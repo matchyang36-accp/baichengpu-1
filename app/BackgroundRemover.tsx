@@ -14,6 +14,7 @@ type Stage = "idle" | "processing" | "done" | "error";
 const MAX_FILE_SIZE = 12 * 1024 * 1024;
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MODEL_ASSET_PATH = "/bg-removal/";
+const DIAGNOSTIC_VERSION = "V6";
 
 function getErrorMessage(reason: unknown) {
   if (reason instanceof Error) {
@@ -36,11 +37,22 @@ function getDiagnosticCode(message: string) {
   return "MODEL_RUNTIME";
 }
 
-function reportClientError(code: string, message: string) {
+function reportClientError(
+  code: string,
+  message: string,
+  phase: string,
+  stack: string,
+) {
   void fetch("/api/client-error", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ code, message }),
+    body: JSON.stringify({
+      code,
+      message,
+      phase,
+      stack: stack.slice(0, 1200),
+      version: DIAGNOSTIC_VERSION,
+    }),
     keepalive: true,
   }).catch(() => undefined);
 }
@@ -128,15 +140,18 @@ export function BackgroundRemover() {
       setError("");
       setStage("processing");
 
+      let diagnosticPhase = "manifest";
       try {
         const publicPath = new URL(
           MODEL_ASSET_PATH,
           window.location.href,
         ).toString();
         await verifyModelAssets(publicPath);
+        diagnosticPhase = "library-import";
         const { default: removeBackground } = await import(
           "@imgly/background-removal"
         );
+        diagnosticPhase = "model-init";
         const output = await removeBackground(file, {
           publicPath,
           model: "isnet_quint8",
@@ -146,6 +161,7 @@ export function BackgroundRemover() {
             type: "foreground",
           },
           progress: (key: string, current: number, total: number) => {
+            diagnosticPhase = key;
             const ratio = total > 0 ? current / total : 0;
             const modelProgress = Math.max(6, Math.min(78, ratio * 78));
             setProgress(Math.round(modelProgress));
@@ -167,11 +183,17 @@ export function BackgroundRemover() {
         const errorMessage = getErrorMessage(reason);
         const detail = errorMessage.toLowerCase();
         const diagnosticCode = getDiagnosticCode(errorMessage);
-        reportClientError(diagnosticCode, errorMessage);
+        const stack = reason instanceof Error ? reason.stack ?? "" : "";
+        reportClientError(
+          diagnosticCode,
+          errorMessage,
+          diagnosticPhase,
+          stack,
+        );
         setError(
           detail.includes("memory") || detail.includes("allocation")
             ? "设备可用内存不足。请关闭其他页面，或换一张尺寸更小的图片后重试。"
-            : `本地模型没有加载完成。诊断码：${diagnosticCode}。请点击重试；首次使用需下载约 56MB。`,
+            : `本地模型没有加载完成。诊断版本：${DIAGNOSTIC_VERSION}；诊断码：${diagnosticCode}。请点击重试。`,
         );
         setStage("error");
       }

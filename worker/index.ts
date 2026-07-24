@@ -34,6 +34,9 @@ const worker = {
         const body = (await request.json()) as {
           code?: unknown;
           message?: unknown;
+          phase?: unknown;
+          stack?: unknown;
+          version?: unknown;
         };
         const code =
           typeof body.code === "string" ? body.code.slice(0, 64) : "UNKNOWN";
@@ -41,7 +44,19 @@ const worker = {
           typeof body.message === "string"
             ? body.message.replace(/[\r\n]+/g, " ").slice(0, 500)
             : "No message";
-        console.error(`[client-model-error] ${code}: ${message}`);
+        const phase =
+          typeof body.phase === "string" ? body.phase.slice(0, 100) : "unknown";
+        const version =
+          typeof body.version === "string"
+            ? body.version.slice(0, 32)
+            : "unknown";
+        const stack =
+          typeof body.stack === "string"
+            ? body.stack.replace(/[\r\n]+/g, " ").slice(0, 1200)
+            : "No stack";
+        console.error(
+          `[client-model-error] ${version} ${code} phase=${phase}: ${message} stack=${stack}`,
+        );
       } catch {
         console.error("[client-model-error] INVALID_PAYLOAD");
       }
