@@ -1,5 +1,6 @@
 "use client";
 
+import { removeBackground } from "@imgly/background-removal";
 import {
   ChangeEvent,
   DragEvent,
@@ -14,7 +15,7 @@ type Stage = "idle" | "processing" | "done" | "error";
 const MAX_FILE_SIZE = 12 * 1024 * 1024;
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MODEL_ASSET_PATH = "/bg-removal/";
-const DIAGNOSTIC_VERSION = "V6";
+const DIAGNOSTIC_VERSION = "V7";
 
 function getErrorMessage(reason: unknown) {
   if (reason instanceof Error) {
@@ -147,10 +148,6 @@ export function BackgroundRemover() {
           window.location.href,
         ).toString();
         await verifyModelAssets(publicPath);
-        diagnosticPhase = "library-import";
-        const { default: removeBackground } = await import(
-          "@imgly/background-removal"
-        );
         diagnosticPhase = "model-init";
         const output = await removeBackground(file, {
           publicPath,
