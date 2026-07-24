@@ -484,6 +484,58 @@ a:focus-visible {
   background-size: 20px 20px;
 }
 
+.cleanup-controls {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #f5faf7;
+  color: var(--ink);
+}
+
+.cleanup-controls > span {
+  font-size: 12px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.cleanup-controls small {
+  color: var(--muted);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.cleanup-options {
+  display: flex;
+  gap: 6px;
+}
+
+.cleanup-options button {
+  padding: 6px 9px;
+  border: 1px solid #bfd5cc;
+  border-radius: 999px;
+  background: white;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.cleanup-options button.is-active {
+  border-color: var(--green);
+  background: var(--green);
+  color: white;
+}
+
+.cleanup-options button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
 .result-actions {
   display: flex;
   align-items: center;
@@ -740,6 +792,16 @@ footer {
 
   .result-actions {
     flex-direction: column;
+  }
+
+  .cleanup-controls {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .cleanup-controls small {
+    white-space: normal;
   }
 
   .proof-strip {
