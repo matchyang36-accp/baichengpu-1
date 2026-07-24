@@ -38,16 +38,6 @@ function backgroundRemovalRuntimeCompat() {
   const relativeUrl = url.replace(/^\\//, "");
   return new URL(relativeUrl, config.publicPath).toString();
 }`,
-        )
-        .replace(
-          `  const mjsPath = await loadAsUrl(\`\${baseFilePath}.mjs\`, config);
-  ort2.env.wasm.wasmPaths = {
-    mjs: mjsPath,
-    wasm: wasmPath
-  };`,
-          `  ort2.env.wasm.wasmPaths = {
-    wasm: wasmPath
-  };`,
         );
 
       if (patchedCode === code) {

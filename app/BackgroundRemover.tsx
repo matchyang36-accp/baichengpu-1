@@ -15,7 +15,7 @@ type Stage = "idle" | "processing" | "done" | "error";
 const MAX_FILE_SIZE = 12 * 1024 * 1024;
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MODEL_ASSET_PATH = "/bg-removal/";
-const DIAGNOSTIC_VERSION = "V7";
+const DIAGNOSTIC_VERSION = "V8";
 
 function getErrorMessage(reason: unknown) {
   if (reason instanceof Error) {
