@@ -13,9 +13,39 @@ type Stage = "idle" | "processing" | "done" | "error";
 
 const MAX_FILE_SIZE = 12 * 1024 * 1024;
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MODEL_ASSET_PATH = "/bg-removal/";
+
+async function verifyModelAssets(publicPath: string) {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 15_000);
+
+    try {
+      const response = await fetch(`${publicPath}resources.json`, {
+        cache: "force-cache",
+        signal: controller.signal,
+      });
+      if (!response.ok) {
+        throw new Error(`model-manifest-${response.status}`);
+      }
+      return;
+    } catch (reason) {
+      lastError = reason;
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  }
+
+  throw lastError instanceof Error
+    ? lastError
+    : new Error("model-assets-unavailable");
+}
 
 export function BackgroundRemover() {
   const inputRef = useRef<HTMLInputElement>(null);
+  const retryFileRef = useRef<File | null>(null);
   const [stage, setStage] = useState<Stage>("idle");
   const [sourceUrl, setSourceUrl] = useState("");
   const [resultUrl, setResultUrl] = useState("");
@@ -56,6 +86,7 @@ export function BackgroundRemover() {
       }
 
       clearUrls();
+      retryFileRef.current = file;
       const preview = URL.createObjectURL(file);
       setSourceUrl(preview);
       setResultUrl("");
@@ -68,10 +99,16 @@ export function BackgroundRemover() {
       setStage("processing");
 
       try {
+        const publicPath = new URL(
+          MODEL_ASSET_PATH,
+          window.location.href,
+        ).toString();
+        await verifyModelAssets(publicPath);
         const { default: removeBackground } = await import(
           "@imgly/background-removal"
         );
         const output = await removeBackground(file, {
+          publicPath,
           model: "isnet_quint8",
           output: {
             format: "image/png",
@@ -97,8 +134,12 @@ export function BackgroundRemover() {
         setStage("done");
       } catch (reason) {
         console.error(reason);
+        const detail =
+          reason instanceof Error ? reason.message.toLowerCase() : "";
         setError(
-          "处理没有完成。请检查网络后重试；模型首次加载约需 40MB，之后会缓存到浏览器。",
+          detail.includes("memory") || detail.includes("allocation")
+            ? "设备可用内存不足。请关闭其他页面，或换一张尺寸更小的图片后重试。"
+            : "本地模型没有加载完成。请刷新页面或点击重试；首次使用需下载约 56MB，成功后会缓存到浏览器。",
         );
         setStage("error");
       }
@@ -271,9 +312,22 @@ export function BackgroundRemover() {
               <span aria-hidden="true">!</span>
               <h3>这次没处理成功</h3>
               <p>{error}</p>
-              <button className="primary-button" type="button" onClick={reset}>
-                重新选择
-              </button>
+              <div className="result-actions">
+                <button
+                  className="primary-button"
+                  type="button"
+                  onClick={() => {
+                    if (retryFileRef.current) {
+                      void processFile(retryFileRef.current);
+                    }
+                  }}
+                >
+                  重试处理
+                </button>
+                <button className="text-button" type="button" onClick={reset}>
+                  重新选择
+                </button>
+              </div>
             </div>
           )}
 
