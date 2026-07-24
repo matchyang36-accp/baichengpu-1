@@ -11,6 +11,46 @@ const { d1, r2 } = hostingConfig;
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 
+function backgroundRemovalRuntimeCompat() {
+  return {
+    name: "background-removal-runtime-compat",
+    enforce: "pre" as const,
+    transform(code: string, id: string) {
+      const normalizedId = id.replaceAll("\\", "/");
+      if (
+        !normalizedId.includes(
+          "/@imgly/background-removal/dist/index.mjs",
+        )
+      ) {
+        return null;
+      }
+
+      const patchedCode = code
+        .replace(
+          "var maxNumThreads = () => navigator.hardwareConcurrency ?? 4;",
+          "var maxNumThreads = () => globalThis.crossOriginIsolated ? navigator.hardwareConcurrency ?? 4 : 1;",
+        )
+        .replace(
+          `async function loadAsUrl(url, config) {
+  return URL.createObjectURL(await loadAsBlob(url, config));
+}`,
+          `async function loadAsUrl(url, config) {
+  const relativeUrl = url.replace(/^\\//, "");
+  return new URL(relativeUrl, config.publicPath).toString();
+}`,
+        );
+
+      if (patchedCode === code) {
+        throw new Error(
+          "Unable to apply the background-removal runtime compatibility patch.",
+        );
+      }
+
+      return { code: patchedCode, map: null };
+    },
+  };
+}
+
 const localBindingConfig = {
   main: "./worker/index.ts",
   compatibility_flags: ["nodejs_compat"],
@@ -48,6 +88,7 @@ export default defineConfig(async () => {
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
     plugins: [
+      backgroundRemovalRuntimeCompat(),
       vinext(),
       sites(),
       cloudflare({
