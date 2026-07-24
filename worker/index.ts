@@ -29,6 +29,25 @@ const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
+    if (url.pathname === "/api/client-error" && request.method === "POST") {
+      try {
+        const body = (await request.json()) as {
+          code?: unknown;
+          message?: unknown;
+        };
+        const code =
+          typeof body.code === "string" ? body.code.slice(0, 64) : "UNKNOWN";
+        const message =
+          typeof body.message === "string"
+            ? body.message.replace(/[\r\n]+/g, " ").slice(0, 500)
+            : "No message";
+        console.error(`[client-model-error] ${code}: ${message}`);
+      } catch {
+        console.error("[client-model-error] INVALID_PAYLOAD");
+      }
+      return new Response(null, { status: 204 });
+    }
+
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];
       return handleImageOptimization(request, {

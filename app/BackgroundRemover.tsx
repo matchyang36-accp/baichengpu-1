@@ -15,6 +15,36 @@ const MAX_FILE_SIZE = 12 * 1024 * 1024;
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MODEL_ASSET_PATH = "/bg-removal/";
 
+function getErrorMessage(reason: unknown) {
+  if (reason instanceof Error) {
+    return `${reason.name}: ${reason.message}`.slice(0, 500);
+  }
+  return String(reason).slice(0, 500);
+}
+
+function getDiagnosticCode(message: string) {
+  const normalized = message.toLowerCase();
+  if (normalized.includes("failed to fetch")) return "MODEL_FETCH";
+  if (normalized.includes("size") && normalized.includes("got")) {
+    return "MODEL_SIZE";
+  }
+  if (normalized.includes("wasm")) return "WASM_INIT";
+  if (normalized.includes("session")) return "MODEL_SESSION";
+  if (normalized.includes("memory") || normalized.includes("allocation")) {
+    return "DEVICE_MEMORY";
+  }
+  return "MODEL_RUNTIME";
+}
+
+function reportClientError(code: string, message: string) {
+  void fetch("/api/client-error", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ code, message }),
+    keepalive: true,
+  }).catch(() => undefined);
+}
+
 async function verifyModelAssets(publicPath: string) {
   let lastError: unknown;
 
@@ -134,12 +164,14 @@ export function BackgroundRemover() {
         setStage("done");
       } catch (reason) {
         console.error(reason);
-        const detail =
-          reason instanceof Error ? reason.message.toLowerCase() : "";
+        const errorMessage = getErrorMessage(reason);
+        const detail = errorMessage.toLowerCase();
+        const diagnosticCode = getDiagnosticCode(errorMessage);
+        reportClientError(diagnosticCode, errorMessage);
         setError(
           detail.includes("memory") || detail.includes("allocation")
             ? "设备可用内存不足。请关闭其他页面，或换一张尺寸更小的图片后重试。"
-            : "本地模型没有加载完成。请刷新页面或点击重试；首次使用需下载约 56MB，成功后会缓存到浏览器。",
+            : `本地模型没有加载完成。诊断码：${diagnosticCode}。请点击重试；首次使用需下载约 56MB。`,
         );
         setStage("error");
       }
