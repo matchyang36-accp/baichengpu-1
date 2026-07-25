@@ -23,13 +23,59 @@ const CLEANUP_PRESETS: Record<
   { core: number; low: number; high: number; gamma: number }
 > = {
   standard: { core: 150, low: 18, high: 205, gamma: 0.92 },
-  strong: { core: 178, low: 34, high: 186, gamma: 1.02 },
+  strong: { core: 190, low: 58, high: 176, gamma: 1.08 },
   shadow: { core: 120, low: 5, high: 225, gamma: 0.82 },
 };
 
 function smoothStep(edge0: number, edge1: number, value: number) {
   const t = Math.max(0, Math.min(1, (value - edge0) / (edge1 - edge0)));
   return t * t * (3 - 2 * t);
+}
+
+function openBinaryMask(
+  source: Uint8Array,
+  width: number,
+  height: number,
+  passes: number,
+) {
+  let current = source;
+  for (let pass = 0; pass < passes; pass += 1) {
+    const eroded = new Uint8Array(current.length);
+    for (let y = 1; y < height - 1; y += 1) {
+      for (let x = 1; x < width - 1; x += 1) {
+        const index = y * width + x;
+        let solid = true;
+        for (let oy = -1; oy <= 1 && solid; oy += 1) {
+          for (let ox = -1; ox <= 1; ox += 1) {
+            if (!current[index + oy * width + ox]) {
+              solid = false;
+              break;
+            }
+          }
+        }
+        if (solid) eroded[index] = 1;
+      }
+    }
+
+    const dilated = new Uint8Array(current.length);
+    for (let y = 1; y < height - 1; y += 1) {
+      for (let x = 1; x < width - 1; x += 1) {
+        const index = y * width + x;
+        let nearby = false;
+        for (let oy = -1; oy <= 1 && !nearby; oy += 1) {
+          for (let ox = -1; ox <= 1; ox += 1) {
+            if (eroded[index + oy * width + ox]) {
+              nearby = true;
+              break;
+            }
+          }
+        }
+        if (nearby) dilated[index] = 1;
+      }
+    }
+    current = dilated;
+  }
+  return current;
 }
 
 async function cleanForeground(
@@ -187,16 +233,40 @@ async function cleanForeground(
       if (isMeaningfulPart) selected.add(index);
     });
 
-    const queue: number[] = [];
+    let seedMask = keep;
     selected.forEach((componentIndex) => {
       for (const index of components[componentIndex].pixels) {
-        keep[index] = 1;
-        queue.push(index);
+        seedMask[index] = 1;
       }
     });
 
+    if (mode === "strong") {
+      const openedMask = openBinaryMask(
+        seedMask,
+        analysisWidth,
+        analysisHeight,
+        2,
+      );
+      if (openedMask.some((value) => value === 1)) {
+        seedMask = openedMask;
+        keep.fill(0);
+        keep.set(seedMask);
+      }
+    }
+
+    const queue: number[] = [];
+    const growth = new Uint16Array(pixelCount);
+    const maxGrowth = mode === "strong" ? 5 : 65_000;
+    for (let index = 0; index < pixelCount; index += 1) {
+      if (keep[index]) {
+        queue.push(index);
+        growth[index] = 1;
+      }
+    }
+
     for (let cursor = 0; cursor < queue.length; cursor += 1) {
       const index = queue[cursor];
+      if (growth[index] > maxGrowth) continue;
       const x = index % analysisWidth;
       for (const offset of neighbors) {
         const next = index + offset;
@@ -205,6 +275,7 @@ async function cleanForeground(
         if (offset === 1 && x === analysisWidth - 1) continue;
         if (analysis.data[next * 4 + 3] < preset.low) continue;
         keep[next] = 1;
+        growth[next] = growth[index] + 1;
         queue.push(next);
       }
     }
