@@ -393,6 +393,8 @@ export function BackgroundRemover() {
   const inputRef = useRef<HTMLInputElement>(null);
   const retryFileRef = useRef<File | null>(null);
   const rawResultRef = useRef<Blob | null>(null);
+  const sourceUrlRef = useRef("");
+  const resultUrlRef = useRef("");
   const [stage, setStage] = useState<Stage>("idle");
   const [sourceUrl, setSourceUrl] = useState("");
   const [resultUrl, setResultUrl] = useState("");
@@ -408,9 +410,15 @@ export function BackgroundRemover() {
   const [comparePosition, setComparePosition] = useState(50);
 
   const clearUrls = useCallback(() => {
-    if (sourceUrl) URL.revokeObjectURL(sourceUrl);
-    if (resultUrl) URL.revokeObjectURL(resultUrl);
-  }, [resultUrl, sourceUrl]);
+    if (sourceUrlRef.current) {
+      URL.revokeObjectURL(sourceUrlRef.current);
+      sourceUrlRef.current = "";
+    }
+    if (resultUrlRef.current) {
+      URL.revokeObjectURL(resultUrlRef.current);
+      resultUrlRef.current = "";
+    }
+  }, []);
 
   useEffect(() => () => clearUrls(), [clearUrls]);
 
@@ -438,15 +446,19 @@ export function BackgroundRemover() {
       setIsRefining(true);
       try {
         const cleaned = await cleanForeground(rawResult, mode);
-        if (resultUrl) URL.revokeObjectURL(resultUrl);
-        setResultUrl(URL.createObjectURL(cleaned));
+        if (resultUrlRef.current) {
+          URL.revokeObjectURL(resultUrlRef.current);
+        }
+        const nextResultUrl = URL.createObjectURL(cleaned);
+        resultUrlRef.current = nextResultUrl;
+        setResultUrl(nextResultUrl);
       } catch (reason) {
         console.error(reason);
       } finally {
         setIsRefining(false);
       }
     },
-    [resultUrl],
+    [],
   );
 
   const processFile = useCallback(
@@ -465,6 +477,7 @@ export function BackgroundRemover() {
       clearUrls();
       retryFileRef.current = file;
       const preview = URL.createObjectURL(file);
+      sourceUrlRef.current = preview;
       setSourceUrl(preview);
       setResultUrl("");
       setZoom(100);
@@ -512,6 +525,7 @@ export function BackgroundRemover() {
         setProgress(88);
         const cleanedOutput = await cleanForeground(output, "standard");
         const outputUrl = URL.createObjectURL(cleanedOutput);
+        resultUrlRef.current = outputUrl;
         setResultUrl(outputUrl);
         setProgress(100);
         setStage("done");
