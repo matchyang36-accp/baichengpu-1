@@ -12,6 +12,7 @@ import {
 
 type Stage = "idle" | "processing" | "done" | "error";
 type CleanupMode = "standard" | "strong" | "shadow";
+type ViewMode = "side-by-side" | "compare";
 
 const MAX_FILE_SIZE = 12 * 1024 * 1024;
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -403,6 +404,8 @@ export function BackgroundRemover() {
   const [cleanupMode, setCleanupMode] = useState<CleanupMode>("standard");
   const [isRefining, setIsRefining] = useState(false);
   const [zoom, setZoom] = useState(100);
+  const [viewMode, setViewMode] = useState<ViewMode>("side-by-side");
+  const [comparePosition, setComparePosition] = useState(50);
 
   const clearUrls = useCallback(() => {
     if (sourceUrl) URL.revokeObjectURL(sourceUrl);
@@ -422,6 +425,8 @@ export function BackgroundRemover() {
     setCleanupMode("standard");
     setIsRefining(false);
     setZoom(100);
+    setViewMode("side-by-side");
+    setComparePosition(50);
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -463,6 +468,8 @@ export function BackgroundRemover() {
       setSourceUrl(preview);
       setResultUrl("");
       setZoom(100);
+      setViewMode("side-by-side");
+      setComparePosition(50);
       setFileName(
         `${file.name.replace(/\.[^/.]+$/, "") || "product"}-透明底.png`,
       );
@@ -664,30 +671,77 @@ export function BackgroundRemover() {
 
           {stage === "done" && (
             <div className="result-panel" aria-live="polite">
-              <div className="result-grid">
-                <figure>
-                  <span>原图</span>
-                  <div className="preview-frame">
+              {viewMode === "side-by-side" ? (
+                <div className="result-grid">
+                  <figure>
+                    <span>原图</span>
+                    <div className="preview-frame">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={sourceUrl}
+                        alt="商品原图"
+                        style={{ transform: `scale(${zoom / 100})` }}
+                      />
+                    </div>
+                  </figure>
+                  <figure>
+                    <span className="result-badge">透明底</span>
+                    <div className="preview-frame checkerboard">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={resultUrl}
+                        alt="已经移除背景的商品图"
+                        style={{ transform: `scale(${zoom / 100})` }}
+                      />
+                    </div>
+                  </figure>
+                </div>
+              ) : (
+                <div className="compare-stage checkerboard">
+                  <span className="compare-label compare-label-left">原图</span>
+                  <span className="compare-label compare-label-right">
+                    透明底
+                  </span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    className="compare-result"
+                    src={resultUrl}
+                    alt="透明背景处理结果"
+                    style={{ transform: `scale(${zoom / 100})` }}
+                  />
+                  <div
+                    className="compare-original"
+                    style={{
+                      clipPath: `inset(0 ${100 - comparePosition}% 0 0)`,
+                    }}
+                  >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={sourceUrl}
-                      alt="商品原图"
+                      alt="用于对比的商品原图"
                       style={{ transform: `scale(${zoom / 100})` }}
                     />
                   </div>
-                </figure>
-                <figure>
-                  <span className="result-badge">透明底</span>
-                  <div className="preview-frame checkerboard">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={resultUrl}
-                      alt="已经移除背景的商品图"
-                      style={{ transform: `scale(${zoom / 100})` }}
-                    />
+                  <div
+                    className="compare-divider"
+                    style={{ left: `${comparePosition}%` }}
+                    aria-hidden="true"
+                  >
+                    <span>↔</span>
                   </div>
-                </figure>
-              </div>
+                  <input
+                    className="compare-range"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={comparePosition}
+                    aria-label={`原图与透明图对比位置 ${comparePosition}%`}
+                    onChange={(event) =>
+                      setComparePosition(Number(event.target.value))
+                    }
+                  />
+                </div>
+              )}
               <div className="zoom-controls" aria-label="图片缩放控制">
                 <span>查看细节</span>
                 <div>
@@ -710,16 +764,35 @@ export function BackgroundRemover() {
                   </button>
                   <button
                     type="button"
-                    disabled={zoom >= 300}
+                    disabled={zoom >= 500}
                     onClick={() =>
-                      setZoom((value) => Math.min(300, value + 25))
+                      setZoom((value) => Math.min(500, value + 25))
                     }
                     aria-label="放大图片"
                   >
                     ＋ 放大
                   </button>
                 </div>
-                <small>原图与透明图同步缩放</small>
+                <div className="view-mode-switch" aria-label="图片查看模式">
+                  <button
+                    type="button"
+                    className={
+                      viewMode === "side-by-side" ? "is-active" : ""
+                    }
+                    aria-pressed={viewMode === "side-by-side"}
+                    onClick={() => setViewMode("side-by-side")}
+                  >
+                    并排查看
+                  </button>
+                  <button
+                    type="button"
+                    className={viewMode === "compare" ? "is-active" : ""}
+                    aria-pressed={viewMode === "compare"}
+                    onClick={() => setViewMode("compare")}
+                  >
+                    滑动对比
+                  </button>
+                </div>
               </div>
               <div className="cleanup-controls" aria-label="抠图净化强度">
                 <span>边缘净化</span>

@@ -471,6 +471,99 @@ a:focus-visible {
   background: var(--green);
 }
 
+.compare-stage {
+  min-height: 360px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(23, 32, 29, 0.13);
+  border-radius: 14px;
+  background-color: white;
+}
+
+.compare-stage > img,
+.compare-original,
+.compare-original img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.compare-stage > img,
+.compare-original img {
+  object-fit: contain;
+  transform-origin: center;
+  transition: transform 180ms ease;
+}
+
+.compare-original {
+  z-index: 2;
+  overflow: hidden;
+  background: #ebe8e1;
+}
+
+.compare-label {
+  position: absolute;
+  z-index: 5;
+  top: 12px;
+  padding: 6px 9px;
+  border-radius: 7px;
+  color: white;
+  font-size: 11px;
+  font-weight: 850;
+  pointer-events: none;
+}
+
+.compare-label-left {
+  left: 12px;
+  background: rgba(23, 32, 29, 0.82);
+}
+
+.compare-label-right {
+  right: 12px;
+  background: var(--green);
+}
+
+.compare-divider {
+  width: 2px;
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  bottom: 0;
+  background: white;
+  box-shadow: 0 0 0 1px rgba(23, 32, 29, 0.14);
+  pointer-events: none;
+}
+
+.compare-divider span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid white;
+  border-radius: 50%;
+  background: var(--ink);
+  color: white;
+  box-shadow: 0 5px 18px rgba(23, 32, 29, 0.24);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.compare-range {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 6;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+}
+
 .checkerboard {
   background-color: white;
   background-image:
@@ -546,6 +639,20 @@ a:focus-visible {
   min-width: 56px;
   border-color: var(--ink);
   background: var(--ink);
+  color: white;
+}
+
+.zoom-controls .view-mode-switch {
+  justify-content: flex-end;
+}
+
+.zoom-controls .view-mode-switch button {
+  min-width: 74px;
+}
+
+.zoom-controls .view-mode-switch button.is-active {
+  border-color: var(--orange);
+  background: var(--orange);
   color: white;
 }
 
@@ -833,6 +940,10 @@ footer {
 
   .result-grid .preview-frame {
     min-height: 230px;
+  }
+
+  .compare-stage {
+    min-height: 300px;
   }
 
   .result-actions {
