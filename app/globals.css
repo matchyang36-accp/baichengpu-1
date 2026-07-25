@@ -226,6 +226,265 @@ button {
   text-align: center;
 }
 
+.batch-page {
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+.batch-hero {
+  width: min(1080px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 62px 0 38px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.batch-hero h1 {
+  margin: 16px 0 18px;
+  font-size: clamp(48px, 6.5vw, 82px);
+  line-height: 0.98;
+  letter-spacing: -0.08em;
+}
+
+.batch-hero p {
+  max-width: 620px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.batch-stats {
+  min-width: 170px;
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.batch-stats span {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.batch-stats strong {
+  color: var(--ink);
+  font-size: 23px;
+}
+
+.batch-workbench {
+  width: min(1080px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 30px;
+  border: 1.5px solid var(--ink);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: 10px 10px 0 var(--ink);
+}
+
+.batch-dropzone {
+  min-height: 116px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border: 2px dashed rgba(241, 90, 55, 0.82);
+  border-radius: 20px;
+  background: #fff5f0;
+  transition:
+    transform 160ms ease,
+    background 160ms ease;
+}
+
+.batch-dropzone.is-dragging {
+  background: #ffe4d8;
+  transform: scale(1.01);
+}
+
+.batch-dropzone div {
+  display: grid;
+  gap: 8px;
+}
+
+.batch-dropzone strong {
+  font-size: 20px;
+}
+
+.batch-dropzone span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.secondary-button {
+  min-height: 46px;
+  padding: 0 20px;
+  border: 1px solid var(--ink);
+  border-radius: 12px;
+  background: white;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.secondary-button:disabled,
+.primary-button:disabled,
+.batch-clear:disabled,
+.batch-item-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.batch-notice {
+  margin: 18px 0 0;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: #eef8f3;
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.batch-actions {
+  padding: 24px 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.batch-clear {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.batch-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.batch-item {
+  min-width: 0;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #faf8f3;
+}
+
+.batch-item.is-processing {
+  border-color: rgba(33, 85, 205, 0.5);
+}
+
+.batch-item.is-done {
+  border-color: rgba(23, 107, 74, 0.42);
+  background: #f3faf6;
+}
+
+.batch-item.is-error {
+  border-color: rgba(241, 90, 55, 0.58);
+}
+
+.batch-thumb {
+  position: relative;
+  height: 76px;
+  overflow: hidden;
+  border-radius: 11px;
+  background:
+    linear-gradient(45deg, #e5e5e5 25%, transparent 25%),
+    linear-gradient(-45deg, #e5e5e5 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e5e5e5 75%),
+    linear-gradient(-45deg, transparent 75%, #e5e5e5 75%);
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
+  background-size: 16px 16px;
+}
+
+.batch-thumb img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.batch-thumb span {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  padding: 3px 5px;
+  border-radius: 6px;
+  background: rgba(23, 32, 29, 0.82);
+  color: white;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.batch-item-copy {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.batch-item-copy strong {
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.batch-item-copy span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.batch-progress {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e1ddd5;
+}
+
+.batch-progress i {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: var(--green);
+  transition: width 180ms ease;
+}
+
+.batch-item-actions {
+  display: grid;
+  gap: 7px;
+}
+
+.batch-item-actions button {
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+}
+
 .hero {
   width: min(1180px, calc(100% - 40px));
   margin: 0 auto;
@@ -910,6 +1169,7 @@ a:focus-visible {
 }
 
 .roadmap-card {
+  display: block;
   padding: 32px;
   border: 1.5px solid var(--ink);
   border-radius: 22px;
@@ -917,6 +1177,12 @@ a:focus-visible {
   color: white;
   box-shadow: 8px 8px 0 var(--ink);
   transform: rotate(1.5deg);
+  text-decoration: none;
+  transition: transform 160ms ease;
+}
+
+.roadmap-card:hover {
+  transform: rotate(0deg) translateY(-3px);
 }
 
 .roadmap-card > span {
@@ -965,6 +1231,10 @@ footer {
 }
 
 @media (max-width: 920px) {
+  .batch-grid {
+    grid-template-columns: 1fr;
+  }
+
   .contact-card {
     grid-template-columns: 1fr;
     max-width: 640px;
@@ -1025,6 +1295,67 @@ footer {
 
   .contact-copy h1 {
     font-size: 48px;
+  }
+
+  .batch-page .nav a[href="/contact"] {
+    display: none;
+  }
+
+  .batch-hero {
+    width: min(100% - 28px, 1080px);
+    padding: 42px 0 28px;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .batch-hero h1 {
+    font-size: 49px;
+  }
+
+  .batch-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .batch-stats span {
+    align-items: center;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .batch-workbench {
+    width: min(100% - 28px, 1080px);
+    padding: 17px;
+    border-radius: 22px;
+    box-shadow: 7px 7px 0 var(--ink);
+  }
+
+  .batch-dropzone {
+    padding: 22px 18px;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .batch-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .batch-clear {
+    margin: 5px auto 0;
+  }
+
+  .batch-item {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .batch-thumb {
+    height: 68px;
+  }
+
+  .batch-item-actions {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .nav a {

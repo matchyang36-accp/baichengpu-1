@@ -79,7 +79,7 @@ function openBinaryMask(
   return current;
 }
 
-async function cleanForeground(
+export async function cleanForeground(
   blob: Blob,
   mode: CleanupMode,
 ): Promise<Blob> {
@@ -361,7 +361,7 @@ function reportClientError(
   }).catch(() => undefined);
 }
 
-async function verifyModelAssets(publicPath: string) {
+export async function verifyModelAssets(publicPath: string) {
   let lastError: unknown;
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -597,7 +597,7 @@ export function BackgroundRemover() {
         </a>
         <nav className="nav" aria-label="主导航">
           <a href="#how-it-works">怎么用</a>
-          <a href="#roadmap">批量版</a>
+          <a href="/batch">批量版</a>
           <a href="/contact">联系我们</a>
           <span className="nav-pill">免费体验</span>
         </nav>
@@ -911,11 +911,11 @@ export function BackgroundRemover() {
           <span className="eyebrow">接下来要做的事</span>
           <h2>不是多一个工具，是少一堆重复劳动。</h2>
         </div>
-        <div className="roadmap-card">
-          <span>即将开放</span>
+        <a className="roadmap-card" href="/batch">
+          <span>体验版已开放</span>
           <h3>批量商品白底图</h3>
-          <p>一次上传 100 张，统一居中、留白、尺寸和阴影，打包下载。</p>
-        </div>
+          <p>一次选择多张商品图，自动排队抠图，完成后打包下载透明 PNG。</p>
+        </a>
       </section>
 
       <footer>
