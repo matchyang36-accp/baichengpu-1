@@ -598,6 +598,7 @@ export function BackgroundRemover() {
         <nav className="nav" aria-label="主导航">
           <a href="#how-it-works">怎么用</a>
           <a href="#roadmap">批量版</a>
+          <a href="/contact">联系我们</a>
           <span className="nav-pill">免费体验</span>
         </nav>
       </header>
