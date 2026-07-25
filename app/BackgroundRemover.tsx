@@ -331,6 +331,7 @@ export function BackgroundRemover() {
   const [dragging, setDragging] = useState(false);
   const [cleanupMode, setCleanupMode] = useState<CleanupMode>("standard");
   const [isRefining, setIsRefining] = useState(false);
+  const [zoom, setZoom] = useState(100);
 
   const clearUrls = useCallback(() => {
     if (sourceUrl) URL.revokeObjectURL(sourceUrl);
@@ -349,6 +350,7 @@ export function BackgroundRemover() {
     rawResultRef.current = null;
     setCleanupMode("standard");
     setIsRefining(false);
+    setZoom(100);
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -389,6 +391,7 @@ export function BackgroundRemover() {
       const preview = URL.createObjectURL(file);
       setSourceUrl(preview);
       setResultUrl("");
+      setZoom(100);
       setFileName(
         `${file.name.replace(/\.[^/.]+$/, "") || "product"}-透明底.png`,
       );
@@ -595,16 +598,57 @@ export function BackgroundRemover() {
                   <span>原图</span>
                   <div className="preview-frame">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={sourceUrl} alt="商品原图" />
+                    <img
+                      src={sourceUrl}
+                      alt="商品原图"
+                      style={{ transform: `scale(${zoom / 100})` }}
+                    />
                   </div>
                 </figure>
                 <figure>
                   <span className="result-badge">透明底</span>
                   <div className="preview-frame checkerboard">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={resultUrl} alt="已经移除背景的商品图" />
+                    <img
+                      src={resultUrl}
+                      alt="已经移除背景的商品图"
+                      style={{ transform: `scale(${zoom / 100})` }}
+                    />
                   </div>
                 </figure>
+              </div>
+              <div className="zoom-controls" aria-label="图片缩放控制">
+                <span>查看细节</span>
+                <div>
+                  <button
+                    type="button"
+                    disabled={zoom <= 50}
+                    onClick={() => setZoom((value) => Math.max(50, value - 25))}
+                    aria-label="缩小图片"
+                  >
+                    − 缩小
+                  </button>
+                  <button
+                    className="zoom-value"
+                    type="button"
+                    disabled={zoom === 100}
+                    onClick={() => setZoom(100)}
+                    aria-label={`当前缩放 ${zoom}%，点击恢复原始比例`}
+                  >
+                    {zoom}%
+                  </button>
+                  <button
+                    type="button"
+                    disabled={zoom >= 300}
+                    onClick={() =>
+                      setZoom((value) => Math.min(300, value + 25))
+                    }
+                    aria-label="放大图片"
+                  >
+                    ＋ 放大
+                  </button>
+                </div>
+                <small>原图与透明图同步缩放</small>
               </div>
               <div className="cleanup-controls" aria-label="抠图净化强度">
                 <span>边缘净化</span>
