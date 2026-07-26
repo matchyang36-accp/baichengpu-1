@@ -169,7 +169,17 @@ export function BatchRemover() {
 
   const updateItem = (id: string, patch: Partial<BatchItem>) => {
     setItems((current) =>
-      current.map((item) => (item.id === id ? { ...item, ...patch } : item)),
+      current.map((item) => {
+        if (item.id !== id) return item;
+        const isLateProgressUpdate =
+          item.status === "done" &&
+          patch.status === undefined &&
+          patch.progress !== undefined;
+        if (isLateProgressUpdate) return item;
+
+        const next = { ...item, ...patch };
+        return next.status === "done" ? { ...next, progress: 100 } : next;
+      }),
     );
   };
 
@@ -405,7 +415,11 @@ export function BatchRemover() {
                       {item.status === "error" && item.error}
                     </span>
                     <div className="batch-progress" aria-hidden="true">
-                      <i style={{ width: `${item.progress}%` }} />
+                      <i
+                        style={{
+                          width: `${item.status === "done" ? 100 : item.progress}%`,
+                        }}
+                      />
                     </div>
                   </div>
                   <div className="batch-item-actions">
