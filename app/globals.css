@@ -352,6 +352,29 @@ button {
   font-weight: 700;
 }
 
+.batch-run-status {
+  margin-top: 14px;
+  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  border: 1px solid rgba(33, 85, 205, 0.18);
+  border-radius: 14px;
+  background: #f3f6ff;
+}
+
+.batch-run-status span {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.batch-run-status strong {
+  color: var(--blue);
+  font-size: 14px;
+}
+
 .batch-actions {
   padding: 24px 0 20px;
   display: flex;
@@ -1339,6 +1362,10 @@ footer {
   .batch-actions {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .batch-run-status {
+    grid-template-columns: 1fr;
   }
 
   .batch-clear {

@@ -23,6 +23,13 @@ type BatchItem = {
   error?: string;
 };
 
+type RunProgress = {
+  completed: number;
+  total: number;
+  etaSeconds: number | null;
+  accelerated: boolean;
+};
+
 const MAX_BATCH_SIZE = 20;
 const MAX_FILE_SIZE = 12 * 1024 * 1024;
 const MODEL_ASSET_PATH = "/bg-removal/";
@@ -30,6 +37,14 @@ const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 function outputName(fileName: string) {
   return `${fileName.replace(/\.[^/.]+$/, "") || "product"}-透明底.png`;
+}
+
+function formatDuration(seconds: number | null) {
+  if (seconds === null) return "正在估算";
+  if (seconds < 60) return `约 ${Math.max(1, Math.ceil(seconds))} 秒`;
+  const minutes = Math.floor(seconds / 60);
+  const remainder = Math.ceil(seconds % 60);
+  return `约 ${minutes} 分 ${remainder} 秒`;
 }
 
 function crc32(bytes: Uint8Array) {
@@ -111,6 +126,7 @@ export function BatchRemover() {
   const [processing, setProcessing] = useState(false);
   const [notice, setNotice] = useState("");
   const [preparingZip, setPreparingZip] = useState(false);
+  const [runProgress, setRunProgress] = useState<RunProgress | null>(null);
 
   useEffect(() => {
     itemsRef.current = items;
@@ -190,12 +206,28 @@ export function BatchRemover() {
     if (pending.length === 0) return;
 
     setProcessing(true);
-    setNotice("正在准备本地 AI 模型，首次使用可能需要一些时间。");
+    const concurrency = 1;
+    const accelerated = globalThis.crossOriginIsolated === true;
+    setRunProgress({
+      completed: 0,
+      total: pending.length,
+      etaSeconds: null,
+      accelerated,
+    });
+    setNotice(
+      accelerated
+        ? "正在准备本地 AI 模型；当前浏览器已启用安全的多线程加速。"
+        : "正在准备本地 AI 模型；当前设备将采用稳定的单任务模式。",
+    );
     const publicPath = new URL(MODEL_ASSET_PATH, window.location.href).toString();
 
     try {
       await verifyModelAssets(publicPath);
-      for (const item of pending) {
+      const startedAt = performance.now();
+      let cursor = 0;
+      let finished = 0;
+
+      const processItem = async (item: BatchItem) => {
         updateItem(item.id, {
           status: "processing",
           progress: 4,
@@ -235,13 +267,38 @@ export function BatchRemover() {
             error: "处理失败，可稍后重试",
           });
         }
-      }
+        finished += 1;
+        const elapsedSeconds = (performance.now() - startedAt) / 1000;
+        const etaSeconds =
+          finished > 0
+            ? (elapsedSeconds / finished) * (pending.length - finished)
+            : null;
+        setRunProgress({
+          completed: finished,
+          total: pending.length,
+          etaSeconds,
+          accelerated,
+        });
+      };
+
+      const worker = async () => {
+        while (cursor < pending.length) {
+          const item = pending[cursor];
+          cursor += 1;
+          await processItem(item);
+        }
+      };
+
+      await Promise.all(
+        Array.from({ length: concurrency }, () => worker()),
+      );
       setNotice("本批次处理完成，可逐张预览或打包下载。");
     } catch (reason) {
       console.error(reason);
       setNotice("本地模型没有加载完成，请检查网络后重试。");
     } finally {
       setProcessing(false);
+      setRunProgress(null);
     }
   };
 
@@ -369,6 +426,26 @@ export function BatchRemover() {
 
         {items.length > 0 && (
           <>
+            {processing && runProgress && (
+              <div className="batch-run-status" role="status">
+                <span>
+                  当前进度
+                  <strong>
+                    {runProgress.completed} / {runProgress.total}
+                  </strong>
+                </span>
+                <span>
+                  预计剩余
+                  <strong>{formatDuration(runProgress.etaSeconds)}</strong>
+                </span>
+                <span>
+                  处理模式
+                  <strong>
+                    {runProgress.accelerated ? "多线程加速" : "稳定模式"}
+                  </strong>
+                </span>
+              </div>
+            )}
             <div className="batch-actions">
               <button
                 className="primary-button"
@@ -376,7 +453,9 @@ export function BatchRemover() {
                 disabled={processing || pendingCount === 0}
                 onClick={() => void processAll()}
               >
-                {processing ? "正在逐张处理…" : `开始处理 ${pendingCount} 张`}
+                {processing && runProgress
+                  ? `处理中 ${runProgress.completed}/${runProgress.total}`
+                  : `开始处理 ${pendingCount} 张`}
               </button>
               <button
                 className="secondary-button"

@@ -28,7 +28,7 @@ function backgroundRemovalRuntimeCompat() {
       const patchedCode = code
         .replace(
           "var maxNumThreads = () => navigator.hardwareConcurrency ?? 4;",
-          "var maxNumThreads = () => globalThis.crossOriginIsolated ? navigator.hardwareConcurrency ?? 4 : 1;",
+          "var maxNumThreads = () => globalThis.crossOriginIsolated ? Math.min(navigator.hardwareConcurrency ?? 4, 4) : 1;",
         )
         .replace(
           `async function loadAsUrl(url, config) {
