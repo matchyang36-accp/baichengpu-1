@@ -9,15 +9,28 @@ import {
   useRef,
   useState,
 } from "react";
+import { ManualMaskEditor } from "./ManualMaskEditor";
 
 type Stage = "idle" | "processing" | "done" | "error";
 type CleanupMode = "standard" | "strong" | "shadow";
 type ViewMode = "side-by-side" | "compare";
+type Platform = "taobao" | "pinduoduo" | "douyin";
 
 const MAX_FILE_SIZE = 12 * 1024 * 1024;
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MODEL_ASSET_PATH = "/bg-removal/";
 const DIAGNOSTIC_VERSION = "V8";
+const PRODUCT_CANVAS_SIZE = 1000;
+
+const PLATFORM_PRESETS: Array<{
+  id: Platform;
+  label: string;
+  shortLabel: string;
+}> = [
+  { id: "taobao", label: "淘宝主图", shortLabel: "淘宝" },
+  { id: "pinduoduo", label: "拼多多主图", shortLabel: "拼多多" },
+  { id: "douyin", label: "抖音小店主图", shortLabel: "抖音小店" },
+];
 
 const CLEANUP_PRESETS: Record<
   CleanupMode,
@@ -31,6 +44,87 @@ const CLEANUP_PRESETS: Record<
 function smoothStep(edge0: number, edge1: number, value: number) {
   const t = Math.max(0, Math.min(1, (value - edge0) / (edge1 - edge0)));
   return t * t * (3 - 2 * t);
+}
+
+function loadImage(source: string) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("image-load-failed"));
+    image.src = source;
+  });
+}
+
+async function cropTransparentForeground(blob: Blob) {
+  const bitmap = await createImageBitmap(blob);
+  const sourceCanvas = document.createElement("canvas");
+  sourceCanvas.width = bitmap.width;
+  sourceCanvas.height = bitmap.height;
+  const sourceContext = sourceCanvas.getContext("2d", {
+    willReadFrequently: true,
+  });
+  if (!sourceContext) throw new Error("crop-canvas-unavailable");
+  sourceContext.drawImage(bitmap, 0, 0);
+  const pixels = sourceContext.getImageData(
+    0,
+    0,
+    bitmap.width,
+    bitmap.height,
+  ).data;
+
+  let minX = bitmap.width;
+  let minY = bitmap.height;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y = 0; y < bitmap.height; y += 1) {
+    for (let x = 0; x < bitmap.width; x += 1) {
+      if (pixels[(y * bitmap.width + x) * 4 + 3] <= 8) continue;
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+    }
+  }
+
+  if (maxX < minX || maxY < minY) {
+    bitmap.close();
+    return blob;
+  }
+
+  const subjectWidth = maxX - minX + 1;
+  const subjectHeight = maxY - minY + 1;
+  const padding = Math.max(4, Math.round(Math.max(subjectWidth, subjectHeight) * 0.025));
+  const cropX = Math.max(0, minX - padding);
+  const cropY = Math.max(0, minY - padding);
+  const cropWidth = Math.min(bitmap.width - cropX, subjectWidth + padding * 2);
+  const cropHeight = Math.min(bitmap.height - cropY, subjectHeight + padding * 2);
+  const cropCanvas = document.createElement("canvas");
+  cropCanvas.width = cropWidth;
+  cropCanvas.height = cropHeight;
+  const cropContext = cropCanvas.getContext("2d");
+  if (!cropContext) throw new Error("crop-export-canvas-unavailable");
+  cropContext.drawImage(
+    bitmap,
+    cropX,
+    cropY,
+    cropWidth,
+    cropHeight,
+    0,
+    0,
+    cropWidth,
+    cropHeight,
+  );
+  bitmap.close();
+
+  return new Promise<Blob>((resolve, reject) => {
+    cropCanvas.toBlob(
+      (output) =>
+        output
+          ? resolve(output)
+          : reject(new Error("crop-foreground-export-failed")),
+      "image/png",
+    );
+  });
 }
 
 function openBinaryMask(
@@ -395,9 +489,11 @@ export function BackgroundRemover() {
   const rawResultRef = useRef<Blob | null>(null);
   const sourceUrlRef = useRef("");
   const resultUrlRef = useRef("");
+  const productUrlRef = useRef("");
   const [stage, setStage] = useState<Stage>("idle");
   const [sourceUrl, setSourceUrl] = useState("");
   const [resultUrl, setResultUrl] = useState("");
+  const [productUrl, setProductUrl] = useState("");
   const [fileName, setFileName] = useState("baichengpu-cutout.png");
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState("准备图片");
@@ -408,6 +504,19 @@ export function BackgroundRemover() {
   const [zoom, setZoom] = useState(100);
   const [viewMode, setViewMode] = useState<ViewMode>("side-by-side");
   const [comparePosition, setComparePosition] = useState(50);
+  const [manualEditorOpen, setManualEditorOpen] = useState(false);
+  const [platform, setPlatform] = useState<Platform>("taobao");
+  const [backgroundColor, setBackgroundColor] = useState("#ffffff");
+  const [subjectScale, setSubjectScale] = useState(82);
+  const [subjectX, setSubjectX] = useState(0);
+  const [subjectY, setSubjectY] = useState(0);
+  const [naturalShadow, setNaturalShadow] = useState(true);
+  const [exportingProduct, setExportingProduct] = useState(false);
+  const [feedbackChoice, setFeedbackChoice] = useState<
+    "satisfied" | "unsatisfied" | null
+  >(null);
+  const [feedbackIssues, setFeedbackIssues] = useState<string[]>([]);
+  const [feedbackSent, setFeedbackSent] = useState(false);
 
   const clearUrls = useCallback(() => {
     if (sourceUrlRef.current) {
@@ -418,14 +527,26 @@ export function BackgroundRemover() {
       URL.revokeObjectURL(resultUrlRef.current);
       resultUrlRef.current = "";
     }
+    if (productUrlRef.current) {
+      URL.revokeObjectURL(productUrlRef.current);
+      productUrlRef.current = "";
+    }
   }, []);
 
   useEffect(() => () => clearUrls(), [clearUrls]);
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem("baichengpu-platform");
+    if (saved === "taobao" || saved === "pinduoduo" || saved === "douyin") {
+      setPlatform(saved);
+    }
+  }, []);
 
   const reset = () => {
     clearUrls();
     setSourceUrl("");
     setResultUrl("");
+    setProductUrl("");
     setStage("idle");
     setProgress(0);
     setError("");
@@ -435,6 +556,15 @@ export function BackgroundRemover() {
     setZoom(100);
     setViewMode("side-by-side");
     setComparePosition(50);
+    setManualEditorOpen(false);
+    setBackgroundColor("#ffffff");
+    setSubjectScale(82);
+    setSubjectX(0);
+    setSubjectY(0);
+    setNaturalShadow(true);
+    setFeedbackChoice(null);
+    setFeedbackIssues([]);
+    setFeedbackSent(false);
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -452,6 +582,13 @@ export function BackgroundRemover() {
         const nextResultUrl = URL.createObjectURL(cleaned);
         resultUrlRef.current = nextResultUrl;
         setResultUrl(nextResultUrl);
+        const cropped = await cropTransparentForeground(cleaned);
+        if (productUrlRef.current) {
+          URL.revokeObjectURL(productUrlRef.current);
+        }
+        const nextProductUrl = URL.createObjectURL(cropped);
+        productUrlRef.current = nextProductUrl;
+        setProductUrl(nextProductUrl);
       } catch (reason) {
         console.error(reason);
       } finally {
@@ -480,9 +617,14 @@ export function BackgroundRemover() {
       sourceUrlRef.current = preview;
       setSourceUrl(preview);
       setResultUrl("");
+      setProductUrl("");
       setZoom(100);
       setViewMode("side-by-side");
       setComparePosition(50);
+      setManualEditorOpen(false);
+      setFeedbackChoice(null);
+      setFeedbackIssues([]);
+      setFeedbackSent(false);
       setFileName(
         `${file.name.replace(/\.[^/.]+$/, "") || "product"}-透明底.png`,
       );
@@ -527,6 +669,10 @@ export function BackgroundRemover() {
         const outputUrl = URL.createObjectURL(cleanedOutput);
         resultUrlRef.current = outputUrl;
         setResultUrl(outputUrl);
+        const croppedOutput = await cropTransparentForeground(cleanedOutput);
+        const croppedOutputUrl = URL.createObjectURL(croppedOutput);
+        productUrlRef.current = croppedOutputUrl;
+        setProductUrl(croppedOutputUrl);
         setProgress(100);
         setStage("done");
       } catch (reason) {
@@ -584,6 +730,108 @@ export function BackgroundRemover() {
     anchor.href = resultUrl;
     anchor.download = fileName;
     anchor.click();
+  };
+
+  const applyManualEdit = (blob: Blob) => {
+    if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current);
+    const nextResultUrl = URL.createObjectURL(blob);
+    resultUrlRef.current = nextResultUrl;
+    setResultUrl(nextResultUrl);
+    setManualEditorOpen(false);
+    void cropTransparentForeground(blob).then((cropped) => {
+      if (productUrlRef.current) URL.revokeObjectURL(productUrlRef.current);
+      const nextProductUrl = URL.createObjectURL(cropped);
+      productUrlRef.current = nextProductUrl;
+      setProductUrl(nextProductUrl);
+    });
+  };
+
+  const selectPlatform = (nextPlatform: Platform) => {
+    setPlatform(nextPlatform);
+    window.localStorage.setItem("baichengpu-platform", nextPlatform);
+  };
+
+  const downloadProductImage = async () => {
+    const exportSource = productUrl || resultUrl;
+    if (!exportSource) return;
+    setExportingProduct(true);
+    try {
+      const image = await loadImage(exportSource);
+      const canvas = document.createElement("canvas");
+      canvas.width = PRODUCT_CANVAS_SIZE;
+      canvas.height = PRODUCT_CANVAS_SIZE;
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("product-canvas-unavailable");
+
+      context.fillStyle = backgroundColor;
+      context.fillRect(0, 0, canvas.width, canvas.height);
+
+      const maxSide = PRODUCT_CANVAS_SIZE * (subjectScale / 100);
+      const imageRatio = image.naturalWidth / image.naturalHeight;
+      const drawWidth = imageRatio >= 1 ? maxSide : maxSide * imageRatio;
+      const drawHeight = imageRatio >= 1 ? maxSide / imageRatio : maxSide;
+      const centerX =
+        PRODUCT_CANVAS_SIZE / 2 + (subjectX / 100) * PRODUCT_CANVAS_SIZE;
+      const centerY =
+        PRODUCT_CANVAS_SIZE / 2 + (subjectY / 100) * PRODUCT_CANVAS_SIZE;
+      const drawX = centerX - drawWidth / 2;
+      const drawY = centerY - drawHeight / 2;
+
+      if (naturalShadow) {
+        context.shadowColor = "rgba(24, 32, 29, 0.28)";
+        context.shadowBlur = 24;
+        context.shadowOffsetY = 18;
+      }
+      context.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(
+          (output) =>
+            output
+              ? resolve(output)
+              : reject(new Error("product-export-failed")),
+          "image/png",
+        );
+      });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      const baseName =
+        fileName.replace(/-透明底\.png$/i, "") || "product";
+      anchor.href = url;
+      anchor.download = `${baseName}-${platform}-白底主图.png`;
+      anchor.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 5_000);
+    } finally {
+      setExportingProduct(false);
+    }
+  };
+
+  const sendQualityFeedback = async (
+    rating: "satisfied" | "unsatisfied",
+    issues: string[],
+  ) => {
+    setFeedbackChoice(rating);
+    if (rating === "satisfied") setFeedbackSent(true);
+    await fetch("/api/quality-feedback", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        rating,
+        issues,
+        cleanupMode,
+        platform,
+        version: DIAGNOSTIC_VERSION,
+      }),
+      keepalive: true,
+    }).catch(() => undefined);
+  };
+
+  const toggleFeedbackIssue = (issue: string) => {
+    setFeedbackIssues((current) =>
+      current.includes(issue)
+        ? current.filter((item) => item !== issue)
+        : [...current, issue],
+    );
   };
 
   return (
@@ -841,6 +1089,145 @@ export function BackgroundRemover() {
                         : "适合大多数商品图片"}
                 </small>
               </div>
+              <div className="manual-edit-entry">
+                <div>
+                  <strong>边缘还有杂点或缺口？</strong>
+                  <span>用擦除与恢复画笔做最后修正，支持撤销。</span>
+                </div>
+                <button
+                  className="secondary-button"
+                  type="button"
+                  disabled={isRefining || !rawResultRef.current}
+                  onClick={() => setManualEditorOpen(true)}
+                >
+                  手动修边
+                </button>
+              </div>
+
+              <section className="product-composer" aria-label="电商白底主图">
+                <div className="product-composer-head">
+                  <div>
+                    <span className="step-kicker">02 / 电商成品图</span>
+                    <h3>一键生成平台白底主图</h3>
+                  </div>
+                  <span>{PRODUCT_CANVAS_SIZE} × {PRODUCT_CANVAS_SIZE}px</span>
+                </div>
+
+                <div className="platform-options" aria-label="选择电商平台">
+                  {PLATFORM_PRESETS.map((preset) => (
+                    <button
+                      type="button"
+                      key={preset.id}
+                      className={platform === preset.id ? "is-active" : ""}
+                      aria-pressed={platform === preset.id}
+                      onClick={() => selectPlatform(preset.id)}
+                    >
+                      <strong>{preset.shortLabel}</strong>
+                      <span>{preset.label}</span>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="product-composer-body">
+                  <div
+                    className="product-canvas"
+                    style={{ backgroundColor }}
+                    aria-label="白底主图预览"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={productUrl || resultUrl}
+                      alt="商品主图预览"
+                      style={{
+                        width: `${subjectScale}%`,
+                        height: `${subjectScale}%`,
+                        transform: `translate(${subjectX}%, ${subjectY}%)`,
+                        filter: naturalShadow
+                          ? "drop-shadow(0 10px 9px rgba(24, 32, 29, 0.25))"
+                          : "none",
+                      }}
+                    />
+                  </div>
+                  <div className="product-controls">
+                    <div>
+                      <span>背景颜色</span>
+                      <div className="color-options">
+                        {["#ffffff", "#f6f3ec", "#eef7f2", "#fff1eb"].map(
+                          (color) => (
+                            <button
+                              type="button"
+                              key={color}
+                              className={
+                                backgroundColor === color ? "is-active" : ""
+                              }
+                              style={{ backgroundColor: color }}
+                              aria-label={`选择背景色 ${color}`}
+                              onClick={() => setBackgroundColor(color)}
+                            />
+                          ),
+                        )}
+                        <input
+                          type="color"
+                          value={backgroundColor}
+                          aria-label="自定义背景颜色"
+                          onChange={(event) =>
+                            setBackgroundColor(event.target.value)
+                          }
+                        />
+                      </div>
+                    </div>
+                    <label>
+                      商品大小
+                      <input
+                        type="range"
+                        min="55"
+                        max="105"
+                        value={subjectScale}
+                        onChange={(event) =>
+                          setSubjectScale(Number(event.target.value))
+                        }
+                      />
+                      <strong>{subjectScale}%</strong>
+                    </label>
+                    <label>
+                      左右位置
+                      <input
+                        type="range"
+                        min="-20"
+                        max="20"
+                        value={subjectX}
+                        onChange={(event) =>
+                          setSubjectX(Number(event.target.value))
+                        }
+                      />
+                      <strong>{subjectX}</strong>
+                    </label>
+                    <label>
+                      上下位置
+                      <input
+                        type="range"
+                        min="-20"
+                        max="20"
+                        value={subjectY}
+                        onChange={(event) =>
+                          setSubjectY(Number(event.target.value))
+                        }
+                      />
+                      <strong>{subjectY}</strong>
+                    </label>
+                    <label className="shadow-toggle">
+                      <input
+                        type="checkbox"
+                        checked={naturalShadow}
+                        onChange={(event) =>
+                          setNaturalShadow(event.target.checked)
+                        }
+                      />
+                      添加自然阴影
+                    </label>
+                  </div>
+                </div>
+              </section>
               <div className="result-actions">
                 <button
                   className="primary-button"
@@ -850,10 +1237,89 @@ export function BackgroundRemover() {
                 >
                   下载透明 PNG
                 </button>
+                <button
+                  className="secondary-button"
+                  type="button"
+                  disabled={isRefining || exportingProduct}
+                  onClick={() => void downloadProductImage()}
+                >
+                  {exportingProduct ? "正在生成…" : "下载白底主图"}
+                </button>
                 <button className="text-button" type="button" onClick={reset}>
                   再处理一张
                 </button>
               </div>
+              <section className="quality-feedback" aria-label="抠图质量反馈">
+                {feedbackSent ? (
+                  <p>谢谢反馈，我们会用它继续优化商品图效果。</p>
+                ) : (
+                  <>
+                    <div>
+                      <strong>这张抠图能直接使用吗？</strong>
+                      <span>反馈不包含你的图片</span>
+                    </div>
+                    <div className="quality-feedback-actions">
+                      <button
+                        type="button"
+                        className={
+                          feedbackChoice === "satisfied" ? "is-active" : ""
+                        }
+                        onClick={() =>
+                          void sendQualityFeedback("satisfied", [])
+                        }
+                      >
+                        满意
+                      </button>
+                      <button
+                        type="button"
+                        className={
+                          feedbackChoice === "unsatisfied" ? "is-active" : ""
+                        }
+                        onClick={() => {
+                          setFeedbackChoice("unsatisfied");
+                          setFeedbackSent(false);
+                        }}
+                      >
+                        不满意
+                      </button>
+                    </div>
+                    {feedbackChoice === "unsatisfied" && (
+                      <div className="feedback-issues">
+                        {["有杂点", "边缘缺失", "阴影错误", "透明物体", "主体识别错误"].map(
+                          (issue) => (
+                            <button
+                              type="button"
+                              key={issue}
+                              className={
+                                feedbackIssues.includes(issue)
+                                  ? "is-active"
+                                  : ""
+                              }
+                              onClick={() => toggleFeedbackIssue(issue)}
+                            >
+                              {issue}
+                            </button>
+                          ),
+                        )}
+                        <button
+                          className="feedback-submit"
+                          type="button"
+                          disabled={feedbackIssues.length === 0}
+                          onClick={() => {
+                            setFeedbackSent(true);
+                            void sendQualityFeedback(
+                              "unsatisfied",
+                              feedbackIssues,
+                            );
+                          }}
+                        >
+                          提交问题
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </section>
             </div>
           )}
 
@@ -890,6 +1356,15 @@ export function BackgroundRemover() {
           />
         </div>
       </section>
+
+      {manualEditorOpen && resultUrl && rawResultRef.current && (
+        <ManualMaskEditor
+          resultUrl={resultUrl}
+          restoreBlob={rawResultRef.current}
+          onApply={applyManualEdit}
+          onClose={() => setManualEditorOpen(false)}
+        />
+      )}
 
       <section className="proof-strip" id="how-it-works">
         <div>

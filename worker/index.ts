@@ -63,6 +63,49 @@ const worker = {
       return new Response(null, { status: 204 });
     }
 
+    if (
+      url.pathname === "/api/quality-feedback" &&
+      request.method === "POST"
+    ) {
+      try {
+        const body = (await request.json()) as {
+          rating?: unknown;
+          issues?: unknown;
+          cleanupMode?: unknown;
+          platform?: unknown;
+          version?: unknown;
+        };
+        const rating =
+          body.rating === "satisfied" || body.rating === "unsatisfied"
+            ? body.rating
+            : "unknown";
+        const issues = Array.isArray(body.issues)
+          ? body.issues
+              .filter((issue): issue is string => typeof issue === "string")
+              .slice(0, 8)
+              .map((issue) => issue.slice(0, 40))
+          : [];
+        const cleanupMode =
+          typeof body.cleanupMode === "string"
+            ? body.cleanupMode.slice(0, 32)
+            : "unknown";
+        const platform =
+          typeof body.platform === "string"
+            ? body.platform.slice(0, 32)
+            : "unknown";
+        const version =
+          typeof body.version === "string"
+            ? body.version.slice(0, 32)
+            : "unknown";
+        console.log(
+          `[quality-feedback] ${version} rating=${rating} cleanup=${cleanupMode} platform=${platform} issues=${issues.join(",") || "none"}`,
+        );
+      } catch {
+        console.error("[quality-feedback] INVALID_PAYLOAD");
+      }
+      return new Response(null, { status: 204 });
+    }
+
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];
       return handleImageOptimization(request, {
