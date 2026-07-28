@@ -846,6 +846,7 @@ export function BackgroundRemover() {
         <nav className="nav" aria-label="主导航">
           <a href="#how-it-works">怎么用</a>
           <a href="/batch">批量版</a>
+          <a href="/pricing">专业版</a>
           <a href="/contact">联系我们</a>
           <span className="nav-pill">免费体验</span>
         </nav>
@@ -1395,7 +1396,11 @@ export function BackgroundRemover() {
 
       <footer>
         <span>© 2026 白橙铺</span>
-        <span>面向电商卖家的商品图生产工具</span>
+        <div className="footer-links">
+          <a href="/pricing">专业版方案</a>
+          <a href="/privacy">隐私说明</a>
+          <a href="/contact">联系我们</a>
+        </div>
       </footer>
     </main>
   );

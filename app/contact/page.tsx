@@ -15,9 +15,11 @@ export default function ContactPage() {
           </span>
           <span>白橙铺</span>
         </a>
-        <a className="contact-home-link" href="/">
-          返回抠图工具
-        </a>
+        <nav className="nav" aria-label="联系页导航">
+          <a href="/">单张抠图</a>
+          <a href="/batch">批量版</a>
+          <a href="/pricing">专业版</a>
+        </nav>
       </header>
 
       <section className="contact-card" aria-labelledby="contact-title">

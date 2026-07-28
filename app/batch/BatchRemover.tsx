@@ -450,6 +450,7 @@ export function BatchRemover() {
         </a>
         <nav className="nav" aria-label="批量版导航">
           <a href="/">单张抠图</a>
+          <a href="/pricing">专业版</a>
           <a href="/contact">联系我们</a>
           <span className="nav-pill">批量体验版</span>
         </nav>
