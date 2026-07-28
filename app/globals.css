@@ -1783,7 +1783,17 @@ footer {
   text-decoration: none;
 }
 
-.footer-links a:hover {
+.footer-links button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+  font-weight: 700;
+}
+
+.footer-links a:hover,
+.footer-links button:hover {
   color: var(--orange-dark);
 }
 

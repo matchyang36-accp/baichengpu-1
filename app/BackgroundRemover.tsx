@@ -1,25 +1,40 @@
 "use client";
 
-import { removeBackground } from "@imgly/background-removal";
 import {
   ChangeEvent,
   DragEvent,
+  lazy,
+  Suspense,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
-import { ManualMaskEditor } from "./ManualMaskEditor";
+import {
+  clearModelCache,
+  registerModelCacheWorker,
+} from "./lib/model-cache";
+import {
+  mapRemovalProgress,
+  removeBackgroundLocal,
+  verifyModelAssets,
+} from "./lib/model-runtime";
 
 type Stage = "idle" | "processing" | "done" | "error";
 type CleanupMode = "standard" | "strong" | "shadow";
 type ViewMode = "side-by-side" | "compare";
 type Platform = "taobao" | "pinduoduo" | "douyin";
 
+const ManualMaskEditor = lazy(() =>
+  import("./ManualMaskEditor").then((module) => ({
+    default: module.ManualMaskEditor,
+  })),
+);
+
 const MAX_FILE_SIZE = 12 * 1024 * 1024;
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MODEL_ASSET_PATH = "/bg-removal/";
-const DIAGNOSTIC_VERSION = "V9";
+const DIAGNOSTIC_VERSION = "V10";
 const MODEL_INIT_TIMEOUT_MS = 120_000;
 const PRODUCT_CANVAS_SIZE = 1000;
 
@@ -476,77 +491,6 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number) {
   });
 }
 
-export async function verifyModelAssets(publicPath: string) {
-  let lastError: unknown;
-
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 15_000);
-
-    try {
-      const response = await fetch(`${publicPath}resources.json`, {
-        cache: "force-cache",
-        signal: controller.signal,
-      });
-      if (!response.ok) {
-        throw new Error(`model-manifest-${response.status}`);
-      }
-      return;
-    } catch (reason) {
-      lastError = reason;
-    } finally {
-      window.clearTimeout(timeout);
-    }
-  }
-
-  throw lastError instanceof Error
-    ? lastError
-    : new Error("model-assets-unavailable");
-}
-
-export function mapRemovalProgress(
-  key: string,
-  current: number,
-  total: number,
-) {
-  const ratio = total > 0 ? Math.max(0, Math.min(1, current / total)) : 0;
-
-  if (key.startsWith("fetch:")) {
-    const isModel = key.includes("/models/");
-    if (isModel) {
-      return {
-        progress: Math.round(ratio >= 0.995 ? 72 : 20 + ratio * 50),
-        status:
-          ratio >= 0.995
-            ? "模型下载完成，正在启动本地 AI"
-            : "首次使用，正在下载 AI 模型（约 44MB）",
-      };
-    }
-    return {
-      progress: Math.round(6 + ratio * 14),
-      status: "正在准备本地运行组件",
-    };
-  }
-
-  if (key === "compute:decode") {
-    return { progress: 78, status: "正在读取并缩放商品图片" };
-  }
-  if (key === "compute:inference") {
-    return { progress: 82, status: "AI 正在识别商品主体与边缘" };
-  }
-  if (key === "compute:mask") {
-    return { progress: 92, status: "正在生成透明边缘" };
-  }
-  if (key === "compute:encode") {
-    return {
-      progress: current >= total ? 98 : 96,
-      status: "正在生成透明 PNG",
-    };
-  }
-
-  return { progress: 6, status: "正在准备本地 AI 模型" };
-}
-
 export function BackgroundRemover() {
   const inputRef = useRef<HTMLInputElement>(null);
   const retryFileRef = useRef<File | null>(null);
@@ -583,6 +527,7 @@ export function BackgroundRemover() {
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [processingSeconds, setProcessingSeconds] = useState(0);
   const [requiresReload, setRequiresReload] = useState(false);
+  const [cacheCleared, setCacheCleared] = useState(false);
 
   const clearUrls = useCallback(() => {
     if (sourceUrlRef.current) {
@@ -600,6 +545,10 @@ export function BackgroundRemover() {
   }, []);
 
   useEffect(() => () => clearUrls(), [clearUrls]);
+
+  useEffect(() => {
+    void registerModelCacheWorker().catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     const saved = window.localStorage.getItem("baichengpu-platform");
@@ -715,6 +664,7 @@ export function BackgroundRemover() {
 
       let diagnosticPhase = "manifest";
       try {
+        await registerModelCacheWorker().catch(() => undefined);
         const publicPath = new URL(
           MODEL_ASSET_PATH,
           window.location.href,
@@ -722,7 +672,7 @@ export function BackgroundRemover() {
         await verifyModelAssets(publicPath);
         diagnosticPhase = "model-init";
         const output = await withTimeout(
-          removeBackground(file, {
+          removeBackgroundLocal(file, {
             publicPath,
             model: "isnet_quint8",
             output: {
@@ -1454,12 +1404,14 @@ export function BackgroundRemover() {
       </section>
 
       {manualEditorOpen && resultUrl && rawResultRef.current && (
-        <ManualMaskEditor
-          resultUrl={resultUrl}
-          restoreBlob={rawResultRef.current}
-          onApply={applyManualEdit}
-          onClose={() => setManualEditorOpen(false)}
-        />
+        <Suspense fallback={null}>
+          <ManualMaskEditor
+            resultUrl={resultUrl}
+            restoreBlob={rawResultRef.current}
+            onApply={applyManualEdit}
+            onClose={() => setManualEditorOpen(false)}
+          />
+        </Suspense>
       )}
 
       <section className="proof-strip" id="how-it-works">
@@ -1495,6 +1447,17 @@ export function BackgroundRemover() {
           <a href="/pricing">专业版方案</a>
           <a href="/privacy">隐私说明</a>
           <a href="/contact">联系我们</a>
+          <button
+            type="button"
+            onClick={() => {
+              void clearModelCache().then(() => {
+                setCacheCleared(true);
+                window.setTimeout(() => setCacheCleared(false), 2_000);
+              });
+            }}
+          >
+            {cacheCleared ? "缓存已清除" : "清除模型缓存"}
+          </button>
         </div>
       </footer>
     </main>

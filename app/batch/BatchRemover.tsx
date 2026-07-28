@@ -1,20 +1,28 @@
 "use client";
 
-import { removeBackground } from "@imgly/background-removal";
 import {
   ChangeEvent,
   DragEvent,
+  lazy,
+  Suspense,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
+import { cleanForeground } from "../BackgroundRemover";
+import { registerModelCacheWorker } from "../lib/model-cache";
 import {
-  cleanForeground,
   mapRemovalProgress,
+  removeBackgroundLocal,
   verifyModelAssets,
-} from "../BackgroundRemover";
-import { ManualMaskEditor } from "../ManualMaskEditor";
+} from "../lib/model-runtime";
+
+const ManualMaskEditor = lazy(() =>
+  import("../ManualMaskEditor").then((module) => ({
+    default: module.ManualMaskEditor,
+  })),
+);
 
 type ItemStatus = "queued" | "processing" | "done" | "error";
 
@@ -150,6 +158,10 @@ export function BatchRemover() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
 
   useEffect(() => {
+    void registerModelCacheWorker().catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
     itemsRef.current = items;
   }, [items]);
 
@@ -236,6 +248,7 @@ export function BatchRemover() {
       failed: 0,
     });
     setNotice("正在准备本地 AI 模型；当前设备将采用稳定的单任务模式。");
+    await registerModelCacheWorker().catch(() => undefined);
     const publicPath = new URL(MODEL_ASSET_PATH, window.location.href).toString();
 
     try {
@@ -254,7 +267,7 @@ export function BatchRemover() {
           error: undefined,
         });
         try {
-          const raw = await removeBackground(item.file, {
+          const raw = await removeBackgroundLocal(item.file, {
             publicPath,
             model: "isnet_quint8",
             output: {
@@ -677,13 +690,15 @@ export function BatchRemover() {
       )}
 
       {editingItem?.resultUrl && editingItem.rawBlob && (
-        <ManualMaskEditor
-          resultUrl={editingItem.resultUrl}
-          resultBlob={editingItem.resultBlob}
-          restoreBlob={editingItem.rawBlob}
-          onApply={(blob) => applyManualEdit(editingItem, blob)}
-          onClose={() => setEditingItemId(null)}
-        />
+        <Suspense fallback={null}>
+          <ManualMaskEditor
+            resultUrl={editingItem.resultUrl}
+            resultBlob={editingItem.resultBlob}
+            restoreBlob={editingItem.rawBlob}
+            onApply={(blob) => applyManualEdit(editingItem, blob)}
+            onClose={() => setEditingItemId(null)}
+          />
+        </Suspense>
       )}
     </main>
   );
