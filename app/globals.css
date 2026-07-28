@@ -375,6 +375,22 @@ button {
   font-size: 14px;
 }
 
+.batch-overall-progress {
+  grid-column: 1 / -1;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dce4f7;
+}
+
+.batch-overall-progress i {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: var(--blue);
+  transition: width 180ms ease;
+}
+
 .batch-actions {
   padding: 24px 0 20px;
   display: flex;
@@ -506,6 +522,86 @@ button {
   color: var(--ink);
   font-size: 11px;
   font-weight: 800;
+  cursor: pointer;
+}
+
+.batch-preview-backdrop {
+  position: fixed;
+  z-index: 90;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(18, 24, 22, 0.76);
+  backdrop-filter: blur(7px);
+}
+
+.batch-preview-modal {
+  width: min(920px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  padding: 20px;
+  border: 1px solid var(--ink);
+  border-radius: 20px;
+  background: #fffdf9;
+  box-shadow: 10px 10px 0 var(--ink);
+}
+
+.batch-preview-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.batch-preview-head h2 {
+  max-width: 680px;
+  overflow: hidden;
+  margin: 5px 0 0;
+  font-size: 23px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.batch-preview-head > button {
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  background: white;
+  color: var(--ink);
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.batch-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.batch-preview-grid figure {
+  min-width: 0;
+  margin: 0;
+}
+
+.batch-preview-grid figcaption {
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.batch-preview-grid .preview-frame {
+  min-height: 420px;
+}
+
+.batch-preview-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
 }
 
 .hero {
@@ -1944,5 +2040,34 @@ footer {
   .tool-switch {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .batch-preview-backdrop {
+    padding: 10px;
+  }
+
+  .batch-preview-modal {
+    max-height: calc(100vh - 20px);
+    padding: 14px;
+    border-radius: 15px;
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+
+  .batch-preview-head h2 {
+    max-width: 240px;
+    font-size: 18px;
+  }
+
+  .batch-preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .batch-preview-grid .preview-frame {
+    min-height: 260px;
+  }
+
+  .batch-preview-actions {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

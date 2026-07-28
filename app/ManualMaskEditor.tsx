@@ -11,6 +11,7 @@ type Tool = "erase" | "restore";
 
 type ManualMaskEditorProps = {
   resultUrl: string;
+  resultBlob?: Blob;
   restoreBlob: Blob;
   onApply: (blob: Blob) => void;
   onClose: () => void;
@@ -28,6 +29,7 @@ function canvasToBlob(canvas: HTMLCanvasElement) {
 
 export function ManualMaskEditor({
   resultUrl,
+  resultBlob,
   restoreBlob,
   onApply,
   onClose,
@@ -40,6 +42,7 @@ export function ManualMaskEditor({
   const [tool, setTool] = useState<Tool>("erase");
   const [brushSize, setBrushSize] = useState(48);
   const [ready, setReady] = useState(false);
+  const [prepareError, setPrepareError] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -49,9 +52,13 @@ export function ManualMaskEditor({
     let restoreBitmap: ImageBitmap | null = null;
 
     const prepare = async () => {
-      const editedBlob = await fetch(resultUrl).then((response) =>
-        response.blob(),
-      );
+      setPrepareError(false);
+      const editedBlob =
+        resultBlob ??
+        (await fetch(resultUrl).then((response) => {
+          if (!response.ok) throw new Error("manual-edit-image-unavailable");
+          return response.blob();
+        }));
       [editedBitmap, restoreBitmap] = await Promise.all([
         createImageBitmap(editedBlob),
         createImageBitmap(restoreBlob),
@@ -70,14 +77,17 @@ export function ManualMaskEditor({
       setReady(true);
     };
 
-    void prepare();
+    void prepare().catch((reason) => {
+      console.error(reason);
+      if (!cancelled) setPrepareError(true);
+    });
     return () => {
       cancelled = true;
       editedBitmap?.close();
       restoreBitmap?.close();
       restoreBitmapRef.current = null;
     };
-  }, [restoreBlob, resultUrl]);
+  }, [restoreBlob, resultBlob, resultUrl]);
 
   const pointFromEvent = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     const canvas = event.currentTarget;
@@ -206,7 +216,13 @@ export function ManualMaskEditor({
             onPointerUp={stopDrawing}
             onPointerCancel={stopDrawing}
           />
-          {!ready && <span>正在准备高清画布…</span>}
+          {!ready && (
+            <span>
+              {prepareError
+                ? "高清画布准备失败，请关闭后重试"
+                : "正在准备高清画布…"}
+            </span>
+          )}
         </div>
 
         <div className="mask-editor-tools">

@@ -4,11 +4,13 @@ import { removeBackground } from "@imgly/background-removal";
 import {
   ChangeEvent,
   DragEvent,
+  useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
 import { cleanForeground, verifyModelAssets } from "../BackgroundRemover";
+import { ManualMaskEditor } from "../ManualMaskEditor";
 
 type ItemStatus = "queued" | "processing" | "done" | "error";
 
@@ -18,8 +20,10 @@ type BatchItem = {
   sourceUrl: string;
   resultUrl?: string;
   resultBlob?: Blob;
+  rawBlob?: Blob;
   status: ItemStatus;
   progress: number;
+  durationMs?: number;
   error?: string;
 };
 
@@ -28,6 +32,8 @@ type RunProgress = {
   total: number;
   etaSeconds: number | null;
   accelerated: boolean;
+  overallPercent: number;
+  failed: number;
 };
 
 const MAX_BATCH_SIZE = 20;
@@ -41,10 +47,19 @@ function outputName(fileName: string) {
 
 function formatDuration(seconds: number | null) {
   if (seconds === null) return "正在估算";
+  if (seconds <= 0) return "已完成";
   if (seconds < 60) return `约 ${Math.max(1, Math.ceil(seconds))} 秒`;
   const minutes = Math.floor(seconds / 60);
   const remainder = Math.ceil(seconds % 60);
   return `约 ${minutes} 分 ${remainder} 秒`;
+}
+
+function formatItemDuration(durationMs?: number) {
+  if (!durationMs) return "";
+  const seconds = Math.max(1, Math.round(durationMs / 1000));
+  return seconds < 60
+    ? `${seconds} 秒`
+    : `${Math.floor(seconds / 60)} 分 ${seconds % 60} 秒`;
 }
 
 function crc32(bytes: Uint8Array) {
@@ -127,6 +142,8 @@ export function BatchRemover() {
   const [notice, setNotice] = useState("");
   const [preparingZip, setPreparingZip] = useState(false);
   const [runProgress, setRunProgress] = useState<RunProgress | null>(null);
+  const [previewItemId, setPreviewItemId] = useState<string | null>(null);
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
 
   useEffect(() => {
     itemsRef.current = items;
@@ -165,6 +182,7 @@ export function BatchRemover() {
     }));
 
     setItems((current) => [...current, ...added]);
+    setRunProgress(null);
     setNotice(
       skipped > 0
         ? `已加入 ${added.length} 张，另有 ${skipped} 张因格式、大小或数量限制被跳过。`
@@ -183,7 +201,7 @@ export function BatchRemover() {
     if (!processing) addFiles(Array.from(event.dataTransfer.files ?? []));
   };
 
-  const updateItem = (id: string, patch: Partial<BatchItem>) => {
+  const updateItem = useCallback((id: string, patch: Partial<BatchItem>) => {
     setItems((current) =>
       current.map((item) => {
         if (item.id !== id) return item;
@@ -197,22 +215,22 @@ export function BatchRemover() {
         return next.status === "done" ? { ...next, progress: 100 } : next;
       }),
     );
-  };
+  }, []);
 
-  const processAll = async () => {
-    const pending = itemsRef.current.filter(
-      (item) => item.status === "queued" || item.status === "error",
-    );
-    if (pending.length === 0) return;
+  const processItems = async (targets: BatchItem[]) => {
+    if (targets.length === 0 || processing) return;
 
     setProcessing(true);
-    const concurrency = 1;
     const accelerated = globalThis.crossOriginIsolated === true;
+    const concurrency =
+      accelerated && (navigator.hardwareConcurrency ?? 4) >= 8 ? 2 : 1;
     setRunProgress({
       completed: 0,
-      total: pending.length,
+      total: targets.length,
       etaSeconds: null,
       accelerated,
+      overallPercent: 0,
+      failed: 0,
     });
     setNotice(
       accelerated
@@ -226,8 +244,10 @@ export function BatchRemover() {
       const startedAt = performance.now();
       let cursor = 0;
       let finished = 0;
+      let failed = 0;
 
       const processItem = async (item: BatchItem) => {
+        const itemStartedAt = performance.now();
         updateItem(item.id, {
           status: "processing",
           progress: 4,
@@ -244,8 +264,31 @@ export function BatchRemover() {
             },
             progress: (_key: string, current: number, total: number) => {
               const ratio = total > 0 ? current / total : 0;
+              const itemProgress = Math.round(
+                Math.max(6, Math.min(82, ratio * 82)),
+              );
               updateItem(item.id, {
-                progress: Math.round(Math.max(6, Math.min(82, ratio * 82))),
+                progress: itemProgress,
+              });
+              const elapsedSeconds = (performance.now() - startedAt) / 1000;
+              const completedEquivalent = finished + itemProgress / 100;
+              const averageSeconds =
+                completedEquivalent > 0
+                  ? elapsedSeconds / completedEquivalent
+                  : 0;
+              setRunProgress({
+                completed: finished,
+                total: targets.length,
+                etaSeconds: Math.max(
+                  0,
+                  averageSeconds * (targets.length - completedEquivalent),
+                ),
+                accelerated,
+                overallPercent: Math.min(
+                  99,
+                  Math.round((completedEquivalent / targets.length) * 100),
+                ),
+                failed,
               });
             },
           });
@@ -256,34 +299,40 @@ export function BatchRemover() {
           updateItem(item.id, {
             resultBlob,
             resultUrl,
+            rawBlob: raw,
             status: "done",
             progress: 100,
+            durationMs: performance.now() - itemStartedAt,
           });
         } catch (reason) {
           console.error(reason);
+          failed += 1;
           updateItem(item.id, {
             status: "error",
             progress: 0,
-            error: "处理失败，可稍后重试",
+            durationMs: performance.now() - itemStartedAt,
+            error: "处理失败，可单独重试",
           });
         }
         finished += 1;
         const elapsedSeconds = (performance.now() - startedAt) / 1000;
         const etaSeconds =
           finished > 0
-            ? (elapsedSeconds / finished) * (pending.length - finished)
+            ? (elapsedSeconds / finished) * (targets.length - finished)
             : null;
         setRunProgress({
           completed: finished,
-          total: pending.length,
+          total: targets.length,
           etaSeconds,
           accelerated,
+          overallPercent: Math.round((finished / targets.length) * 100),
+          failed,
         });
       };
 
       const worker = async () => {
-        while (cursor < pending.length) {
-          const item = pending[cursor];
+        while (cursor < targets.length) {
+          const item = targets[cursor];
           cursor += 1;
           await processItem(item);
         }
@@ -292,14 +341,32 @@ export function BatchRemover() {
       await Promise.all(
         Array.from({ length: concurrency }, () => worker()),
       );
-      setNotice("本批次处理完成，可逐张预览或打包下载。");
+      setRunProgress({
+        completed: targets.length,
+        total: targets.length,
+        etaSeconds: 0,
+        accelerated,
+        overallPercent: 100,
+        failed,
+      });
+      setNotice(
+        failed > 0
+          ? `本轮完成，${failed} 张失败，可在对应图片上单独重试。`
+          : "本批次处理完成，可逐张预览、修边或打包下载。",
+      );
     } catch (reason) {
       console.error(reason);
       setNotice("本地模型没有加载完成，请检查网络后重试。");
     } finally {
       setProcessing(false);
-      setRunProgress(null);
     }
+  };
+
+  const processAll = async () => {
+    const pending = itemsRef.current.filter(
+      (item) => item.status === "queued" || item.status === "error",
+    );
+    await processItems(pending);
   };
 
   const downloadOne = (item: BatchItem) => {
@@ -351,12 +418,26 @@ export function BatchRemover() {
     }
     setItems([]);
     setNotice("");
+    setRunProgress(null);
+    setPreviewItemId(null);
+    setEditingItemId(null);
+  };
+
+  const applyManualEdit = (item: BatchItem, blob: Blob) => {
+    if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
+    const resultUrl = URL.createObjectURL(blob);
+    updateItem(item.id, { resultBlob: blob, resultUrl });
+    setEditingItemId(null);
   };
 
   const completedCount = items.filter((item) => item.status === "done").length;
   const pendingCount = items.filter(
     (item) => item.status === "queued" || item.status === "error",
   ).length;
+  const previewItem =
+    items.find((item) => item.id === previewItemId) ?? null;
+  const editingItem =
+    items.find((item) => item.id === editingItemId) ?? null;
 
   return (
     <main className="batch-page">
@@ -426,12 +507,12 @@ export function BatchRemover() {
 
         {items.length > 0 && (
           <>
-            {processing && runProgress && (
+            {runProgress && (
               <div className="batch-run-status" role="status">
                 <span>
-                  当前进度
+                  批次进度
                   <strong>
-                    {runProgress.completed} / {runProgress.total}
+                    {runProgress.overallPercent}%
                   </strong>
                 </span>
                 <span>
@@ -444,6 +525,9 @@ export function BatchRemover() {
                     {runProgress.accelerated ? "多线程加速" : "稳定模式"}
                   </strong>
                 </span>
+                <div className="batch-overall-progress" aria-hidden="true">
+                  <i style={{ width: `${runProgress.overallPercent}%` }} />
+                </div>
               </div>
             )}
             <div className="batch-actions">
@@ -490,7 +574,8 @@ export function BatchRemover() {
                     <span>
                       {item.status === "queued" && "等待处理"}
                       {item.status === "processing" && `处理中 ${item.progress}%`}
-                      {item.status === "done" && "处理完成"}
+                      {item.status === "done" &&
+                        `处理完成 · ${formatItemDuration(item.durationMs)}`}
                       {item.status === "error" && item.error}
                     </span>
                     <div className="batch-progress" aria-hidden="true">
@@ -503,8 +588,25 @@ export function BatchRemover() {
                   </div>
                   <div className="batch-item-actions">
                     {item.status === "done" && (
-                      <button type="button" onClick={() => downloadOne(item)}>
-                        下载
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setPreviewItemId(item.id)}
+                        >
+                          预览
+                        </button>
+                        <button type="button" onClick={() => downloadOne(item)}>
+                          下载
+                        </button>
+                      </>
+                    )}
+                    {item.status === "error" && (
+                      <button
+                        type="button"
+                        disabled={processing}
+                        onClick={() => void processItems([item])}
+                      >
+                        单独重试
                       </button>
                     )}
                     <button
@@ -521,6 +623,68 @@ export function BatchRemover() {
           </>
         )}
       </section>
+
+      {previewItem?.resultUrl && (
+        <div className="batch-preview-backdrop" role="dialog" aria-modal="true">
+          <section className="batch-preview-modal">
+            <div className="batch-preview-head">
+              <div>
+                <span className="step-kicker">批量结果预览</span>
+                <h2 title={previewItem.file.name}>{previewItem.file.name}</h2>
+              </div>
+              <button
+                type="button"
+                aria-label="关闭结果预览"
+                onClick={() => setPreviewItemId(null)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="batch-preview-grid">
+              <figure>
+                <figcaption>原图</figcaption>
+                <div className="preview-frame">
+                  <img src={previewItem.sourceUrl} alt="批量商品原图" />
+                </div>
+              </figure>
+              <figure>
+                <figcaption>透明底</figcaption>
+                <div className="preview-frame checkerboard">
+                  <img src={previewItem.resultUrl} alt="批量抠图结果" />
+                </div>
+              </figure>
+            </div>
+            <div className="batch-preview-actions">
+              {previewItem.rawBlob && (
+                <button
+                  className="secondary-button"
+                  type="button"
+                  onClick={() => setEditingItemId(previewItem.id)}
+                >
+                  手动修边
+                </button>
+              )}
+              <button
+                className="primary-button"
+                type="button"
+                onClick={() => downloadOne(previewItem)}
+              >
+                下载透明 PNG
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {editingItem?.resultUrl && editingItem.rawBlob && (
+        <ManualMaskEditor
+          resultUrl={editingItem.resultUrl}
+          resultBlob={editingItem.resultBlob}
+          restoreBlob={editingItem.rawBlob}
+          onApply={(blob) => applyManualEdit(editingItem, blob)}
+          onClose={() => setEditingItemId(null)}
+        />
+      )}
     </main>
   );
 }
