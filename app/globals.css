@@ -1527,10 +1527,36 @@ a:focus-visible {
   height: 100%;
   object-fit: contain;
   touch-action: none;
-  cursor: crosshair;
+  cursor: none;
 }
 
-.mask-editor-stage > span {
+.mask-brush-cursor {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1.5px rgba(23, 32, 29, 0.95),
+    0 2px 8px rgba(23, 32, 29, 0.28);
+  pointer-events: none;
+  transition:
+    width 100ms ease,
+    height 100ms ease,
+    opacity 80ms ease;
+}
+
+.mask-brush-cursor.is-restore {
+  border-color: #dff7e9;
+  box-shadow:
+    0 0 0 2px var(--green),
+    0 2px 8px rgba(20, 117, 82, 0.32);
+}
+
+.mask-editor-stage > span:not(.mask-brush-cursor) {
   position: absolute;
   padding: 8px 12px;
   border-radius: 999px;

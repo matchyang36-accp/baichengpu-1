@@ -41,6 +41,7 @@ export function ManualMaskEditor({
   onClose,
 }: ManualMaskEditorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const brushCursorRef = useRef<HTMLSpanElement>(null);
   const baseBitmapRef = useRef<ImageBitmap | null>(null);
   const restoreBitmapRef = useRef<ImageBitmap | null>(null);
   const strokesRef = useRef<Stroke[]>([]);
@@ -111,6 +112,23 @@ export function ManualMaskEditor({
     };
   };
 
+  const updateBrushCursor = (
+    event: ReactPointerEvent<HTMLCanvasElement>,
+  ) => {
+    const cursor = brushCursorRef.current;
+    if (!cursor || !ready || event.pointerType === "touch") return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    cursor.style.left = `${event.clientX - rect.left}px`;
+    cursor.style.top = `${event.clientY - rect.top}px`;
+    cursor.style.opacity = "1";
+  };
+
+  const hideBrushCursor = () => {
+    if (brushCursorRef.current) {
+      brushCursorRef.current.style.opacity = "0";
+    }
+  };
+
   const drawPoint = (
     x: number,
     y: number,
@@ -170,6 +188,7 @@ export function ManualMaskEditor({
     event: ReactPointerEvent<HTMLCanvasElement>,
   ) => {
     if (!ready) return;
+    updateBrushCursor(event);
     const canvas = event.currentTarget;
     drawingRef.current = true;
     canvas.setPointerCapture(event.pointerId);
@@ -186,6 +205,7 @@ export function ManualMaskEditor({
   const onPointerMove = (
     event: ReactPointerEvent<HTMLCanvasElement>,
   ) => {
+    updateBrushCursor(event);
     if (!drawingRef.current) return;
     const point = pointFromEvent(event);
     const lastPoint = lastPointRef.current;
@@ -282,6 +302,14 @@ export function ManualMaskEditor({
             onPointerMove={onPointerMove}
             onPointerUp={stopDrawing}
             onPointerCancel={stopDrawing}
+            onPointerEnter={updateBrushCursor}
+            onPointerLeave={hideBrushCursor}
+          />
+          <span
+            ref={brushCursorRef}
+            className={`mask-brush-cursor is-${tool}`}
+            style={{ width: brushSize, height: brushSize }}
+            aria-hidden="true"
           />
           {!ready && (
             <span>
