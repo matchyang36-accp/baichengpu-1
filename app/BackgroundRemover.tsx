@@ -583,7 +583,6 @@ export function BackgroundRemover() {
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [processingSeconds, setProcessingSeconds] = useState(0);
   const [requiresReload, setRequiresReload] = useState(false);
-  const [workspaceExpanded, setWorkspaceExpanded] = useState(false);
 
   const clearUrls = useCallback(() => {
     if (sourceUrlRef.current) {
@@ -620,30 +619,6 @@ export function BackgroundRemover() {
     }, 1_000);
     return () => window.clearInterval(timer);
   }, [stage]);
-
-  useEffect(() => {
-    if (stage === "done") {
-      setWorkspaceExpanded(true);
-    } else {
-      setWorkspaceExpanded(false);
-    }
-  }, [stage]);
-
-  useEffect(() => {
-    if (!workspaceExpanded) return;
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const exitOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setWorkspaceExpanded(false);
-    };
-    window.addEventListener("keydown", exitOnEscape);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", exitOnEscape);
-    };
-  }, [workspaceExpanded]);
 
   const reset = () => {
     clearUrls();
@@ -977,31 +952,15 @@ export function BackgroundRemover() {
           </div>
         </div>
 
-        <div
-          className={`workbench ${
-            workspaceExpanded ? "is-workspace-fullscreen" : ""
-          }`}
-        >
+        <div className="workbench">
           <div className="workbench-head">
             <div>
               <span className="step-kicker">在线工具 / 单张抠图</span>
               <h2>上传商品图片</h2>
             </div>
-            <div className="workbench-head-actions">
-              <span className="privacy-chip">
-                <i aria-hidden="true">●</i> 图片不会上传
-              </span>
-              {stage === "done" && (
-                <button
-                  className="workspace-expand-button"
-                  type="button"
-                  aria-pressed={workspaceExpanded}
-                  onClick={() => setWorkspaceExpanded((value) => !value)}
-                >
-                  {workspaceExpanded ? "退出全屏" : "全屏操作"}
-                </button>
-              )}
-            </div>
+            <span className="privacy-chip">
+              <i aria-hidden="true">●</i> 图片不会上传
+            </span>
           </div>
 
           {stage === "idle" && (
