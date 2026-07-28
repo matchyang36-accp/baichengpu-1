@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { InterestForm } from "./InterestForm";
 
 export const metadata: Metadata = {
   title: "专业版方案｜白橙铺",
@@ -106,6 +107,8 @@ export default function PricingPage() {
           </article>
         ))}
       </section>
+
+      <InterestForm />
 
       <section className="pricing-note">
         <div>

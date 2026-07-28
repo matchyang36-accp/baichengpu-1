@@ -106,6 +106,135 @@ const worker = {
       return new Response(null, { status: 204 });
     }
 
+    if (url.pathname === "/api/pro-interest" && request.method === "POST") {
+      const json = (value: unknown, status: number) =>
+        Response.json(value, {
+          status,
+          headers: { "cache-control": "no-store" },
+        });
+
+      try {
+        const body = (await request.json()) as {
+          role?: unknown;
+          monthlyVolume?: unknown;
+          needs?: unknown;
+          contactChannel?: unknown;
+          contact?: unknown;
+          note?: unknown;
+          source?: unknown;
+          website?: unknown;
+        };
+
+        if (typeof body.website === "string" && body.website.trim()) {
+          return json({ ok: true }, 200);
+        }
+
+        const allowedRoles = new Set([
+          "ecommerce",
+          "new-media",
+          "photography",
+          "team-lead",
+          "other",
+        ]);
+        const allowedVolumes = new Set([
+          "1-20",
+          "21-100",
+          "101-500",
+          "500+",
+        ]);
+        const allowedChannels = new Set(["wechat", "email"]);
+        const role = typeof body.role === "string" ? body.role : "";
+        const monthlyVolume =
+          typeof body.monthlyVolume === "string" ? body.monthlyVolume : "";
+        const contactChannel =
+          typeof body.contactChannel === "string" ? body.contactChannel : "";
+        const contact =
+          typeof body.contact === "string"
+            ? body.contact.trim().replace(/[\r\n]+/g, "").slice(0, 120)
+            : "";
+        const needs = Array.isArray(body.needs)
+          ? body.needs
+              .filter((need): need is string => typeof need === "string")
+              .slice(0, 6)
+              .map((need) => need.slice(0, 40))
+          : [];
+        const note =
+          typeof body.note === "string"
+            ? body.note.trim().replace(/\0/g, "").slice(0, 500)
+            : "";
+        const source =
+          typeof body.source === "string"
+            ? body.source.trim().slice(0, 60)
+            : "pricing";
+
+        if (
+          !allowedRoles.has(role) ||
+          !allowedVolumes.has(monthlyVolume) ||
+          !allowedChannels.has(contactChannel) ||
+          contact.length < 3
+        ) {
+          return json({ ok: false, code: "INVALID_INPUT" }, 400);
+        }
+
+        const now = new Date().toISOString();
+        await env.DB.batch([
+          env.DB.prepare(`
+            CREATE TABLE IF NOT EXISTS pro_interests (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              contact TEXT NOT NULL UNIQUE,
+              contact_channel TEXT NOT NULL,
+              role TEXT NOT NULL,
+              monthly_volume TEXT NOT NULL,
+              needs TEXT NOT NULL,
+              note TEXT NOT NULL DEFAULT '',
+              source TEXT NOT NULL DEFAULT 'pricing',
+              status TEXT NOT NULL DEFAULT 'new',
+              created_at TEXT NOT NULL,
+              updated_at TEXT NOT NULL
+            )
+          `),
+          env.DB.prepare(
+            "CREATE INDEX IF NOT EXISTS pro_interests_status_idx ON pro_interests (status, created_at)",
+          ),
+        ]);
+        await env.DB.prepare(`
+          INSERT INTO pro_interests (
+            contact, contact_channel, role, monthly_volume, needs, note,
+            source, status, created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, 'new', ?, ?)
+          ON CONFLICT(contact) DO UPDATE SET
+            contact_channel = excluded.contact_channel,
+            role = excluded.role,
+            monthly_volume = excluded.monthly_volume,
+            needs = excluded.needs,
+            note = excluded.note,
+            source = excluded.source,
+            status = 'new',
+            updated_at = excluded.updated_at
+        `)
+          .bind(
+            contact,
+            contactChannel,
+            role,
+            monthlyVolume,
+            JSON.stringify(needs),
+            note,
+            source,
+            now,
+            now,
+          )
+          .run();
+
+        console.log(
+          `[pro-interest] role=${role} volume=${monthlyVolume} channel=${contactChannel} needs=${needs.length} source=${source}`,
+        );
+        return json({ ok: true }, 201);
+      } catch (reason) {
+        console.error("[pro-interest] STORE_FAILED", reason);
+        return json({ ok: false, code: "STORE_FAILED" }, 500);
+      }
+    }
+
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];
       return handleImageOptimization(request, {

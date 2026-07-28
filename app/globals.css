@@ -1838,9 +1838,202 @@ footer {
 }
 
 .pricing-note,
-.faq-section {
+.faq-section,
+.interest-section {
   width: min(980px, calc(100% - 40px));
   margin: 0 auto 90px;
+}
+
+.interest-section {
+  padding: 42px;
+  display: grid;
+  grid-template-columns: 0.82fr 1.18fr;
+  align-items: start;
+  gap: 54px;
+  border: 1px solid var(--ink);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 9px 9px 0 var(--ink);
+}
+
+.interest-copy h2 {
+  margin: 15px 0 16px;
+  font-size: clamp(32px, 4vw, 47px);
+  line-height: 1.08;
+  letter-spacing: -0.06em;
+}
+
+.interest-copy > p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.interest-promise {
+  margin-top: 28px;
+  padding: 18px;
+  display: grid;
+  gap: 5px;
+  border-radius: 16px;
+  background: #eaf7f1;
+}
+
+.interest-promise strong {
+  color: var(--green);
+}
+
+.interest-promise span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.interest-form {
+  display: grid;
+  gap: 18px;
+}
+
+.interest-form label,
+.interest-form fieldset {
+  display: grid;
+  gap: 8px;
+  color: #3f4945;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.interest-form fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.interest-form legend {
+  margin-bottom: 9px;
+}
+
+.interest-form select,
+.interest-form input,
+.interest-form textarea {
+  width: 100%;
+  padding: 12px 13px;
+  border: 1px solid rgba(23, 32, 29, 0.22);
+  border-radius: 11px;
+  outline: none;
+  background: white;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 500;
+}
+
+.interest-form textarea {
+  resize: vertical;
+}
+
+.interest-form select:focus,
+.interest-form input:focus,
+.interest-form textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(23, 107, 74, 0.12);
+}
+
+.contact-fields {
+  display: grid;
+  grid-template-columns: 0.72fr 1.28fr;
+  gap: 12px;
+}
+
+.need-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.need-options button {
+  padding: 8px 11px;
+  border: 1px solid rgba(23, 107, 74, 0.22);
+  border-radius: 999px;
+  background: white;
+  color: #3f4945;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.need-options button.is-active {
+  border-color: var(--green);
+  background: var(--green);
+  color: white;
+}
+
+.interest-form .interest-consent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.interest-consent input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--green);
+}
+
+.interest-consent a {
+  margin-left: 4px;
+  color: var(--green);
+}
+
+.interest-honeypot {
+  position: absolute;
+  left: -9999px;
+}
+
+.interest-error {
+  margin: 0;
+  color: #a22e18;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.interest-success {
+  min-height: 360px;
+  padding: 35px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  text-align: center;
+  border: 1px solid rgba(23, 107, 74, 0.24);
+  border-radius: 20px;
+  background: #eaf7f1;
+}
+
+.interest-success > span {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--green);
+  color: white;
+  font-size: 27px;
+  font-weight: 900;
+}
+
+.interest-success h3 {
+  margin: 16px 0 8px;
+  font-size: 28px;
+}
+
+.interest-success p {
+  max-width: 420px;
+  margin: 0 0 24px;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.interest-success a {
+  text-decoration: none;
 }
 
 .pricing-note {
@@ -1965,6 +2158,11 @@ footer {
 }
 
 @media (max-width: 920px) {
+  .interest-section {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+
   .pricing-grid {
     grid-template-columns: 1fr;
     max-width: 620px;
@@ -2033,6 +2231,7 @@ footer {
   .pricing-grid,
   .pricing-note,
   .faq-section,
+  .interest-section,
   .privacy-card {
     width: min(100% - 28px, 1080px);
   }
@@ -2055,6 +2254,15 @@ footer {
 
   .pricing-note {
     padding: 26px 22px;
+  }
+
+  .interest-section {
+    padding: 26px 20px;
+    box-shadow: 7px 7px 0 var(--ink);
+  }
+
+  .contact-fields {
+    grid-template-columns: 1fr;
   }
 
   .privacy-card {

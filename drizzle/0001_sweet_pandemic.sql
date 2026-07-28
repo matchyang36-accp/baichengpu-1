@@ -1,0 +1,1 @@
+CREATE INDEX `pro_interests_status_idx` ON `pro_interests` (`status`,`created_at`);
