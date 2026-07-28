@@ -1177,6 +1177,7 @@ a:focus-visible {
 }
 
 .zoom-controls {
+  grid-template-columns: auto 1fr auto auto;
   margin-top: 14px;
   background: #fafbfe;
 }
@@ -1242,6 +1243,29 @@ a:focus-visible {
 .zoom-controls button:disabled {
   cursor: default;
   opacity: 0.45;
+}
+
+.zoom-controls .quick-download-button {
+  min-height: 34px;
+  min-width: 104px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-color: var(--orange);
+  background: var(--orange);
+  color: white;
+}
+
+.zoom-controls .quick-download-button:hover:not(:disabled) {
+  border-color: var(--orange-dark);
+  background: var(--orange-dark);
+  color: white;
+}
+
+.quick-download-button > span {
+  font-size: 17px;
+  line-height: 1;
 }
 
 .cleanup-options {

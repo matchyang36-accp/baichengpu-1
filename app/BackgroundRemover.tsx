@@ -1191,6 +1191,15 @@ export function BackgroundRemover() {
                     滑动对比
                   </button>
                 </div>
+                <button
+                  className="quick-download-button"
+                  type="button"
+                  disabled={isRefining}
+                  onClick={download}
+                >
+                  <span aria-hidden="true">↓</span>
+                  下载 PNG
+                </button>
               </div>
               <div className="cleanup-controls" aria-label="抠图净化强度">
                 <span>边缘净化</span>
