@@ -715,6 +715,75 @@ button {
   gap: 16px;
 }
 
+.workbench-head-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.workspace-expand-button {
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--ink);
+  color: white;
+  font-size: 11px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.workspace-expand-button:hover {
+  background: var(--orange);
+}
+
+.workbench.is-workspace-fullscreen {
+  width: 100vw;
+  height: 100dvh;
+  min-height: 100dvh;
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  padding: 20px clamp(18px, 3vw, 52px) 42px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 0;
+  border-radius: 0;
+  background: #fffdfa;
+  box-shadow: none;
+}
+
+.workbench.is-workspace-fullscreen::before {
+  display: none;
+}
+
+.workbench.is-workspace-fullscreen .workbench-head {
+  min-height: 70px;
+  position: sticky;
+  z-index: 20;
+  top: -20px;
+  align-items: center;
+  padding: 18px 0 12px;
+  background: rgba(255, 253, 250, 0.96);
+  backdrop-filter: blur(12px);
+}
+
+.workbench.is-workspace-fullscreen .result-panel {
+  width: min(1500px, 100%);
+  margin: 0 auto;
+  justify-content: flex-start;
+}
+
+.workbench.is-workspace-fullscreen .result-grid .preview-frame,
+.workbench.is-workspace-fullscreen .compare-stage {
+  min-height: clamp(480px, 66vh, 820px);
+}
+
+.workbench.is-workspace-fullscreen .preview-frame img {
+  max-height: none;
+}
+
 .workbench-head h2 {
   margin: 6px 0 0;
   font-size: 23px;
@@ -2412,6 +2481,26 @@ footer {
 
   .workbench-head h2 {
     font-size: 19px;
+  }
+
+  .workbench-head-actions {
+    align-items: flex-end;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .workbench.is-workspace-fullscreen {
+    padding: 12px 12px 30px;
+  }
+
+  .workbench.is-workspace-fullscreen .workbench-head {
+    top: -12px;
+    padding: 12px 0 10px;
+  }
+
+  .workbench.is-workspace-fullscreen .result-grid .preview-frame,
+  .workbench.is-workspace-fullscreen .compare-stage {
+    min-height: 58vh;
   }
 
   .privacy-chip {
