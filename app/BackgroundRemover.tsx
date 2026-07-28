@@ -19,7 +19,8 @@ type Platform = "taobao" | "pinduoduo" | "douyin";
 const MAX_FILE_SIZE = 12 * 1024 * 1024;
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MODEL_ASSET_PATH = "/bg-removal/";
-const DIAGNOSTIC_VERSION = "V8";
+const DIAGNOSTIC_VERSION = "V9";
+const MODEL_INIT_TIMEOUT_MS = 120_000;
 const PRODUCT_CANVAS_SIZE = 1000;
 
 const PLATFORM_PRESETS: Array<{
@@ -423,6 +424,7 @@ function getErrorMessage(reason: unknown) {
 
 function getDiagnosticCode(message: string) {
   const normalized = message.toLowerCase();
+  if (normalized.includes("model_init_timeout")) return "MODEL_TIMEOUT";
   if (normalized.includes("failed to fetch")) return "MODEL_FETCH";
   if (normalized.includes("size") && normalized.includes("got")) {
     return "MODEL_SIZE";
@@ -453,6 +455,25 @@ function reportClientError(
     }),
     keepalive: true,
   }).catch(() => undefined);
+}
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number) {
+  return new Promise<T>((resolve, reject) => {
+    const timer = window.setTimeout(
+      () => reject(new Error("MODEL_INIT_TIMEOUT")),
+      timeoutMs,
+    );
+    promise.then(
+      (value) => {
+        window.clearTimeout(timer);
+        resolve(value);
+      },
+      (reason) => {
+        window.clearTimeout(timer);
+        reject(reason);
+      },
+    );
+  });
 }
 
 export async function verifyModelAssets(publicPath: string) {
@@ -561,6 +582,7 @@ export function BackgroundRemover() {
   const [feedbackIssues, setFeedbackIssues] = useState<string[]>([]);
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [processingSeconds, setProcessingSeconds] = useState(0);
+  const [requiresReload, setRequiresReload] = useState(false);
 
   const clearUrls = useCallback(() => {
     if (sourceUrlRef.current) {
@@ -621,6 +643,7 @@ export function BackgroundRemover() {
     setFeedbackChoice(null);
     setFeedbackIssues([]);
     setFeedbackSent(false);
+    setRequiresReload(false);
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -687,6 +710,7 @@ export function BackgroundRemover() {
       setProgress(4);
       setStatusText("正在加载本地 AI 模型");
       setError("");
+      setRequiresReload(false);
       setStage("processing");
 
       let diagnosticPhase = "manifest";
@@ -697,21 +721,24 @@ export function BackgroundRemover() {
         ).toString();
         await verifyModelAssets(publicPath);
         diagnosticPhase = "model-init";
-        const output = await removeBackground(file, {
-          publicPath,
-          model: "isnet_quint8",
-          output: {
-            format: "image/png",
-            quality: 1,
-            type: "foreground",
-          },
-          progress: (key: string, current: number, total: number) => {
-            diagnosticPhase = key;
-            const next = mapRemovalProgress(key, current, total);
-            setProgress((value) => Math.max(value, next.progress));
-            setStatusText(next.status);
-          },
-        });
+        const output = await withTimeout(
+          removeBackground(file, {
+            publicPath,
+            model: "isnet_quint8",
+            output: {
+              format: "image/png",
+              quality: 1,
+              type: "foreground",
+            },
+            progress: (key: string, current: number, total: number) => {
+              diagnosticPhase = key;
+              const next = mapRemovalProgress(key, current, total);
+              setProgress((value) => Math.max(value, next.progress));
+              setStatusText(next.status);
+            },
+          }),
+          MODEL_INIT_TIMEOUT_MS,
+        );
         rawResultRef.current = output;
         setCleanupMode("standard");
         setStatusText("AI 正在净化边缘与背景杂点");
@@ -732,14 +759,18 @@ export function BackgroundRemover() {
         const detail = errorMessage.toLowerCase();
         const diagnosticCode = getDiagnosticCode(errorMessage);
         const stack = reason instanceof Error ? reason.stack ?? "" : "";
+        const timedOut = detail.includes("model_init_timeout");
         reportClientError(
           diagnosticCode,
           errorMessage,
           diagnosticPhase,
           stack,
         );
+        setRequiresReload(timedOut);
         setError(
-          detail.includes("memory") || detail.includes("allocation")
+          timedOut
+            ? "本地 AI 启动超过 2 分钟，浏览器运行环境可能已卡住。请刷新页面后重新处理。"
+            : detail.includes("memory") || detail.includes("allocation")
             ? "设备可用内存不足。请关闭其他页面，或换一张尺寸更小的图片后重试。"
             : `本地模型没有加载完成。诊断版本：${DIAGNOSTIC_VERSION}；诊断码：${diagnosticCode}。请点击重试。`,
         );
@@ -1397,12 +1428,14 @@ export function BackgroundRemover() {
                   className="primary-button"
                   type="button"
                   onClick={() => {
-                    if (retryFileRef.current) {
+                    if (requiresReload) {
+                      window.location.reload();
+                    } else if (retryFileRef.current) {
                       void processFile(retryFileRef.current);
                     }
                   }}
                 >
-                  重试处理
+                  {requiresReload ? "刷新页面重试" : "重试处理"}
                 </button>
                 <button className="text-button" type="button" onClick={reset}>
                   重新选择

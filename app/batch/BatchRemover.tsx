@@ -225,9 +225,8 @@ export function BatchRemover() {
     if (targets.length === 0 || processing) return;
 
     setProcessing(true);
-    const accelerated = globalThis.crossOriginIsolated === true;
-    const concurrency =
-      accelerated && (navigator.hardwareConcurrency ?? 4) >= 8 ? 2 : 1;
+    const accelerated = false;
+    const concurrency = 1;
     setRunProgress({
       completed: 0,
       total: targets.length,
@@ -236,11 +235,7 @@ export function BatchRemover() {
       overallPercent: 0,
       failed: 0,
     });
-    setNotice(
-      accelerated
-        ? "正在准备本地 AI 模型；当前浏览器已启用安全的多线程加速。"
-        : "正在准备本地 AI 模型；当前设备将采用稳定的单任务模式。",
-    );
+    setNotice("正在准备本地 AI 模型；当前设备将采用稳定的单任务模式。");
     const publicPath = new URL(MODEL_ASSET_PATH, window.location.href).toString();
 
     try {
