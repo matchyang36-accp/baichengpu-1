@@ -8,6 +8,12 @@ import {
 } from "react";
 
 type Tool = "erase" | "restore";
+type Point = { x: number; y: number };
+type Stroke = {
+  tool: Tool;
+  brushSize: number;
+  points: Point[];
+};
 
 type ManualMaskEditorProps = {
   resultUrl: string;
@@ -35,10 +41,12 @@ export function ManualMaskEditor({
   onClose,
 }: ManualMaskEditorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const baseBitmapRef = useRef<ImageBitmap | null>(null);
   const restoreBitmapRef = useRef<ImageBitmap | null>(null);
-  const undoRef = useRef<ImageData | null>(null);
+  const strokesRef = useRef<Stroke[]>([]);
+  const activeStrokeRef = useRef<Stroke | null>(null);
   const drawingRef = useRef(false);
-  const lastPointRef = useRef<{ x: number; y: number } | null>(null);
+  const lastPointRef = useRef<Point | null>(null);
   const [tool, setTool] = useState<Tool>("erase");
   const [brushSize, setBrushSize] = useState(48);
   const [ready, setReady] = useState(false);
@@ -73,7 +81,11 @@ export function ManualMaskEditor({
       if (!context) return;
       context.clearRect(0, 0, canvas.width, canvas.height);
       context.drawImage(editedBitmap, 0, 0);
+      baseBitmapRef.current = editedBitmap;
       restoreBitmapRef.current = restoreBitmap;
+      strokesRef.current = [];
+      activeStrokeRef.current = null;
+      setCanUndo(false);
       setReady(true);
     };
 
@@ -85,6 +97,7 @@ export function ManualMaskEditor({
       cancelled = true;
       editedBitmap?.close();
       restoreBitmap?.close();
+      baseBitmapRef.current = null;
       restoreBitmapRef.current = null;
     };
   }, [restoreBlob, resultBlob, resultUrl]);
@@ -98,20 +111,25 @@ export function ManualMaskEditor({
     };
   };
 
-  const drawPoint = (x: number, y: number) => {
+  const drawPoint = (
+    x: number,
+    y: number,
+    selectedTool = tool,
+    selectedBrushSize = brushSize,
+  ) => {
     const canvas = canvasRef.current;
     const restoreBitmap = restoreBitmapRef.current;
     if (!canvas || !restoreBitmap) return;
     const context = canvas.getContext("2d", { willReadFrequently: true });
     if (!context) return;
     const displayWidth = Math.max(1, canvas.getBoundingClientRect().width);
-    const radius = (brushSize * canvas.width) / displayWidth / 2;
+    const radius = (selectedBrushSize * canvas.width) / displayWidth / 2;
 
     context.save();
     context.beginPath();
     context.arc(x, y, radius, 0, Math.PI * 2);
     context.clip();
-    if (tool === "erase") {
+    if (selectedTool === "erase") {
       context.globalCompositeOperation = "destination-out";
       context.fillStyle = "rgba(0,0,0,1)";
       context.fillRect(x - radius, y - radius, radius * 2, radius * 2);
@@ -123,20 +141,27 @@ export function ManualMaskEditor({
   };
 
   const drawLine = (
-    from: { x: number; y: number },
-    to: { x: number; y: number },
+    from: Point,
+    to: Point,
+    selectedTool = tool,
+    selectedBrushSize = brushSize,
   ) => {
     const distance = Math.hypot(to.x - from.x, to.y - from.y);
     const canvas = canvasRef.current;
     if (!canvas) return;
     const displayWidth = Math.max(1, canvas.getBoundingClientRect().width);
-    const step = Math.max(1, (brushSize * canvas.width) / displayWidth / 5);
+    const step = Math.max(
+      1,
+      (selectedBrushSize * canvas.width) / displayWidth / 5,
+    );
     const segments = Math.max(1, Math.ceil(distance / step));
     for (let index = 1; index <= segments; index += 1) {
       const ratio = index / segments;
       drawPoint(
         from.x + (to.x - from.x) * ratio,
         from.y + (to.y - from.y) * ratio,
+        selectedTool,
+        selectedBrushSize,
       );
     }
   };
@@ -146,15 +171,16 @@ export function ManualMaskEditor({
   ) => {
     if (!ready) return;
     const canvas = event.currentTarget;
-    const context = canvas.getContext("2d", { willReadFrequently: true });
-    if (!context) return;
-    undoRef.current = context.getImageData(0, 0, canvas.width, canvas.height);
-    setCanUndo(true);
     drawingRef.current = true;
     canvas.setPointerCapture(event.pointerId);
     const point = pointFromEvent(event);
+    activeStrokeRef.current = {
+      tool,
+      brushSize,
+      points: [point],
+    };
     lastPointRef.current = point;
-    drawPoint(point.x, point.y);
+    drawPoint(point.x, point.y, tool, brushSize);
   };
 
   const onPointerMove = (
@@ -163,24 +189,65 @@ export function ManualMaskEditor({
     if (!drawingRef.current) return;
     const point = pointFromEvent(event);
     const lastPoint = lastPointRef.current;
-    if (lastPoint) drawLine(lastPoint, point);
+    const activeStroke = activeStrokeRef.current;
+    if (lastPoint && activeStroke) {
+      drawLine(
+        lastPoint,
+        point,
+        activeStroke.tool,
+        activeStroke.brushSize,
+      );
+      activeStroke.points.push(point);
+    }
     lastPointRef.current = point;
   };
 
   const stopDrawing = () => {
+    if (!drawingRef.current) return;
+    const activeStroke = activeStrokeRef.current;
+    if (activeStroke) {
+      strokesRef.current.push(activeStroke);
+      setCanUndo(true);
+    }
     drawingRef.current = false;
     lastPointRef.current = null;
+    activeStrokeRef.current = null;
   };
 
   const undo = () => {
     const canvas = canvasRef.current;
-    const snapshot = undoRef.current;
-    if (!canvas || !snapshot) return;
+    const baseBitmap = baseBitmapRef.current;
+    if (!canvas || !baseBitmap || strokesRef.current.length === 0) return;
     const context = canvas.getContext("2d");
     if (!context) return;
-    context.putImageData(snapshot, 0, 0);
-    undoRef.current = null;
-    setCanUndo(false);
+
+    strokesRef.current.pop();
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.globalCompositeOperation = "source-over";
+    context.drawImage(baseBitmap, 0, 0, canvas.width, canvas.height);
+
+    for (const stroke of strokesRef.current) {
+      const [firstPoint, ...remainingPoints] = stroke.points;
+      if (!firstPoint) continue;
+      drawPoint(
+        firstPoint.x,
+        firstPoint.y,
+        stroke.tool,
+        stroke.brushSize,
+      );
+      let previousPoint = firstPoint;
+      for (const point of remainingPoints) {
+        drawLine(
+          previousPoint,
+          point,
+          stroke.tool,
+          stroke.brushSize,
+        );
+        previousPoint = point;
+      }
+    }
+
+    setCanUndo(strokesRef.current.length > 0);
   };
 
   const apply = async () => {
@@ -255,7 +322,12 @@ export function ManualMaskEditor({
             />
             <strong>{brushSize}px</strong>
           </label>
-          <button type="button" disabled={!canUndo} onClick={undo}>
+          <button
+            type="button"
+            disabled={!canUndo}
+            onClick={undo}
+            title="可连续撤销，直到恢复进入修边时的原始状态"
+          >
             撤销上一步
           </button>
         </div>
