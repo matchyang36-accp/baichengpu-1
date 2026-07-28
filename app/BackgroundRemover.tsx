@@ -930,7 +930,11 @@ export function BackgroundRemover() {
                 onClick={() => inputRef.current?.click()}
                 aria-label="选择商品图片"
               >
-                <span aria-hidden="true">↑</span>
+                <span className="upload-arrow-icon" aria-hidden="true">
+                  <i className="upload-arrow-head" />
+                  <i className="upload-arrow-stem" />
+                  <i className="upload-arrow-tray" />
+                </span>
               </button>
               <h3>拖一张商品图到这里</h3>
               <p>或点击选择、直接粘贴截图</p>
