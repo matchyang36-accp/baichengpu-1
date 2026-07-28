@@ -483,6 +483,49 @@ export async function verifyModelAssets(publicPath: string) {
     : new Error("model-assets-unavailable");
 }
 
+export function mapRemovalProgress(
+  key: string,
+  current: number,
+  total: number,
+) {
+  const ratio = total > 0 ? Math.max(0, Math.min(1, current / total)) : 0;
+
+  if (key.startsWith("fetch:")) {
+    const isModel = key.includes("/models/");
+    if (isModel) {
+      return {
+        progress: Math.round(ratio >= 0.995 ? 72 : 20 + ratio * 50),
+        status:
+          ratio >= 0.995
+            ? "模型下载完成，正在启动本地 AI"
+            : "首次使用，正在下载 AI 模型（约 44MB）",
+      };
+    }
+    return {
+      progress: Math.round(6 + ratio * 14),
+      status: "正在准备本地运行组件",
+    };
+  }
+
+  if (key === "compute:decode") {
+    return { progress: 78, status: "正在读取并缩放商品图片" };
+  }
+  if (key === "compute:inference") {
+    return { progress: 82, status: "AI 正在识别商品主体与边缘" };
+  }
+  if (key === "compute:mask") {
+    return { progress: 92, status: "正在生成透明边缘" };
+  }
+  if (key === "compute:encode") {
+    return {
+      progress: current >= total ? 98 : 96,
+      status: "正在生成透明 PNG",
+    };
+  }
+
+  return { progress: 6, status: "正在准备本地 AI 模型" };
+}
+
 export function BackgroundRemover() {
   const inputRef = useRef<HTMLInputElement>(null);
   const retryFileRef = useRef<File | null>(null);
@@ -517,6 +560,7 @@ export function BackgroundRemover() {
   >(null);
   const [feedbackIssues, setFeedbackIssues] = useState<string[]>([]);
   const [feedbackSent, setFeedbackSent] = useState(false);
+  const [processingSeconds, setProcessingSeconds] = useState(0);
 
   const clearUrls = useCallback(() => {
     if (sourceUrlRef.current) {
@@ -541,6 +585,18 @@ export function BackgroundRemover() {
       setPlatform(saved);
     }
   }, []);
+
+  useEffect(() => {
+    if (stage !== "processing") {
+      setProcessingSeconds(0);
+      return;
+    }
+    const startedAt = Date.now();
+    const timer = window.setInterval(() => {
+      setProcessingSeconds(Math.floor((Date.now() - startedAt) / 1000));
+    }, 1_000);
+    return () => window.clearInterval(timer);
+  }, [stage]);
 
   const reset = () => {
     clearUrls();
@@ -651,20 +707,15 @@ export function BackgroundRemover() {
           },
           progress: (key: string, current: number, total: number) => {
             diagnosticPhase = key;
-            const ratio = total > 0 ? current / total : 0;
-            const modelProgress = Math.max(6, Math.min(78, ratio * 78));
-            setProgress(Math.round(modelProgress));
-            setStatusText(
-              key.includes("fetch")
-                ? "首次使用，正在下载本地模型"
-                : "AI 正在识别商品边缘",
-            );
+            const next = mapRemovalProgress(key, current, total);
+            setProgress((value) => Math.max(value, next.progress));
+            setStatusText(next.status);
           },
         });
         rawResultRef.current = output;
         setCleanupMode("standard");
         setStatusText("AI 正在净化边缘与背景杂点");
-        setProgress(88);
+        setProgress(99);
         const cleanedOutput = await cleanForeground(output, "standard");
         const outputUrl = URL.createObjectURL(cleanedOutput);
         resultUrlRef.current = outputUrl;
@@ -924,11 +975,23 @@ export function BackgroundRemover() {
               <div className="processing-copy">
                 <span className="spinner" aria-hidden="true" />
                 <h3>{statusText}</h3>
-                <p>请保持页面打开，图片始终留在你的设备上。</p>
+                <p>
+                  {processingSeconds >= 45
+                    ? "首次初始化可能需要 1–2 分钟，请继续保持页面打开。"
+                    : "请保持页面打开，图片始终留在你的设备上。"}
+                </p>
                 <div className="progress-track">
                   <span style={{ width: `${progress}%` }} />
                 </div>
-                <small>{progress}%</small>
+                <small className="processing-meta">
+                  <span>{progress}%</span>
+                  <span>
+                    已等待{" "}
+                    {processingSeconds < 60
+                      ? `${processingSeconds} 秒`
+                      : `${Math.floor(processingSeconds / 60)} 分 ${processingSeconds % 60} 秒`}
+                  </span>
+                </small>
               </div>
             </div>
           )}

@@ -930,10 +930,21 @@ a:focus-visible {
 }
 
 .processing-copy small {
-  display: block;
   margin-top: 8px;
   color: var(--blue);
   font-weight: 800;
+}
+
+.processing-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.processing-meta span:last-child {
+  color: var(--muted);
+  font-weight: 650;
 }
 
 .result-panel {

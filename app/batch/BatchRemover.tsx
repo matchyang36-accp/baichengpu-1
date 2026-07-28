@@ -9,7 +9,11 @@ import {
   useRef,
   useState,
 } from "react";
-import { cleanForeground, verifyModelAssets } from "../BackgroundRemover";
+import {
+  cleanForeground,
+  mapRemovalProgress,
+  verifyModelAssets,
+} from "../BackgroundRemover";
 import { ManualMaskEditor } from "../ManualMaskEditor";
 
 type ItemStatus = "queued" | "processing" | "done" | "error";
@@ -248,6 +252,7 @@ export function BatchRemover() {
 
       const processItem = async (item: BatchItem) => {
         const itemStartedAt = performance.now();
+        let peakProgress = 4;
         updateItem(item.id, {
           status: "processing",
           progress: 4,
@@ -262,11 +267,10 @@ export function BatchRemover() {
               quality: 1,
               type: "foreground",
             },
-            progress: (_key: string, current: number, total: number) => {
-              const ratio = total > 0 ? current / total : 0;
-              const itemProgress = Math.round(
-                Math.max(6, Math.min(82, ratio * 82)),
-              );
+            progress: (key: string, current: number, total: number) => {
+              const mapped = mapRemovalProgress(key, current, total);
+              peakProgress = Math.max(peakProgress, mapped.progress);
+              const itemProgress = peakProgress;
               updateItem(item.id, {
                 progress: itemProgress,
               });
@@ -292,7 +296,7 @@ export function BatchRemover() {
               });
             },
           });
-          updateItem(item.id, { progress: 88 });
+          updateItem(item.id, { progress: 99 });
           const resultBlob = await cleanForeground(raw, "standard");
           const resultUrl = URL.createObjectURL(resultBlob);
           if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
