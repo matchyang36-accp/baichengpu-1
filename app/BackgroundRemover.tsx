@@ -951,25 +951,24 @@ export function BackgroundRemover() {
           <span>白橙铺</span>
         </a>
         <nav className="nav" aria-label="主导航">
-          <a href="#how-it-works">怎么用</a>
-          <a href="/batch">批量版</a>
+          <a href="#">首页</a>
+          <a href="#how-it-works">使用说明</a>
+          <a href="/batch">批量处理</a>
           <a href="/pricing">专业版</a>
           <a href="/contact">联系我们</a>
-          <span className="nav-pill">免费体验</span>
+          <span className="nav-pill">本地 AI · 免费</span>
         </nav>
       </header>
 
       <section className="hero">
         <div className="hero-copy">
-          <span className="eyebrow">电商商品图工作台 · 第一步</span>
+          <span className="eyebrow">AI 智能商品抠图</span>
           <h1>
-            商品图，
-            <br />
-            一键<span>干净抠出。</span>
+            商品图，一键<span>干净抠出</span>
           </h1>
           <p>
-            不用学设计，不用装软件。上传商品照片，AI
-            自动去掉背景，直接下载透明 PNG。
+            上传图片，AI 自动移除背景。本地处理，无需注册，直接下载透明
+            PNG。
           </p>
           <div className="trust-row" aria-label="产品特点">
             <span>✓ 浏览器本地处理</span>
@@ -985,8 +984,8 @@ export function BackgroundRemover() {
         >
           <div className="workbench-head">
             <div>
-              <span className="step-kicker">01 / 单张抠图</span>
-              <h2>把商品照片放进来</h2>
+              <span className="step-kicker">在线工具 / 单张抠图</span>
+              <h2>上传商品图片</h2>
             </div>
             <div className="workbench-head-actions">
               <span className="privacy-chip">
