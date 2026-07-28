@@ -4,6 +4,7 @@ import {
   ChangeEvent,
   DragEvent,
   lazy,
+  PointerEvent as ReactPointerEvent,
   Suspense,
   useCallback,
   useEffect,
@@ -498,6 +499,7 @@ export function BackgroundRemover() {
   const sourceUrlRef = useRef("");
   const resultUrlRef = useRef("");
   const productUrlRef = useRef("");
+  const panStartRef = useRef<{ x: number; y: number } | null>(null);
   const [stage, setStage] = useState<Stage>("idle");
   const [sourceUrl, setSourceUrl] = useState("");
   const [resultUrl, setResultUrl] = useState("");
@@ -512,6 +514,9 @@ export function BackgroundRemover() {
   const [zoom, setZoom] = useState(100);
   const [viewMode, setViewMode] = useState<ViewMode>("side-by-side");
   const [comparePosition, setComparePosition] = useState(50);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [panning, setPanning] = useState(false);
+  const [comparePanMode, setComparePanMode] = useState(false);
   const [manualEditorOpen, setManualEditorOpen] = useState(false);
   const [platform, setPlatform] = useState<Platform>("taobao");
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
@@ -569,6 +574,49 @@ export function BackgroundRemover() {
     return () => window.clearInterval(timer);
   }, [stage]);
 
+  useEffect(() => {
+    if (zoom <= 100) {
+      setPan({ x: 0, y: 0 });
+      setPanning(false);
+      setComparePanMode(false);
+    }
+  }, [zoom]);
+
+  const canPanImages =
+    zoom > 100 && (viewMode === "side-by-side" || comparePanMode);
+
+  const startImagePan = (event: ReactPointerEvent<HTMLElement>) => {
+    if (!canPanImages) return;
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    panStartRef.current = { x: event.clientX, y: event.clientY };
+    setPanning(true);
+  };
+
+  const moveImagePan = (event: ReactPointerEvent<HTMLElement>) => {
+    const lastPoint = panStartRef.current;
+    if (!panning || !lastPoint) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const maxX = (rect.width * (zoom / 100 - 1)) / 2;
+    const maxY = (rect.height * (zoom / 100 - 1)) / 2;
+    const deltaX = event.clientX - lastPoint.x;
+    const deltaY = event.clientY - lastPoint.y;
+    panStartRef.current = { x: event.clientX, y: event.clientY };
+    setPan((current) => ({
+      x: Math.max(-maxX, Math.min(maxX, current.x + deltaX)),
+      y: Math.max(-maxY, Math.min(maxY, current.y + deltaY)),
+    }));
+  };
+
+  const stopImagePan = () => {
+    panStartRef.current = null;
+    setPanning(false);
+  };
+
+  const imageTransform = `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${
+    zoom / 100
+  })`;
+
   const reset = () => {
     clearUrls();
     setSourceUrl("");
@@ -583,6 +631,9 @@ export function BackgroundRemover() {
     setZoom(100);
     setViewMode("side-by-side");
     setComparePosition(50);
+    setPan({ x: 0, y: 0 });
+    setPanning(false);
+    setComparePanMode(false);
     setManualEditorOpen(false);
     setBackgroundColor("#ffffff");
     setSubjectScale(82);
@@ -986,29 +1037,53 @@ export function BackgroundRemover() {
                 <div className="result-grid">
                   <figure>
                     <span>原图</span>
-                    <div className="preview-frame">
+                    <div
+                      className={`preview-frame image-pan-stage ${
+                        zoom > 100 ? "is-pannable" : ""
+                      } ${panning ? "is-panning" : ""}`}
+                      onPointerDown={startImagePan}
+                      onPointerMove={moveImagePan}
+                      onPointerUp={stopImagePan}
+                      onPointerCancel={stopImagePan}
+                    >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={sourceUrl}
                         alt="商品原图"
-                        style={{ transform: `scale(${zoom / 100})` }}
+                        style={{ transform: imageTransform }}
                       />
                     </div>
                   </figure>
                   <figure>
                     <span className="result-badge">透明底</span>
-                    <div className="preview-frame checkerboard">
+                    <div
+                      className={`preview-frame checkerboard image-pan-stage ${
+                        zoom > 100 ? "is-pannable" : ""
+                      } ${panning ? "is-panning" : ""}`}
+                      onPointerDown={startImagePan}
+                      onPointerMove={moveImagePan}
+                      onPointerUp={stopImagePan}
+                      onPointerCancel={stopImagePan}
+                    >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={resultUrl}
                         alt="已经移除背景的商品图"
-                        style={{ transform: `scale(${zoom / 100})` }}
+                        style={{ transform: imageTransform }}
                       />
                     </div>
                   </figure>
                 </div>
               ) : (
-                <div className="compare-stage checkerboard">
+                <div
+                  className={`compare-stage checkerboard image-pan-stage ${
+                    canPanImages ? "is-pannable" : ""
+                  } ${panning ? "is-panning" : ""}`}
+                  onPointerDown={startImagePan}
+                  onPointerMove={moveImagePan}
+                  onPointerUp={stopImagePan}
+                  onPointerCancel={stopImagePan}
+                >
                   <span className="compare-label compare-label-left">原图</span>
                   <span className="compare-label compare-label-right">
                     透明底
@@ -1018,7 +1093,7 @@ export function BackgroundRemover() {
                     className="compare-result"
                     src={resultUrl}
                     alt="透明背景处理结果"
-                    style={{ transform: `scale(${zoom / 100})` }}
+                    style={{ transform: imageTransform }}
                   />
                   <div
                     className="compare-original"
@@ -1030,7 +1105,7 @@ export function BackgroundRemover() {
                     <img
                       src={sourceUrl}
                       alt="用于对比的商品原图"
-                      style={{ transform: `scale(${zoom / 100})` }}
+                      style={{ transform: imageTransform }}
                     />
                   </div>
                   <div
@@ -1041,11 +1116,14 @@ export function BackgroundRemover() {
                     <span>↔</span>
                   </div>
                   <input
-                    className="compare-range"
+                    className={`compare-range ${
+                      comparePanMode ? "is-pan-disabled" : ""
+                    }`}
                     type="range"
                     min="0"
                     max="100"
                     value={comparePosition}
+                    disabled={comparePanMode}
                     aria-label={`原图与透明图对比位置 ${comparePosition}%`}
                     onChange={(event) =>
                       setComparePosition(Number(event.target.value))
@@ -1054,7 +1132,7 @@ export function BackgroundRemover() {
                 </div>
               )}
               <div className="zoom-controls" aria-label="图片缩放控制">
-                <span>查看细节</span>
+                <span>{zoom > 100 ? "拖动查看细节" : "查看细节"}</span>
                 <div>
                   <button
                     type="button"
@@ -1085,6 +1163,15 @@ export function BackgroundRemover() {
                   </button>
                 </div>
                 <div className="view-mode-switch" aria-label="图片查看模式">
+                  <button
+                    type="button"
+                    className={comparePanMode ? "is-active" : ""}
+                    disabled={zoom <= 100 || viewMode !== "compare"}
+                    aria-pressed={comparePanMode}
+                    onClick={() => setComparePanMode((value) => !value)}
+                  >
+                    {comparePanMode ? "正在拖动" : "拖动图片"}
+                  </button>
                   <button
                     type="button"
                     className={

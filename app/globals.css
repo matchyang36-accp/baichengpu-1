@@ -902,6 +902,26 @@ a:focus-visible {
   transition: transform 180ms ease;
 }
 
+.image-pan-stage.is-pannable {
+  cursor: grab;
+  touch-action: none;
+}
+
+.image-pan-stage img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.image-pan-stage.is-panning {
+  cursor: grabbing;
+}
+
+.image-pan-stage.is-panning img,
+.image-pan-stage.is-panning .compare-original img {
+  transition: none;
+  user-select: none;
+}
+
 .source-preview {
   background: white;
 }
@@ -1121,6 +1141,10 @@ a:focus-visible {
   margin: 0;
   opacity: 0;
   cursor: ew-resize;
+}
+
+.compare-range.is-pan-disabled {
+  pointer-events: none;
 }
 
 .checkerboard {
