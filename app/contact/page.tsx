@@ -43,9 +43,9 @@ export default async function ContactPage() {
             批量抠图、商务合作或产品建议，欢迎扫码添加微信，也可以通过邮箱联系我们。
           </p>
 
-          <a className="contact-email" href="mailto:644373212@qq.com">
+          <a className="contact-email" href="mailto:matchyang36@gmail.com">
             <span>联系邮箱</span>
-            <strong>644373212@qq.com</strong>
+            <strong>matchyang36@gmail.com</strong>
           </a>
 
           <p className="contact-note">添加微信时请备注“白橙铺”，方便及时通过。</p>
