@@ -34,7 +34,7 @@ type StoredCredential = SessionUser & {
 
 const SESSION_COOKIE = "bcp_session";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
-const PASSWORD_ITERATIONS = 210_000;
+const PASSWORD_ITERATIONS = 100_000;
 const AUTH_BODY_LIMIT_BYTES = 16 * 1024;
 const AUTH_RATE_WINDOW_MS = 15 * 60 * 1000;
 const AUTH_RATE_BLOCK_MS = 30 * 60 * 1000;
