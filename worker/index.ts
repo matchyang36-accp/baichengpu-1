@@ -19,6 +19,32 @@ interface ExecutionContext {
   passThroughOnException(): void;
 }
 
+const AUTH_EMAIL_HEADER = "oai-authenticated-user-email";
+const AUTH_NAME_HEADER = "oai-authenticated-user-full-name";
+const AUTH_NAME_ENCODING_HEADER =
+  "oai-authenticated-user-full-name-encoding";
+
+function readAuthenticatedUser(request: Request) {
+  const rawEmail = request.headers.get(AUTH_EMAIL_HEADER)?.trim() ?? "";
+  const email = rawEmail.toLocaleLowerCase().slice(0, 320);
+  if (!email || !email.includes("@")) return null;
+
+  const encodedName = request.headers.get(AUTH_NAME_HEADER);
+  let displayName = email;
+  if (
+    encodedName &&
+    request.headers.get(AUTH_NAME_ENCODING_HEADER) === "percent-encoded-utf-8"
+  ) {
+    try {
+      displayName = decodeURIComponent(encodedName).trim().slice(0, 120) || email;
+    } catch {
+      displayName = email;
+    }
+  }
+
+  return { email, displayName };
+}
+
 // Image security config. SVG sources with .svg extension auto-skip the
 // optimization endpoint on the client side (served directly, no proxy).
 // To route SVGs through the optimizer (with security headers), set
@@ -28,6 +54,67 @@ interface ExecutionContext {
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+
+    if (url.pathname === "/api/account" && request.method === "POST") {
+      const user = readAuthenticatedUser(request);
+      if (!user) {
+        return Response.json(
+          { ok: false, code: "AUTH_REQUIRED" },
+          {
+            status: 401,
+            headers: { "cache-control": "no-store" },
+          },
+        );
+      }
+
+      try {
+        const existing = await env.DB.prepare(
+          "SELECT id FROM users WHERE email = ? LIMIT 1",
+        )
+          .bind(user.email)
+          .first<{ id: string }>();
+        const now = new Date().toISOString();
+        const id = existing?.id ?? crypto.randomUUID();
+
+        await env.DB.prepare(`
+          INSERT INTO users (
+            id, email, display_name, plan, status,
+            created_at, last_login_at, updated_at
+          ) VALUES (?, ?, ?, 'free', 'active', ?, ?, ?)
+          ON CONFLICT(email) DO UPDATE SET
+            display_name = excluded.display_name,
+            last_login_at = excluded.last_login_at,
+            updated_at = excluded.updated_at
+        `)
+          .bind(id, user.email, user.displayName, now, now, now)
+          .run();
+
+        return Response.json(
+          {
+            ok: true,
+            created: !existing,
+            account: {
+              displayName: user.displayName,
+              email: user.email,
+              plan: "free",
+            },
+          },
+          {
+            status: existing ? 200 : 201,
+            headers: { "cache-control": "no-store" },
+          },
+        );
+      } catch (reason) {
+        console.error("[account] STORE_FAILED", reason);
+        return Response.json(
+          { ok: false, code: "STORE_FAILED" },
+          {
+            status: 500,
+            headers: { "cache-control": "no-store" },
+          },
+        );
+      }
+    }
 
     if (url.pathname === "/api/client-error" && request.method === "POST") {
       try {

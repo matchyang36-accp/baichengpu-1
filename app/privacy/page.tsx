@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
+import { AccountMenu } from "../AccountMenu";
+import { getChatGPTUser } from "../chatgpt-auth";
 
 export const metadata: Metadata = {
   title: "隐私说明｜白橙铺",
   description: "了解白橙铺如何在浏览器本地处理图片和保护用户隐私。",
 };
 
-export default function PrivacyPage() {
+export const dynamic = "force-dynamic";
+
+export default async function PrivacyPage() {
+  const user = await getChatGPTUser();
+
   return (
     <main className="commercial-page">
       <header className="topbar">
@@ -21,6 +27,13 @@ export default function PrivacyPage() {
           <a href="/pricing">专业版</a>
           <a href="/contact">联系我们</a>
         </nav>
+        <AccountMenu
+          viewer={
+            user
+              ? { displayName: user.displayName, email: user.email }
+              : null
+          }
+        />
       </header>
 
       <article className="privacy-card">
@@ -47,6 +60,12 @@ export default function PrivacyPage() {
           <h2>质量反馈</h2>
           <p>
             如果你提交“满意”或问题类型，系统只记录所选反馈、处理模式和基础诊断信息，不包含原图或抠图结果。
+          </p>
+        </section>
+        <section>
+          <h2>注册与登录</h2>
+          <p>
+            注册登录由 ChatGPT 安全登录完成。白橙铺不会接触或保存你的密码，只保存账户邮箱、显示名称、方案状态和必要的登录时间，用于识别账户与承载产品权益。
           </p>
         </section>
         <section>

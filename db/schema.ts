@@ -1,5 +1,23 @@
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+export const users = sqliteTable(
+  "users",
+  {
+    id: text("id").primaryKey(),
+    email: text("email").notNull().unique(),
+    displayName: text("display_name").notNull(),
+    plan: text("plan").notNull().default("free"),
+    status: text("status").notNull().default("active"),
+    createdAt: text("created_at").notNull(),
+    lastLoginAt: text("last_login_at").notNull(),
+    updatedAt: text("updated_at").notNull(),
+  },
+  (table) => [
+    index("users_plan_status_idx").on(table.plan, table.status),
+    index("users_last_login_idx").on(table.lastLoginAt),
+  ],
+);
+
 export const proInterests = sqliteTable(
   "pro_interests",
   {

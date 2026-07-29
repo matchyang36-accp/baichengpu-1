@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { AccountMenu, type AccountViewer } from "./AccountMenu";
 import {
   clearModelCache,
   registerModelCacheWorker,
@@ -492,7 +493,11 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number) {
   });
 }
 
-export function BackgroundRemover() {
+export function BackgroundRemover({
+  viewer,
+}: {
+  viewer: AccountViewer | null;
+}) {
   const inputRef = useRef<HTMLInputElement>(null);
   const retryFileRef = useRef<File | null>(null);
   const rawResultRef = useRef<Blob | null>(null);
@@ -934,6 +939,7 @@ export function BackgroundRemover() {
           <a href="/contact">联系我们</a>
           <span className="nav-pill">本地 AI · 免费</span>
         </nav>
+        <AccountMenu viewer={viewer} />
       </header>
 
       <section className="hero">

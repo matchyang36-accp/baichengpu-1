@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
+import { AccountMenu } from "../AccountMenu";
+import { getChatGPTUser } from "../chatgpt-auth";
 
 export const metadata: Metadata = {
   title: "联系我们｜白橙铺",
   description: "通过微信或电子邮件联系白橙铺。",
 };
 
-export default function ContactPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ContactPage() {
+  const user = await getChatGPTUser();
+
   return (
     <main className="contact-page">
       <header className="topbar contact-topbar">
@@ -20,6 +26,13 @@ export default function ContactPage() {
           <a href="/batch">批量版</a>
           <a href="/pricing">专业版</a>
         </nav>
+        <AccountMenu
+          viewer={
+            user
+              ? { displayName: user.displayName, email: user.email }
+              : null
+          }
+        />
       </header>
 
       <section className="contact-card" aria-labelledby="contact-title">

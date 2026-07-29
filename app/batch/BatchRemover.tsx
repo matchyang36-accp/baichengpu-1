@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { AccountMenu, type AccountViewer } from "../AccountMenu";
 import { cleanForeground } from "../BackgroundRemover";
 import { registerModelCacheWorker } from "../lib/model-cache";
 import {
@@ -145,7 +146,11 @@ async function createZip(
   });
 }
 
-export function BatchRemover() {
+export function BatchRemover({
+  viewer,
+}: {
+  viewer: AccountViewer | null;
+}) {
   const inputRef = useRef<HTMLInputElement>(null);
   const itemsRef = useRef<BatchItem[]>([]);
   const [items, setItems] = useState<BatchItem[]>([]);
@@ -466,6 +471,7 @@ export function BatchRemover() {
           <a href="/contact">联系我们</a>
           <span className="nav-pill">批量体验版</span>
         </nav>
+        <AccountMenu viewer={viewer} />
       </header>
 
       <section className="batch-hero">

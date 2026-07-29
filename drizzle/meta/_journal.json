@@ -15,6 +15,13 @@
       "when": 1785234111721,
       "tag": "0001_sweet_pandemic",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1785289116357,
+      "tag": "0002_bouncy_venom",
+      "breakpoints": true
     }
   ]
 }

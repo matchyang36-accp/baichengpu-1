@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { AccountMenu } from "../AccountMenu";
+import { getChatGPTUser } from "../chatgpt-auth";
 import { InterestForm } from "./InterestForm";
 
 export const metadata: Metadata = {
@@ -54,7 +56,11 @@ const faqs = [
   ],
 ];
 
-export default function PricingPage() {
+export const dynamic = "force-dynamic";
+
+export default async function PricingPage() {
+  const user = await getChatGPTUser();
+
   return (
     <main className="commercial-page">
       <header className="topbar">
@@ -70,6 +76,13 @@ export default function PricingPage() {
           <a href="/contact">联系我们</a>
           <span className="nav-pill">专业版内测</span>
         </nav>
+        <AccountMenu
+          viewer={
+            user
+              ? { displayName: user.displayName, email: user.email }
+              : null
+          }
+        />
       </header>
 
       <section className="pricing-hero">

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-async function render(pathname = "/") {
+async function render(pathname = "/", requestHeaders = {}) {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set(
     "test",
@@ -11,7 +11,7 @@ async function render(pathname = "/") {
 
   return worker.fetch(
     new Request(`http://localhost${pathname}`, {
-      headers: { accept: "text/html" },
+      headers: { accept: "text/html", ...requestHeaders },
     }),
     {
       ASSETS: {
@@ -43,7 +43,45 @@ test("server-renders the product homepage", async () => {
   assert.match(html, /href="\/batch"/);
   assert.match(html, /href="\/pricing"/);
   assert.match(html, /href="\/privacy"/);
+  assert.match(html, /注册/);
+  assert.match(html, /登录/);
   assert.doesNotMatch(html, /codex-preview|Building your site/);
+});
+
+test("renders signed-in account navigation and protected account page", async () => {
+  const authenticatedHeaders = {
+    "oai-authenticated-user-email": "seller@example.com",
+    "oai-authenticated-user-full-name":
+      encodeURIComponent("电商运营小白"),
+    "oai-authenticated-user-full-name-encoding": "percent-encoded-utf-8",
+  };
+  const [homeResponse, accountResponse] = await Promise.all([
+    render("/", authenticatedHeaders),
+    render("/account", authenticatedHeaders),
+  ]);
+
+  assert.equal(homeResponse.status, 200);
+  assert.equal(accountResponse.status, 200);
+
+  const [homeHtml, accountHtml] = await Promise.all([
+    homeResponse.text(),
+    accountResponse.text(),
+  ]);
+  assert.match(homeHtml, /我的账户/);
+  assert.match(accountHtml, /账户中心/);
+  assert.match(accountHtml, /电商运营小白/);
+  assert.match(accountHtml, /seller@example\.com/);
+  assert.match(accountHtml, /退出登录/);
+});
+
+test("redirects anonymous visitors to the managed sign-in flow", async () => {
+  const response = await render("/account");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(
+    html,
+    /NEXT_REDIRECT;;%2Fsignin-with-chatgpt%3Freturn_to%3D%252Faccount/,
+  );
 });
 
 test("server-renders the professional plan and privacy pages", async () => {
@@ -126,4 +164,67 @@ test("accepts and stores a valid professional plan application", async () => {
   assert.equal(executed.length, 3);
   assert.match(executed[2].sql, /INSERT INTO pro_interests/);
   assert.equal(executed[2].values[0], "sample_wechat");
+});
+
+test("requires authentication and creates an account on first login", async () => {
+  const worker = await loadWorker("account");
+  const unauthorized = await worker.fetch(
+    new Request("http://localhost/api/account", { method: "POST" }),
+    {
+      ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+      DB: {},
+    },
+    {
+      waitUntil() {},
+      passThroughOnException() {},
+    },
+  );
+  assert.equal(unauthorized.status, 401);
+
+  const executed = [];
+  const db = {
+    prepare(sql) {
+      return {
+        bind(...values) {
+          return {
+            async first() {
+              return null;
+            },
+            async run() {
+              executed.push({ sql, values });
+              return { success: true };
+            },
+          };
+        },
+      };
+    },
+  };
+  const response = await worker.fetch(
+    new Request("http://localhost/api/account", {
+      method: "POST",
+      headers: {
+        "oai-authenticated-user-email": "SELLER@example.com",
+        "oai-authenticated-user-full-name":
+          encodeURIComponent("电商运营小白"),
+        "oai-authenticated-user-full-name-encoding": "percent-encoded-utf-8",
+      },
+    }),
+    {
+      ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+      DB: db,
+    },
+    {
+      waitUntil() {},
+      passThroughOnException() {},
+    },
+  );
+
+  assert.equal(response.status, 201);
+  const payload = await response.json();
+  assert.equal(payload.ok, true);
+  assert.equal(payload.created, true);
+  assert.equal(payload.account.email, "seller@example.com");
+  assert.equal(payload.account.displayName, "电商运营小白");
+  assert.equal(executed.length, 1);
+  assert.match(executed[0].sql, /INSERT INTO users/);
 });
