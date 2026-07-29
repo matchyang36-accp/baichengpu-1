@@ -1,6 +1,7 @@
 export type AccountViewer = {
   displayName: string;
   email: string;
+  isAdmin?: boolean;
 };
 
 export function AccountMenu({ viewer }: { viewer: AccountViewer | null }) {
@@ -28,6 +29,11 @@ export function AccountMenu({ viewer }: { viewer: AccountViewer | null }) {
 
   return (
     <div className="account-menu is-signed-in" aria-label="账户操作">
+      {viewer.isAdmin ? (
+        <a className="account-admin-link" href="/admin/users">
+          用户管理
+        </a>
+      ) : null}
       <a className="account-profile-link" href="/account">
         <span className="account-avatar" aria-hidden="true">
           {initial}

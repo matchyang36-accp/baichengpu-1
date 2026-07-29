@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-async function render(pathname = "/", requestHeaders = {}, db = {}) {
+async function render(
+  pathname = "/",
+  requestHeaders = {},
+  db = {},
+  envOverrides = {},
+) {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set(
     "test",
@@ -18,6 +23,7 @@ async function render(pathname = "/", requestHeaders = {}, db = {}) {
         fetch: async () => new Response("Not found", { status: 404 }),
       },
       DB: db,
+      ...envOverrides,
     },
     {
       waitUntil() {},
@@ -97,6 +103,124 @@ test("redirects anonymous visitors to the independent sign-in flow", async () =>
     response.headers.get("location"),
     "http://localhost/auth?mode=login&return_to=%2Faccount",
   );
+});
+
+test("protects the user administration page with an admin email allowlist", async () => {
+  const anonymousResponse = await render("/admin/users");
+  assert.equal(anonymousResponse.status, 302);
+  assert.equal(
+    anonymousResponse.headers.get("location"),
+    "http://localhost/auth?mode=login&return_to=%2Fadmin%2Fusers",
+  );
+
+  const authenticatedHeaders = {
+    cookie: "bcp_session=admin-session-token",
+  };
+  const sessionDb = {
+    prepare(sql) {
+      assert.match(sql, /FROM sessions/);
+      return {
+        bind() {
+          return {
+            async first() {
+              return {
+                id: "admin-1",
+                email: "admin@example.com",
+                displayName: "Admin",
+              };
+            },
+          };
+        },
+      };
+    },
+  };
+  const nonAdminResponse = await render(
+    "/admin/users",
+    authenticatedHeaders,
+    sessionDb,
+  );
+  assert.equal(nonAdminResponse.status, 302);
+  assert.equal(nonAdminResponse.headers.get("location"), "http://localhost/account");
+
+  const adminResponse = await render(
+    "/admin/users",
+    authenticatedHeaders,
+    sessionDb,
+    { ADMIN_EMAILS: "admin@example.com" },
+  );
+  assert.equal(adminResponse.status, 200);
+  const html = await adminResponse.text();
+  assert.match(html, /用户管理/);
+  assert.match(html, /admin@example\.com/);
+  assert.match(html, /导出 CSV/);
+});
+
+test("returns safe user data from the admin API", async () => {
+  const worker = await loadWorker("admin-users");
+  const db = {
+    prepare(sql) {
+      const statement = {
+        bind() {
+          return statement;
+        },
+        async first() {
+          if (/FROM sessions/.test(sql)) {
+            return {
+              id: "admin-1",
+              email: "admin@example.com",
+              displayName: "Admin",
+            };
+          }
+          if (/COUNT\(\*\) AS count/.test(sql)) return { count: 1 };
+          if (/COUNT\(\*\) AS total/.test(sql)) {
+            return { total: 1, active: 1, disabled: 0, pro: 0, today: 1 };
+          }
+          return null;
+        },
+        async all() {
+          if (/GROUP BY substr/.test(sql)) {
+            return { results: [{ day: "2026-07-29", count: 1 }] };
+          }
+          return {
+            results: [
+              {
+                id: "user-1",
+                email: "seller@example.com",
+                displayName: "Seller",
+                plan: "free",
+                status: "active",
+                emailVerified: 0,
+                createdAt: "2026-07-29T10:00:00.000Z",
+                lastLoginAt: "2026-07-29T10:00:00.000Z",
+                updatedAt: "2026-07-29T10:00:00.000Z",
+              },
+            ],
+          };
+        },
+      };
+      return statement;
+    },
+  };
+  const response = await worker.fetch(
+    new Request("http://localhost/api/admin/users", {
+      headers: { cookie: "bcp_session=admin-session-token" },
+    }),
+    {
+      ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+      DB: db,
+      ADMIN_EMAILS: "admin@example.com",
+    },
+    {
+      waitUntil() {},
+      passThroughOnException() {},
+    },
+  );
+  assert.equal(response.status, 200);
+  const payload = await response.json();
+  assert.equal(payload.ok, true);
+  assert.equal(payload.users[0].email, "seller@example.com");
+  assert.equal("passwordHash" in payload.users[0], false);
+  assert.equal("passwordSalt" in payload.users[0], false);
 });
 
 test("server-renders the independent registration page", async () => {

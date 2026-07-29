@@ -5,6 +5,7 @@ import handler from "vinext/server/app-router-entry";
 interface Env {
   ASSETS: Fetcher;
   DB: D1Database;
+  ADMIN_EMAILS?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -43,6 +44,7 @@ const INTERNAL_USER_HEADERS = {
   id: "x-baichengpu-user-id",
   email: "x-baichengpu-user-email",
   name: "x-baichengpu-user-name",
+  admin: "x-baichengpu-admin",
 } as const;
 
 function json(value: unknown, status: number, headers?: HeadersInit) {
@@ -80,6 +82,16 @@ function isStrongPassword(value: unknown): value is string {
     /[A-Za-z]/.test(value) &&
     /\d/.test(value)
   );
+}
+
+function isAdminEmail(email: string, configuredEmails?: string): boolean {
+  if (!configuredEmails) return false;
+  const normalizedEmail = email.trim().toLocaleLowerCase();
+  return configuredEmails
+    .split(",")
+    .map((item) => item.trim().toLocaleLowerCase())
+    .filter(Boolean)
+    .includes(normalizedEmail);
 }
 
 function parseCookies(request: Request): Map<string, string> {
@@ -461,6 +473,216 @@ async function handleAuthRequest(
   );
 }
 
+type AdminUserRow = {
+  id: string;
+  email: string;
+  displayName: string;
+  plan: string;
+  status: string;
+  emailVerified: number;
+  createdAt: string;
+  lastLoginAt: string;
+  updatedAt: string;
+};
+
+async function handleAdminUsersRequest(
+  request: Request,
+  db: D1Database,
+  authenticatedUser: SessionUser,
+): Promise<Response> {
+  const url = new URL(request.url);
+
+  if (url.pathname === "/api/admin/users.csv" && request.method === "GET") {
+    const result = await db
+      .prepare(
+        `SELECT
+          display_name AS displayName,
+          email,
+          plan,
+          status,
+          email_verified AS emailVerified,
+          created_at AS createdAt,
+          last_login_at AS lastLoginAt
+        FROM users
+        ORDER BY created_at DESC`,
+      )
+      .all<Omit<AdminUserRow, "id" | "updatedAt">>();
+    const header = [
+      "显示名称",
+      "邮箱",
+      "套餐",
+      "状态",
+      "邮箱已验证",
+      "注册时间",
+      "最近登录",
+    ];
+    const rows = (result.results ?? []).map((user) => [
+      user.displayName,
+      user.email,
+      user.plan,
+      user.status,
+      user.emailVerified ? "是" : "否",
+      user.createdAt,
+      user.lastLoginAt,
+    ]);
+    const csv = [header, ...rows]
+      .map((row) => row.map(csvCell).join(","))
+      .join("\r\n");
+    return new Response(`\uFEFF${csv}`, {
+      status: 200,
+      headers: {
+        "cache-control": "no-store",
+        "content-disposition": `attachment; filename="baichengpu-users-${new Date()
+          .toISOString()
+          .slice(0, 10)}.csv"`,
+        "content-type": "text/csv; charset=utf-8",
+      },
+    });
+  }
+
+  if (url.pathname === "/api/admin/users" && request.method === "GET") {
+    const query = (url.searchParams.get("q") ?? "")
+      .trim()
+      .toLocaleLowerCase()
+      .slice(0, 100);
+    const status = url.searchParams.get("status") ?? "all";
+    const plan = url.searchParams.get("plan") ?? "all";
+    const page = Math.max(1, Number.parseInt(url.searchParams.get("page") ?? "1", 10) || 1);
+    const pageSize = 25;
+    const where: string[] = [];
+    const values: unknown[] = [];
+
+    if (query) {
+      where.push("(LOWER(email) LIKE ? OR LOWER(display_name) LIKE ?)");
+      const pattern = `%${query}%`;
+      values.push(pattern, pattern);
+    }
+    if (status === "active" || status === "disabled") {
+      where.push("status = ?");
+      values.push(status);
+    }
+    if (plan === "free" || plan === "pro") {
+      where.push("plan = ?");
+      values.push(plan);
+    }
+    const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+    const offset = (page - 1) * pageSize;
+
+    const [usersResult, countResult, statsResult, trendResult] = await Promise.all([
+      db
+        .prepare(
+          `SELECT
+            id,
+            email,
+            display_name AS displayName,
+            plan,
+            status,
+            email_verified AS emailVerified,
+            created_at AS createdAt,
+            last_login_at AS lastLoginAt,
+            updated_at AS updatedAt
+          FROM users
+          ${whereSql}
+          ORDER BY created_at DESC
+          LIMIT ? OFFSET ?`,
+        )
+        .bind(...values, pageSize, offset)
+        .all<AdminUserRow>(),
+      db
+        .prepare(`SELECT COUNT(*) AS count FROM users ${whereSql}`)
+        .bind(...values)
+        .first<{ count: number }>(),
+      db
+        .prepare(
+          `SELECT
+            COUNT(*) AS total,
+            SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS active,
+            SUM(CASE WHEN status = 'disabled' THEN 1 ELSE 0 END) AS disabled,
+            SUM(CASE WHEN plan = 'pro' THEN 1 ELSE 0 END) AS pro,
+            SUM(CASE WHEN substr(created_at, 1, 10) = date('now') THEN 1 ELSE 0 END) AS today
+          FROM users`,
+        )
+        .first<{
+          total: number;
+          active: number;
+          disabled: number;
+          pro: number;
+          today: number;
+        }>(),
+      db
+        .prepare(
+          `SELECT substr(created_at, 1, 10) AS day, COUNT(*) AS count
+          FROM users
+          WHERE created_at >= datetime('now', '-29 days')
+          GROUP BY substr(created_at, 1, 10)
+          ORDER BY day ASC`,
+        )
+        .all<{ day: string; count: number }>(),
+    ]);
+
+    return json(
+      {
+        ok: true,
+        users: usersResult.results ?? [],
+        total: countResult?.count ?? 0,
+        page,
+        pageSize,
+        stats: {
+          total: statsResult?.total ?? 0,
+          active: statsResult?.active ?? 0,
+          disabled: statsResult?.disabled ?? 0,
+          pro: statsResult?.pro ?? 0,
+          today: statsResult?.today ?? 0,
+        },
+        trend: trendResult.results ?? [],
+      },
+      200,
+    );
+  }
+
+  const userMatch = url.pathname.match(/^\/api\/admin\/users\/([^/]+)$/);
+  if (userMatch && request.method === "PATCH") {
+    if (!isSameOrigin(request)) {
+      return json({ ok: false, code: "INVALID_ORIGIN" }, 403);
+    }
+    const id = decodeURIComponent(userMatch[1]).slice(0, 80);
+    const body = await readSmallJson(request);
+    if (!body || !id) {
+      return json({ ok: false, code: "INVALID_INPUT" }, 400);
+    }
+    const updates: string[] = [];
+    const values: unknown[] = [];
+    if (body.status === "active" || body.status === "disabled") {
+      if (id === authenticatedUser.id && body.status === "disabled") {
+        return json({ ok: false, code: "CANNOT_DISABLE_SELF" }, 400);
+      }
+      updates.push("status = ?");
+      values.push(body.status);
+    }
+    if (body.plan === "free" || body.plan === "pro") {
+      updates.push("plan = ?");
+      values.push(body.plan);
+    }
+    if (!updates.length) {
+      return json({ ok: false, code: "INVALID_INPUT" }, 400);
+    }
+    updates.push("updated_at = ?");
+    values.push(new Date().toISOString(), id);
+    const result = await db
+      .prepare(`UPDATE users SET ${updates.join(", ")} WHERE id = ?`)
+      .bind(...values)
+      .run();
+    return json({ ok: true, changed: result.meta.changes > 0 }, 200);
+  }
+
+  return json({ ok: false, code: "NOT_FOUND" }, 404);
+}
+
+function csvCell(value: unknown): string {
+  const text = String(value ?? "");
+  return `"${text.replaceAll('"', '""')}"`;
+}
+
 // Image security config. SVG sources with .svg extension auto-skip the
 // optimization endpoint on the client side (served directly, no proxy).
 // To route SVGs through the optimizer (with security headers), set
@@ -490,6 +712,43 @@ const worker = {
     }
 
     const authenticatedUser = await readSessionUser(request, env.DB);
+    const isAdmin =
+      authenticatedUser !== null &&
+      isAdminEmail(authenticatedUser.email, env.ADMIN_EMAILS);
+
+    if (url.pathname.startsWith("/api/admin/")) {
+      if (!authenticatedUser) {
+        return json({ ok: false, code: "AUTH_REQUIRED" }, 401);
+      }
+      if (!isAdmin) {
+        return json({ ok: false, code: "ADMIN_REQUIRED" }, 403);
+      }
+      try {
+        return await handleAdminUsersRequest(
+          request,
+          env.DB,
+          authenticatedUser,
+        );
+      } catch (reason) {
+        console.error("[admin] STORE_FAILED", reason);
+        return json({ ok: false, code: "STORE_FAILED" }, 500);
+      }
+    }
+
+    if (url.pathname.startsWith("/admin") && request.method === "GET") {
+      if (!authenticatedUser) {
+        return Response.redirect(
+          new URL(
+            "/auth?mode=login&return_to=%2Fadmin%2Fusers",
+            request.url,
+          ),
+          302,
+        );
+      }
+      if (!isAdmin) {
+        return Response.redirect(new URL("/account", request.url), 302);
+      }
+    }
 
     if (
       url.pathname === "/account" &&
@@ -736,6 +995,7 @@ const worker = {
         INTERNAL_USER_HEADERS.name,
         encodeURIComponent(authenticatedUser.displayName),
       );
+      appHeaders.set(INTERNAL_USER_HEADERS.admin, isAdmin ? "1" : "0");
     }
     const appRequest = new Request(request, { headers: appHeaders });
     const response = await handler.fetch(appRequest, env, ctx);

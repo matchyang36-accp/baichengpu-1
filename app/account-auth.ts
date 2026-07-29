@@ -5,11 +5,13 @@ export type AccountUser = {
   id: string;
   displayName: string;
   email: string;
+  isAdmin: boolean;
 };
 
 const USER_ID_HEADER = "x-baichengpu-user-id";
 const USER_EMAIL_HEADER = "x-baichengpu-user-email";
 const USER_NAME_HEADER = "x-baichengpu-user-name";
+const USER_ADMIN_HEADER = "x-baichengpu-admin";
 const AUTH_PATH = "/auth";
 
 export async function getAccountUser(): Promise<AccountUser | null> {
@@ -22,7 +24,12 @@ export async function getAccountUser(): Promise<AccountUser | null> {
   const displayName = safeDecodeURIComponent(encodedName);
   if (!displayName) return null;
 
-  return { id, email, displayName };
+  return {
+    id,
+    email,
+    displayName,
+    isAdmin: requestHeaders.get(USER_ADMIN_HEADER) === "1",
+  };
 }
 
 export async function requireAccountUser(
@@ -32,6 +39,14 @@ export async function requireAccountUser(
   if (user) return user;
 
   redirect(accountSignInPath(returnTo));
+}
+
+export async function requireAdminUser(
+  returnTo = "/admin/users",
+): Promise<AccountUser> {
+  const user = await requireAccountUser(returnTo);
+  if (user.isAdmin) return user;
+  redirect("/account");
 }
 
 export function accountSignInPath(
