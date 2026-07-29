@@ -1,98 +1,53 @@
-# vinext-starter
+# 白橙铺
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+面向电商和新媒体从业者的浏览器本地商品图抠图工具。前端使用
+Next.js 兼容的 vinext 运行时，生产环境部署到 Cloudflare Workers。
 
-## Prerequisites
+## 本地运行
 
-- Node.js `>=22.13.0`
-
-## Quick Start
+需要 Node.js `>=22.13.0`。
 
 ```bash
-npm install
-npm run dev
-npm run build
+pnpm install
+pnpm run dev
+pnpm run build
 ```
 
-This starter does not use `wrangler.jsonc`.
+## Cloudflare 资源
 
-## Included Shape
+- Worker 配置：`wrangler.jsonc`
+- D1 数据库绑定：`DB`
+- Cloudflare Images 绑定：`IMAGES`
+- 数据库迁移：`drizzle/*.sql`
 
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
+首次部署前先创建 D1 数据库，并将 Cloudflare 返回的真实
+`database_id` 写入 `wrangler.jsonc`。
 
-## Workspace Auth Headers
-
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```bash
+pnpm exec wrangler login
+pnpm exec wrangler d1 create baichengpu-db --location=apac
+pnpm run db:migrate:remote
+pnpm run deploy:cloudflare
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+## 账户认证
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
+账户系统由 Worker 和 D1 直接提供：
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
+- `/api/auth/register`：邮箱密码注册
+- `/api/auth/login`：邮箱密码登录
+- `/api/auth/logout`：退出登录
+- 密码使用 PBKDF2-SHA256 加盐派生后保存
+- 登录会话使用随机令牌、D1 令牌摘要和 HttpOnly Cookie
+- 认证接口执行同源校验、请求大小限制和登录频率限制
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
+商品原图和抠图结果仍只在用户浏览器中处理，不写入 D1。
 
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
+## 常用命令
 
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+- `pnpm run dev`：本地开发
+- `pnpm run build`：构建 Cloudflare Worker
+- `pnpm test`：构建并运行服务端与认证测试
+- `pnpm run db:generate`：生成 Drizzle 迁移
+- `pnpm run db:migrate:remote`：应用生产 D1 迁移
+- `pnpm run deploy:cloudflare`：构建、迁移并部署

@@ -1,10 +1,10 @@
 import { BackgroundRemover } from "./BackgroundRemover";
-import { getChatGPTUser } from "./chatgpt-auth";
+import { getAccountUser } from "./account-auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const user = await getChatGPTUser();
+  const user = await getAccountUser();
 
   return (
     <BackgroundRemover

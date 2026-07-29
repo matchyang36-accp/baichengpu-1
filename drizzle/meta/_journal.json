@@ -22,6 +22,13 @@
       "when": 1785289116357,
       "tag": "0002_bouncy_venom",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1785310369156,
+      "tag": "0003_stormy_maverick",
+      "breakpoints": true
     }
   ]
 }

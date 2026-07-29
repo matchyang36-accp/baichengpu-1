@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { AccountMenu } from "../AccountMenu";
-import { getChatGPTUser } from "../chatgpt-auth";
+import { getAccountUser } from "../account-auth";
 
 export const metadata: Metadata = {
   title: "隐私说明｜白橙铺",
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function PrivacyPage() {
-  const user = await getChatGPTUser();
+  const user = await getAccountUser();
 
   return (
     <main className="commercial-page">
@@ -65,7 +65,7 @@ export default async function PrivacyPage() {
         <section>
           <h2>注册与登录</h2>
           <p>
-            注册登录由 ChatGPT 安全登录完成。白橙铺不会接触或保存你的密码，只保存账户邮箱、显示名称、方案状态和必要的登录时间，用于识别账户与承载产品权益。
+            白橙铺只保存账户邮箱、显示名称、经过加盐和高强度派生处理的密码凭据、方案状态与必要的登录时间。登录会话保存在安全的 HttpOnly Cookie 中，网站无法读取你的明文密码。
           </p>
         </section>
         <section>

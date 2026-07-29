@@ -9,13 +9,13 @@ export function AccountMenu({ viewer }: { viewer: AccountViewer | null }) {
       <div className="account-menu" aria-label="账户操作">
         <a
           className="account-register-link"
-          href="/signin-with-chatgpt?return_to=%2Faccount"
+          href="/auth?mode=register&amp;return_to=%2Faccount"
         >
           注册
         </a>
         <a
           className="account-login-button"
-          href="/signin-with-chatgpt?return_to=%2Faccount"
+          href="/auth?mode=login&amp;return_to=%2Faccount"
         >
           登录
         </a>

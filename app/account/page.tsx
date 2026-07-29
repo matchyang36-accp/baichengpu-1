@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import {
-  chatGPTSignOutPath,
-  requireChatGPTUser,
-} from "../chatgpt-auth";
-import { AccountBootstrap } from "./AccountBootstrap";
+import { requireAccountUser } from "../account-auth";
+import { LogoutButton } from "./LogoutButton";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 async function AccountContent() {
-  const user = await requireChatGPTUser("/account");
+  const user = await requireAccountUser("/account");
   const initial =
     Array.from(user.displayName.trim())[0]?.toLocaleUpperCase() ?? "橙";
 
@@ -52,7 +49,9 @@ async function AccountContent() {
             <h2>{user.displayName}</h2>
             <p>{user.email}</p>
           </div>
-          <AccountBootstrap />
+          <p className="account-sync-status is-ready" role="status">
+            ✓ 账户已安全登录
+          </p>
         </article>
 
         <article className="account-plan-card">
@@ -87,12 +86,7 @@ async function AccountContent() {
         <Link className="primary-button" href="/">
           开始抠图
         </Link>
-        <a
-          className="secondary-button"
-          href={chatGPTSignOutPath("/")}
-        >
-          退出登录
-        </a>
+        <LogoutButton />
       </div>
     </main>
   );

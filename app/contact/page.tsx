@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { AccountMenu } from "../AccountMenu";
-import { getChatGPTUser } from "../chatgpt-auth";
+import { getAccountUser } from "../account-auth";
 
 export const metadata: Metadata = {
   title: "联系我们｜白橙铺",
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function ContactPage() {
-  const user = await getChatGPTUser();
+  const user = await getAccountUser();
 
   return (
     <main className="contact-page">

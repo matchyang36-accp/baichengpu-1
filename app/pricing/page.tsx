@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { AccountMenu } from "../AccountMenu";
-import { getChatGPTUser } from "../chatgpt-auth";
+import { getAccountUser } from "../account-auth";
 import { InterestForm } from "./InterestForm";
 
 export const metadata: Metadata = {
@@ -59,7 +59,7 @@ const faqs = [
 export const dynamic = "force-dynamic";
 
 export default async function PricingPage() {
-  const user = await getChatGPTUser();
+  const user = await getAccountUser();
 
   return (
     <main className="commercial-page">

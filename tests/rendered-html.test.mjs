@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-async function render(pathname = "/", requestHeaders = {}) {
+async function render(pathname = "/", requestHeaders = {}, db = {}) {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set(
     "test",
@@ -17,6 +17,7 @@ async function render(pathname = "/", requestHeaders = {}) {
       ASSETS: {
         fetch: async () => new Response("Not found", { status: 404 }),
       },
+      DB: db,
     },
     {
       waitUntil() {},
@@ -50,14 +51,29 @@ test("server-renders the product homepage", async () => {
 
 test("renders signed-in account navigation and protected account page", async () => {
   const authenticatedHeaders = {
-    "oai-authenticated-user-email": "seller@example.com",
-    "oai-authenticated-user-full-name":
-      encodeURIComponent("电商运营小白"),
-    "oai-authenticated-user-full-name-encoding": "percent-encoded-utf-8",
+    cookie: "bcp_session=test-session-token",
+  };
+  const sessionDb = {
+    prepare(sql) {
+      assert.match(sql, /FROM sessions/);
+      return {
+        bind() {
+          return {
+            async first() {
+              return {
+                id: "user-1",
+                email: "seller@example.com",
+                displayName: "电商运营小白",
+              };
+            },
+          };
+        },
+      };
+    },
   };
   const [homeResponse, accountResponse] = await Promise.all([
-    render("/", authenticatedHeaders),
-    render("/account", authenticatedHeaders),
+    render("/", authenticatedHeaders, sessionDb),
+    render("/account", authenticatedHeaders, sessionDb),
   ]);
 
   assert.equal(homeResponse.status, 200);
@@ -74,14 +90,22 @@ test("renders signed-in account navigation and protected account page", async ()
   assert.match(accountHtml, /退出登录/);
 });
 
-test("redirects anonymous visitors to the managed sign-in flow", async () => {
+test("redirects anonymous visitors to the independent sign-in flow", async () => {
   const response = await render("/account");
+  assert.equal(response.status, 302);
+  assert.equal(
+    response.headers.get("location"),
+    "http://localhost/auth?mode=login&return_to=%2Faccount",
+  );
+});
+
+test("server-renders the independent registration page", async () => {
+  const response = await render("/auth?mode=register&return_to=%2Faccount");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(
-    html,
-    /NEXT_REDIRECT;;%2Fsignin-with-chatgpt%3Freturn_to%3D%252Faccount/,
-  );
+  assert.match(html, /创建账户/);
+  assert.match(html, /免费注册/);
+  assert.match(html, /原图和结果不上传服务器/);
 });
 
 test("server-renders the professional plan and privacy pages", async () => {
@@ -166,32 +190,34 @@ test("accepts and stores a valid professional plan application", async () => {
   assert.equal(executed[2].values[0], "sample_wechat");
 });
 
-test("requires authentication and creates an account on first login", async () => {
+test("registers, logs in and logs out with a D1-backed session", async () => {
   const worker = await loadWorker("account");
-  const unauthorized = await worker.fetch(
-    new Request("http://localhost/api/account", { method: "POST" }),
-    {
-      ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
-      DB: {},
-    },
-    {
-      waitUntil() {},
-      passThroughOnException() {},
-    },
-  );
-  assert.equal(unauthorized.status, 401);
-
   const executed = [];
+  let storedUser = null;
   const db = {
     prepare(sql) {
       return {
         bind(...values) {
           return {
             async first() {
+              if (/FROM auth_rate_limits/.test(sql)) return null;
+              if (/SELECT id FROM users/.test(sql)) return null;
+              if (/password_hash AS passwordHash/.test(sql)) return storedUser;
               return null;
             },
             async run() {
               executed.push({ sql, values });
+              if (/INSERT INTO users/.test(sql)) {
+                storedUser = {
+                  id: values[0],
+                  email: values[1],
+                  displayName: values[2],
+                  passwordHash: values[3],
+                  passwordSalt: values[4],
+                  passwordIterations: values[5],
+                  status: "active",
+                };
+              }
               return { success: true };
             },
           };
@@ -199,32 +225,78 @@ test("requires authentication and creates an account on first login", async () =
       };
     },
   };
-  const response = await worker.fetch(
-    new Request("http://localhost/api/account", {
+  const env = {
+    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    DB: db,
+  };
+  const ctx = {
+    waitUntil() {},
+    passThroughOnException() {},
+  };
+
+  const registerResponse = await worker.fetch(
+    new Request("http://localhost/api/auth/register", {
       method: "POST",
       headers: {
-        "oai-authenticated-user-email": "SELLER@example.com",
-        "oai-authenticated-user-full-name":
-          encodeURIComponent("电商运营小白"),
-        "oai-authenticated-user-full-name-encoding": "percent-encoded-utf-8",
+        "content-type": "application/json",
+        origin: "http://localhost",
       },
+      body: JSON.stringify({
+        displayName: "电商运营小白",
+        email: "SELLER@example.com",
+        password: "Seller2026!",
+      }),
     }),
-    {
-      ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
-      DB: db,
-    },
-    {
-      waitUntil() {},
-      passThroughOnException() {},
-    },
+    env,
+    ctx,
   );
 
-  assert.equal(response.status, 201);
-  const payload = await response.json();
-  assert.equal(payload.ok, true);
-  assert.equal(payload.created, true);
-  assert.equal(payload.account.email, "seller@example.com");
-  assert.equal(payload.account.displayName, "电商运营小白");
-  assert.equal(executed.length, 1);
-  assert.match(executed[0].sql, /INSERT INTO users/);
+  assert.equal(registerResponse.status, 201);
+  assert.deepEqual(await registerResponse.json(), { ok: true });
+  assert.match(registerResponse.headers.get("set-cookie") ?? "", /bcp_session=/);
+  assert.equal(storedUser.email, "seller@example.com");
+  assert.equal(storedUser.displayName, "电商运营小白");
+  assert.ok(storedUser.passwordHash);
+  assert.notEqual(storedUser.passwordHash, "Seller2026!");
+
+  const loginResponse = await worker.fetch(
+    new Request("http://localhost/api/auth/login", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        origin: "http://localhost",
+      },
+      body: JSON.stringify({
+        email: "seller@example.com",
+        password: "Seller2026!",
+      }),
+    }),
+    env,
+    ctx,
+  );
+  assert.equal(loginResponse.status, 200);
+  assert.deepEqual(await loginResponse.json(), { ok: true });
+  assert.match(loginResponse.headers.get("set-cookie") ?? "", /HttpOnly/);
+
+  const sessionCookie = loginResponse.headers
+    .get("set-cookie")
+    ?.match(/bcp_session=([^;]+)/)?.[1];
+  assert.ok(sessionCookie);
+  const logoutResponse = await worker.fetch(
+    new Request("http://localhost/api/auth/logout", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        cookie: `bcp_session=${sessionCookie}`,
+        origin: "http://localhost",
+      },
+      body: "{}",
+    }),
+    env,
+    ctx,
+  );
+  assert.equal(logoutResponse.status, 200);
+  assert.match(logoutResponse.headers.get("set-cookie") ?? "", /Max-Age=0/);
+  assert.ok(executed.some(({ sql }) => /INSERT INTO users/.test(sql)));
+  assert.ok(executed.some(({ sql }) => /INSERT INTO sessions/.test(sql)));
 });
