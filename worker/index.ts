@@ -736,16 +736,19 @@ const worker = {
     }
 
     if (url.pathname.startsWith("/admin") && request.method === "GET") {
-      if (!authenticatedUser) {
+      if (url.pathname === "/admin/login") {
+        if (isAdmin) {
+          return Response.redirect(new URL("/admin/users", request.url), 302);
+        }
+      } else if (!authenticatedUser) {
         return Response.redirect(
           new URL(
-            "/auth?mode=login&return_to=%2Fadmin%2Fusers",
+            "/admin/login?return_to=%2Fadmin%2Fusers",
             request.url,
           ),
           302,
         );
-      }
-      if (!isAdmin) {
+      } else if (!isAdmin) {
         return Response.redirect(new URL("/account", request.url), 302);
       }
     }

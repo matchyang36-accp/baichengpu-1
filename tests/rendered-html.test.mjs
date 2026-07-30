@@ -110,8 +110,15 @@ test("protects the user administration page with an admin email allowlist", asyn
   assert.equal(anonymousResponse.status, 302);
   assert.equal(
     anonymousResponse.headers.get("location"),
-    "http://localhost/auth?mode=login&return_to=%2Fadmin%2Fusers",
+    "http://localhost/admin/login?return_to=%2Fadmin%2Fusers",
   );
+
+  const loginResponse = await render("/admin/login");
+  assert.equal(loginResponse.status, 200);
+  const loginHtml = await loginResponse.text();
+  assert.match(loginHtml, /登录管理后台/);
+  assert.match(loginHtml, /644373212@qq\.com/);
+  assert.doesNotMatch(loginHtml, /免费注册/);
 
   const authenticatedHeaders = {
     cookie: "bcp_session=admin-session-token",

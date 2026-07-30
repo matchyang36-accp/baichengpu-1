@@ -44,9 +44,15 @@ export async function requireAccountUser(
 export async function requireAdminUser(
   returnTo = "/admin/users",
 ): Promise<AccountUser> {
-  const user = await requireAccountUser(returnTo);
+  const user = await getAccountUser();
+  if (!user) redirect(adminSignInPath(returnTo));
   if (user.isAdmin) return user;
   redirect("/account");
+}
+
+export function adminSignInPath(returnTo = "/admin/users"): string {
+  const safeReturnTo = safeAdminReturnPath(returnTo);
+  return `/admin/login?return_to=${encodeURIComponent(safeReturnTo)}`;
 }
 
 export function accountSignInPath(
@@ -68,6 +74,25 @@ function safeRelativeReturnPath(value: string): string {
     return `${url.pathname}${url.search}${url.hash}`;
   } catch {
     return "/";
+  }
+}
+
+function safeAdminReturnPath(value: string): string {
+  if (!value.startsWith("/admin/") || value.startsWith("//")) {
+    return "/admin/users";
+  }
+
+  try {
+    const url = new URL(value, "https://app.local");
+    if (
+      url.origin !== "https://app.local" ||
+      url.pathname === "/admin/login"
+    ) {
+      return "/admin/users";
+    }
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return "/admin/users";
   }
 }
 
