@@ -29,6 +29,13 @@
       "when": 1785310369156,
       "tag": "0003_stormy_maverick",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1785593412062,
+      "tag": "0004_high_red_ghost",
+      "breakpoints": true
     }
   ]
 }

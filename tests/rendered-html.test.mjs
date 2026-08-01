@@ -160,6 +160,17 @@ test("protects the user administration page with an admin email allowlist", asyn
   assert.match(html, /用户管理/);
   assert.match(html, /admin@example\.com/);
   assert.match(html, /导出 CSV/);
+
+  const analyticsResponse = await render(
+    "/admin/analytics",
+    authenticatedHeaders,
+    sessionDb,
+    { ADMIN_EMAILS: "admin@example.com" },
+  );
+  assert.equal(analyticsResponse.status, 200);
+  const analyticsHtml = await analyticsResponse.text();
+  assert.match(analyticsHtml, /访问分析/);
+  assert.match(analyticsHtml, /最近访客/);
 });
 
 test("returns safe user data from the admin API", async () => {
@@ -264,7 +275,76 @@ test("server-renders the professional plan and privacy pages", async () => {
   assert.match(privacyHtml, /原图和生成结果不会上传/);
   assert.match(privacyHtml, /模型文件与浏览器缓存/);
   assert.match(privacyHtml, /质量反馈/);
+  assert.match(privacyHtml, /不会保存你的原始 IP 地址/);
   assert.match(privacyHtml, /专业版内测申请/);
+});
+
+test("stores privacy-aware anonymous analytics without a raw IP", async () => {
+  const worker = await loadWorker("analytics-event");
+  const executed = [];
+  const db = {
+    prepare(sql) {
+      return {
+        bind(...values) {
+          return {
+            async run() {
+              executed.push({ sql, values });
+              return { success: true };
+            },
+          };
+        },
+      };
+    },
+    async batch(statements) {
+      for (const statement of statements) await statement.run();
+      return [];
+    },
+  };
+  const response = await worker.fetch(
+    new Request("http://localhost/api/analytics/event", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        origin: "http://localhost",
+        "user-agent": "Mozilla/5.0 Desktop",
+        "cf-connecting-ip": "203.0.113.10",
+      },
+      body: JSON.stringify({
+        eventType: "page_view",
+        path: "/pricing?campaign=test",
+        referrer: "https://example.com/article",
+      }),
+    }),
+    {
+      ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+      DB: db,
+    },
+    { waitUntil() {}, passThroughOnException() {} },
+  );
+
+  assert.equal(response.status, 204);
+  assert.match(response.headers.get("set-cookie") ?? "", /bcp_visitor=/);
+  assert.equal(executed.length, 2);
+  assert.match(executed[0].sql, /INSERT INTO visitor_sessions/);
+  assert.match(executed[1].sql, /INSERT INTO visitor_events/);
+  assert.equal(executed.flatMap((entry) => entry.values).includes("203.0.113.10"), false);
+  assert.equal(executed[1].values[3], "/pricing");
+
+  const optedOutResponse = await worker.fetch(
+    new Request("http://localhost/api/analytics/event", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        origin: "http://localhost",
+        "sec-gpc": "1",
+      },
+      body: JSON.stringify({ eventType: "page_view", path: "/" }),
+    }),
+    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) }, DB: db },
+    { waitUntil() {}, passThroughOnException() {} },
+  );
+  assert.equal(optedOutResponse.status, 204);
+  assert.equal(executed.length, 2);
 });
 
 test("accepts and stores a valid professional plan application", async () => {

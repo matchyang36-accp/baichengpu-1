@@ -69,6 +69,16 @@ export default async function PrivacyPage() {
           </p>
         </section>
         <section>
+          <h2>访问分析</h2>
+          <p>
+            为了解网站使用情况并改进产品，我们会使用第一方匿名访客编号记录访问时间、访问页面、来源网站、设备类型，以及由 Cloudflare
+            提供的国家、地区和城市级近似位置。登录后，匿名访客编号可能与账户关联，用于统计注册、抠图和下载等关键功能的使用情况。
+          </p>
+          <p>
+            访问分析不会保存你的原始 IP 地址，也不会包含原图或抠图结果。浏览器启用“全局隐私控制”或“请勿跟踪”信号时，网站不会写入访问分析记录。
+          </p>
+        </section>
+        <section>
           <h2>专业版内测申请</h2>
           <p>
             当你主动申请专业版内测时，我们会保存你填写的工作角色、图片处理量、需求、联系方式和补充说明，用于筛选内测用户、产品调研与后续联系。你可以联系我们申请更正或删除。
@@ -132,7 +142,7 @@ export default async function PrivacyPage() {
       </article>
 
       <footer>
-        <span>更新日期：2026 年 7 月 31 日</span>
+        <span>更新日期：2026 年 8 月 1 日</span>
         <div className="footer-links">
           <a href="/pricing">专业版方案</a>
           <a href="/contact">联系我们</a>

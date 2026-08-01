@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 import { AccountMenu, type AccountViewer } from "../AccountMenu";
+import { trackAnalyticsEvent } from "../AnalyticsTracker";
 import { cleanForeground } from "../BackgroundRemover";
 import { registerModelCacheWorker } from "../lib/model-cache";
 import {
@@ -242,6 +243,7 @@ export function BatchRemover({
     if (targets.length === 0 || processing) return;
 
     setProcessing(true);
+    trackAnalyticsEvent("batch_started");
     const accelerated = false;
     const concurrency = 1;
     setRunProgress({
@@ -371,6 +373,7 @@ export function BatchRemover({
           ? `本轮完成，${failed} 张失败，可在对应图片上单独重试。`
           : "本批次处理完成，可逐张预览、修边或打包下载。",
       );
+      trackAnalyticsEvent("batch_completed");
     } catch (reason) {
       console.error(reason);
       setNotice("本地模型没有加载完成，请检查网络后重试。");
@@ -392,6 +395,7 @@ export function BatchRemover({
     anchor.href = item.resultUrl;
     anchor.download = outputName(item.file.name);
     anchor.click();
+    trackAnalyticsEvent("download");
   };
 
   const downloadZip = async () => {
@@ -413,6 +417,7 @@ export function BatchRemover({
       anchor.href = url;
       anchor.download = `白橙铺-批量抠图-${completed.length}张.zip`;
       anchor.click();
+      trackAnalyticsEvent("download");
       window.setTimeout(() => URL.revokeObjectURL(url), 5_000);
     } finally {
       setPreparingZip(false);

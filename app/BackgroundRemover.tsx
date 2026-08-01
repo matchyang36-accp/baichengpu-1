@@ -12,6 +12,7 @@ import {
   useState,
 } from "react";
 import { AccountMenu, type AccountViewer } from "./AccountMenu";
+import { trackAnalyticsEvent } from "./AnalyticsTracker";
 import {
   clearModelCache,
   registerModelCacheWorker,
@@ -717,6 +718,7 @@ export function BackgroundRemover({
       setError("");
       setRequiresReload(false);
       setStage("processing");
+      trackAnalyticsEvent("cutout_started");
 
       let diagnosticPhase = "manifest";
       try {
@@ -759,6 +761,7 @@ export function BackgroundRemover({
         setProductUrl(croppedOutputUrl);
         setProgress(100);
         setStage("done");
+        trackAnalyticsEvent("cutout_completed");
       } catch (reason) {
         console.error(reason);
         const errorMessage = getErrorMessage(reason);
@@ -818,6 +821,7 @@ export function BackgroundRemover({
     anchor.href = resultUrl;
     anchor.download = fileName;
     anchor.click();
+    trackAnalyticsEvent("download");
   };
 
   const applyManualEdit = (blob: Blob) => {
@@ -888,6 +892,7 @@ export function BackgroundRemover({
       anchor.href = url;
       anchor.download = `${baseName}-${platform}-白底主图.png`;
       anchor.click();
+      trackAnalyticsEvent("download");
       window.setTimeout(() => URL.revokeObjectURL(url), 5_000);
     } finally {
       setExportingProduct(false);

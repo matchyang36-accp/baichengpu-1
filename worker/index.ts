@@ -34,7 +34,9 @@ type StoredCredential = SessionUser & {
 };
 
 const SESSION_COOKIE = "bcp_session";
+const VISITOR_COOKIE = "bcp_visitor";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
+const VISITOR_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 const PASSWORD_ITERATIONS = 100_000;
 const AUTH_BODY_LIMIT_BYTES = 16 * 1024;
 const AUTH_RATE_WINDOW_MS = 15 * 60 * 1000;
@@ -114,6 +116,11 @@ function sessionCookie(request: Request, token: string): string {
 function clearSessionCookie(request: Request): string {
   const secure = new URL(request.url).protocol === "https:" ? "; Secure" : "";
   return `${SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`;
+}
+
+function visitorCookie(request: Request, visitorId: string): string {
+  const secure = new URL(request.url).protocol === "https:" ? "; Secure" : "";
+  return `${VISITOR_COOKIE}=${visitorId}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${VISITOR_MAX_AGE_SECONDS}${secure}`;
 }
 
 function isSameOrigin(request: Request): boolean {
@@ -473,6 +480,158 @@ async function handleAuthRequest(
   );
 }
 
+type RequestGeo = {
+  country?: string;
+  region?: string;
+  city?: string;
+};
+
+const ANALYTICS_EVENT_TYPES = new Set([
+  "page_view",
+  "cutout_started",
+  "cutout_completed",
+  "download",
+  "batch_started",
+  "batch_completed",
+]);
+
+function hasAnalyticsOptOut(request: Request): boolean {
+  return (
+    request.headers.get("sec-gpc") === "1" ||
+    request.headers.get("dnt") === "1"
+  );
+}
+
+function getRequestGeo(request: Request) {
+  const cf = (request as Request & { cf?: RequestGeo }).cf;
+  return {
+    country: (cf?.country ?? "unknown").slice(0, 8),
+    region: (cf?.region ?? "").slice(0, 100),
+    city: (cf?.city ?? "").slice(0, 100),
+  };
+}
+
+function getDeviceType(request: Request): string {
+  const userAgent = request.headers.get("user-agent") ?? "";
+  if (/bot|crawler|spider|slurp/i.test(userAgent)) return "bot";
+  if (/ipad|tablet|kindle|silk/i.test(userAgent)) return "tablet";
+  if (/mobile|iphone|android/i.test(userAgent)) return "mobile";
+  return userAgent ? "desktop" : "unknown";
+}
+
+function normalizeAnalyticsPath(value: unknown): string {
+  if (typeof value !== "string") return "/";
+  const path = value.trim().slice(0, 500);
+  if (!path.startsWith("/") || path.startsWith("//")) return "/";
+  return path.split("?")[0].split("#")[0] || "/";
+}
+
+function analyticsSource(referrer: string, request: Request): string {
+  if (!referrer) return "direct";
+  try {
+    const referrerUrl = new URL(referrer);
+    if (referrerUrl.hostname === new URL(request.url).hostname) return "internal";
+    return referrerUrl.hostname.replace(/^www\./, "").slice(0, 120);
+  } catch {
+    return "other";
+  }
+}
+
+async function handleAnalyticsEvent(
+  request: Request,
+  db: D1Database,
+  authenticatedUser: SessionUser | null,
+): Promise<Response> {
+  if (!isSameOrigin(request)) {
+    return json({ ok: false, code: "INVALID_ORIGIN" }, 403);
+  }
+  if (hasAnalyticsOptOut(request)) {
+    return new Response(null, { status: 204, headers: { "cache-control": "no-store" } });
+  }
+
+  const body = await readSmallJson(request);
+  const eventType = typeof body?.eventType === "string" ? body.eventType : "";
+  if (!body || !ANALYTICS_EVENT_TYPES.has(eventType)) {
+    return json({ ok: false, code: "INVALID_INPUT" }, 400);
+  }
+
+  const cookies = parseCookies(request);
+  const existingVisitorId = cookies.get(VISITOR_COOKIE) ?? "";
+  const hasValidVisitorId = /^[0-9a-f-]{36}$/i.test(existingVisitorId);
+  const visitorId = hasValidVisitorId ? existingVisitorId : crypto.randomUUID();
+  const path = normalizeAnalyticsPath(body.path);
+  if (path.startsWith("/admin")) {
+    return new Response(null, { status: 204, headers: { "cache-control": "no-store" } });
+  }
+
+  const referrer =
+    typeof body.referrer === "string"
+      ? body.referrer.trim().slice(0, 500)
+      : "";
+  const source = analyticsSource(referrer, request);
+  const geo = getRequestGeo(request);
+  const deviceType = getDeviceType(request);
+  if (deviceType === "bot") {
+    return new Response(null, { status: 204, headers: { "cache-control": "no-store" } });
+  }
+
+  const now = new Date().toISOString();
+  const isPageView = eventType === "page_view" ? 1 : 0;
+  await db.batch([
+    db
+      .prepare(
+        `INSERT INTO visitor_sessions (
+          id, user_id, first_seen_at, last_seen_at, landing_path, referrer,
+          source, country, region, city, device_type, page_view_count
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+          user_id = COALESCE(excluded.user_id, visitor_sessions.user_id),
+          last_seen_at = excluded.last_seen_at,
+          country = excluded.country,
+          region = excluded.region,
+          city = excluded.city,
+          device_type = excluded.device_type,
+          page_view_count = visitor_sessions.page_view_count + excluded.page_view_count`,
+      )
+      .bind(
+        visitorId,
+        authenticatedUser?.id ?? null,
+        now,
+        now,
+        path,
+        referrer,
+        source,
+        geo.country,
+        geo.region,
+        geo.city,
+        deviceType,
+        isPageView,
+      ),
+    db
+      .prepare(
+        `INSERT INTO visitor_events (
+          visitor_id, user_id, event_type, path, country, region, city, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      )
+      .bind(
+        visitorId,
+        authenticatedUser?.id ?? null,
+        eventType,
+        path,
+        geo.country,
+        geo.region,
+        geo.city,
+        now,
+      ),
+  ]);
+
+  const headers = new Headers({ "cache-control": "no-store" });
+  if (!hasValidVisitorId) {
+    headers.set("set-cookie", visitorCookie(request, visitorId));
+  }
+  return new Response(null, { status: 204, headers });
+}
+
 type AdminUserRow = {
   id: string;
   email: string;
@@ -491,6 +650,170 @@ async function handleAdminUsersRequest(
   authenticatedUser: SessionUser,
 ): Promise<Response> {
   const url = new URL(request.url);
+
+  if (url.pathname === "/api/admin/analytics" && request.method === "GET") {
+    const requestedRange = Number.parseInt(
+      url.searchParams.get("days") ?? "30",
+      10,
+    );
+    const days = [7, 30, 90].includes(requestedRange) ? requestedRange : 30;
+    const since = new Date(Date.now() - (days - 1) * 86_400_000);
+    since.setUTCHours(0, 0, 0, 0);
+    const sinceIso = since.toISOString();
+
+    const [
+      summary,
+      newVisitors,
+      trend,
+      countries,
+      topPages,
+      sources,
+      devices,
+      recentVisitors,
+    ] = await Promise.all([
+      db
+        .prepare(
+          `SELECT
+            COUNT(DISTINCT visitor_id) AS visitors,
+            SUM(CASE WHEN event_type = 'page_view' THEN 1 ELSE 0 END) AS pageViews,
+            SUM(CASE WHEN event_type = 'download' THEN 1 ELSE 0 END) AS downloads,
+            COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) AS knownUsers
+          FROM visitor_events
+          WHERE created_at >= ?`,
+        )
+        .bind(sinceIso)
+        .first<{
+          visitors: number;
+          pageViews: number;
+          downloads: number;
+          knownUsers: number;
+        }>(),
+      db
+        .prepare(
+          "SELECT COUNT(*) AS count FROM visitor_sessions WHERE first_seen_at >= ?",
+        )
+        .bind(sinceIso)
+        .first<{ count: number }>(),
+      db
+        .prepare(
+          `SELECT
+            substr(created_at, 1, 10) AS day,
+            COUNT(DISTINCT visitor_id) AS visitors,
+            SUM(CASE WHEN event_type = 'page_view' THEN 1 ELSE 0 END) AS pageViews
+          FROM visitor_events
+          WHERE created_at >= ?
+          GROUP BY substr(created_at, 1, 10)
+          ORDER BY day ASC`,
+        )
+        .bind(sinceIso)
+        .all<{ day: string; visitors: number; pageViews: number }>(),
+      db
+        .prepare(
+          `SELECT
+            country,
+            COUNT(DISTINCT visitor_id) AS visitors,
+            COUNT(*) AS events
+          FROM visitor_events
+          WHERE created_at >= ? AND event_type = 'page_view'
+          GROUP BY country
+          ORDER BY visitors DESC
+          LIMIT 12`,
+        )
+        .bind(sinceIso)
+        .all<{ country: string; visitors: number; events: number }>(),
+      db
+        .prepare(
+          `SELECT path, COUNT(*) AS views, COUNT(DISTINCT visitor_id) AS visitors
+          FROM visitor_events
+          WHERE created_at >= ? AND event_type = 'page_view'
+          GROUP BY path
+          ORDER BY views DESC
+          LIMIT 12`,
+        )
+        .bind(sinceIso)
+        .all<{ path: string; views: number; visitors: number }>(),
+      db
+        .prepare(
+          `SELECT source, COUNT(*) AS visitors
+          FROM visitor_sessions
+          WHERE last_seen_at >= ?
+          GROUP BY source
+          ORDER BY visitors DESC
+          LIMIT 10`,
+        )
+        .bind(sinceIso)
+        .all<{ source: string; visitors: number }>(),
+      db
+        .prepare(
+          `SELECT device_type AS deviceType, COUNT(*) AS visitors
+          FROM visitor_sessions
+          WHERE last_seen_at >= ?
+          GROUP BY device_type
+          ORDER BY visitors DESC`,
+        )
+        .bind(sinceIso)
+        .all<{ deviceType: string; visitors: number }>(),
+      db
+        .prepare(
+          `SELECT
+            visitor_sessions.id AS visitorId,
+            visitor_sessions.user_id AS userId,
+            users.email AS email,
+            users.display_name AS displayName,
+            visitor_sessions.last_seen_at AS lastSeenAt,
+            visitor_sessions.first_seen_at AS firstSeenAt,
+            visitor_sessions.landing_path AS landingPath,
+            visitor_sessions.source AS source,
+            visitor_sessions.country AS country,
+            visitor_sessions.region AS region,
+            visitor_sessions.city AS city,
+            visitor_sessions.device_type AS deviceType,
+            visitor_sessions.page_view_count AS pageViewCount
+          FROM visitor_sessions
+          LEFT JOIN users ON users.id = visitor_sessions.user_id
+          WHERE visitor_sessions.last_seen_at >= ?
+          ORDER BY visitor_sessions.last_seen_at DESC
+          LIMIT 50`,
+        )
+        .bind(sinceIso)
+        .all<{
+          visitorId: string;
+          userId: string | null;
+          email: string | null;
+          displayName: string | null;
+          lastSeenAt: string;
+          firstSeenAt: string;
+          landingPath: string;
+          source: string;
+          country: string;
+          region: string;
+          city: string;
+          deviceType: string;
+          pageViewCount: number;
+        }>(),
+    ]);
+
+    return json(
+      {
+        ok: true,
+        days,
+        summary: {
+          visitors: summary?.visitors ?? 0,
+          newVisitors: newVisitors?.count ?? 0,
+          pageViews: summary?.pageViews ?? 0,
+          downloads: summary?.downloads ?? 0,
+          knownUsers: summary?.knownUsers ?? 0,
+        },
+        trend: trend.results ?? [],
+        countries: countries.results ?? [],
+        topPages: topPages.results ?? [],
+        sources: sources.results ?? [],
+        devices: devices.results ?? [],
+        recentVisitors: recentVisitors.results ?? [],
+      },
+      200,
+    );
+  }
 
   if (url.pathname === "/api/admin/users.csv" && request.method === "GET") {
     const result = await db
@@ -716,6 +1039,15 @@ const worker = {
       authenticatedUser !== null &&
       isAdminEmail(authenticatedUser.email, env.ADMIN_EMAILS);
 
+    if (url.pathname === "/api/analytics/event" && request.method === "POST") {
+      try {
+        return await handleAnalyticsEvent(request, env.DB, authenticatedUser);
+      } catch (reason) {
+        console.error("[analytics] STORE_FAILED", reason);
+        return json({ ok: false, code: "STORE_FAILED" }, 500);
+      }
+    }
+
     if (url.pathname.startsWith("/api/admin/")) {
       if (!authenticatedUser) {
         return json({ ok: false, code: "AUTH_REQUIRED" }, 401);
@@ -743,7 +1075,7 @@ const worker = {
       } else if (!authenticatedUser) {
         return Response.redirect(
           new URL(
-            "/admin/login?return_to=%2Fadmin%2Fusers",
+            `/admin/login?return_to=${encodeURIComponent(url.pathname)}`,
             request.url,
           ),
           302,

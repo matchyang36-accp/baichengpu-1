@@ -359,6 +359,147 @@
   text-align: center;
 }
 
+.analytics-range {
+  display: flex;
+  width: fit-content;
+  padding: 5px;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #e0e5ef;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.analytics-range > span {
+  padding: 0 10px;
+  color: #747d91;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.analytics-range button {
+  padding: 9px 14px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #626b80;
+  font-weight: 800;
+}
+
+.analytics-range button.is-active {
+  background: #7846f5;
+  color: #fff;
+  box-shadow: 0 7px 20px rgba(120, 70, 245, 0.22);
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.analytics-trend-card {
+  grid-column: 1 / -1;
+}
+
+.analytics-trend {
+  display: flex;
+  height: 190px;
+  margin-top: 22px;
+  align-items: flex-end;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.analytics-trend-item {
+  display: grid;
+  min-width: 34px;
+  height: 165px;
+  flex: 1;
+  align-items: end;
+  gap: 7px;
+}
+
+.analytics-trend-item > span {
+  min-height: 8px;
+  border-radius: 8px 8px 3px 3px;
+  background: linear-gradient(180deg, #a975ff, #7040ef);
+}
+
+.analytics-trend-item small {
+  color: #858da1;
+  font-size: 11px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.analytics-rank-card {
+  padding: 24px;
+  border: 1px solid #e1e5ee;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 14px 40px rgba(25, 31, 49, 0.055);
+}
+
+.analytics-rank-list {
+  display: grid;
+  margin-top: 18px;
+  gap: 15px;
+}
+
+.analytics-rank-row {
+  display: grid;
+  gap: 7px;
+}
+
+.analytics-rank-row > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.analytics-rank-row strong {
+  overflow: hidden;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.analytics-rank-row div span {
+  color: #798196;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.analytics-rank-row > i {
+  display: block;
+  height: 7px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #eef0f6;
+}
+
+.analytics-rank-row > i > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7846f5, #a76cff);
+}
+
+.analytics-visitors-card {
+  margin-top: 2px;
+}
+
+.analytics-visitors-table code {
+  padding: 4px 7px;
+  border-radius: 7px;
+  background: #f2f0fa;
+  color: #5f3bc7;
+  font-family: inherit;
+  font-size: 12px;
+}
+
 @media (max-width: 900px) {
   .admin-heading,
   .admin-toolbar {
@@ -372,6 +513,14 @@
 
   .admin-filters {
     flex-wrap: wrap;
+  }
+
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-trend-card {
+    grid-column: auto;
   }
 }
 
@@ -400,6 +549,18 @@
   .admin-pagination {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .analytics-range {
+    width: 100%;
+  }
+
+  .analytics-range button {
+    flex: 1;
+  }
+
+  .analytics-rank-card {
+    padding: 16px;
   }
 }
 

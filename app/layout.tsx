@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Script from "next/script";
+import { AnalyticsTracker } from "./AnalyticsTracker";
 import "./globals.css";
 
 /**
@@ -59,7 +60,10 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body>{children}</body>
+      <body>
+        <AnalyticsTracker />
+        {children}
+      </body>
     </html>
   );
 }
