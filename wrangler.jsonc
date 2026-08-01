@@ -8,6 +8,14 @@
   "preview_urls": false,
   "routes": [
     {
+      "pattern": "edit-photo.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.edit-photo.com",
+      "custom_domain": true
+    },
+    {
       "pattern": "app.edit-photo.com",
       "custom_domain": true
     }
