@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import Script from "next/script";
 import "./globals.css";
+
+/**
+ * Google AdSense 发布商 ID
+ * 申请 AdSense 后，在 AdSense 后台 → 账号 → 账号信息中找到你的发布商 ID（格式：ca-pub-XXXXXXXXXXXXXXXX）
+ * 将下面的占位符替换为你的真实 ID
+ */
+const ADSENSE_CLIENT_ID = "ca-pub-XXXXXXXXXXXXXXXX";
 
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
@@ -40,6 +48,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
+      <head>
+        {/* Google AdSense — 申请通过后替换 ADSENSE_CLIENT_ID 为你的真实发布商 ID */}
+        {ADSENSE_CLIENT_ID !== "ca-pub-XXXXXXXXXXXXXXXX" && (
+          <Script
+            async
+            strategy="afterInteractive"
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
+            crossOrigin="anonymous"
+          />
+        )}
+      </head>
       <body>{children}</body>
     </html>
   );

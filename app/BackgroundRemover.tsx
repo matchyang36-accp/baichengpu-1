@@ -1550,6 +1550,7 @@ export function BackgroundRemover({
       <footer>
         <span>© 2026 白橙铺</span>
         <div className="footer-links">
+          <a href="/blog">使用指南</a>
           <a href="/pricing">专业版方案</a>
           <a href="/privacy">隐私说明</a>
           <a href="/contact">联系我们</a>

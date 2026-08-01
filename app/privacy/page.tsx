@@ -86,6 +86,40 @@ export default async function PrivacyPage() {
             如果未来增加账号、云端存储或支付功能，我们会在上线前更新本说明，并明确告知数据用途和保存方式。
           </p>
         </section>
+        <section>
+          <h2>Cookie 与第三方广告</h2>
+          <p>
+            本网站使用 Cookie 和类似技术来改善用户体验、分析流量并展示广告。Google
+            AdSense 等第三方广告供应商可能会使用 Cookie
+            来根据你过往的访问记录或其他网站的访问记录为你展示广告。
+          </p>
+          <p>
+            Google 使用 Cookie
+            来存储广告偏好、投放频率等信息，以便根据你的兴趣展示更相关的广告。你可以通过浏览器设置管理或删除
+            Cookie，也可以访问
+            <a
+              href="https://www.google.com/settings/ads"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Google 广告设置
+            </a>
+            页面个性化广告偏好或停用个性化广告。
+          </p>
+          <p>
+            第三方广告供应商（包括 Google）使用 Cookie
+            投放广告时，会受到相关法律法规约束。如需了解 Google
+            如何使用数据，请参阅
+            <a
+              href="https://policies.google.com/technologies/partner-sites"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Google 隐私政策与合作伙伴站点
+            </a>
+            。
+          </p>
+        </section>
 
         <div className="privacy-actions">
           <a className="primary-button" href="/">
@@ -98,7 +132,7 @@ export default async function PrivacyPage() {
       </article>
 
       <footer>
-        <span>更新日期：2026 年 7 月 28 日</span>
+        <span>更新日期：2026 年 7 月 31 日</span>
         <div className="footer-links">
           <a href="/pricing">专业版方案</a>
           <a href="/contact">联系我们</a>
