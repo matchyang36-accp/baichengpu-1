@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import Stripe from "stripe";
 
 async function render(
   pathname = "/",
@@ -854,4 +855,185 @@ test("payment routes fail closed and degrade safely when Stripe is unavailable",
     ok: false,
     code: "PAYMENT_NOT_CONFIGURED",
   });
+});
+
+test("credit consumption is atomic when requests reach the quota together", async () => {
+  const worker = await loadWorker("payment-credit-atomicity");
+  let used = 19;
+  const db = {
+    prepare(sql) {
+      return {
+        bind(...values) {
+          return {
+            async first() {
+              if (/FROM sessions/.test(sql)) {
+                return {
+                  id: "user_credit_test",
+                  email: "seller@example.com",
+                  displayName: "Seller",
+                  plan: "free",
+                };
+              }
+              if (/INSERT INTO credit_usage/.test(sql)) {
+                const count = values[2];
+                const limit = values[6];
+                if (used + count > limit) return null;
+                used += count;
+                return { used };
+              }
+              if (/SELECT used FROM credit_usage/.test(sql)) return { used };
+              return null;
+            },
+          };
+        },
+      };
+    },
+  };
+  const consume = () =>
+    worker.fetch(
+      new Request("http://localhost/api/credits/consume", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          cookie: "bcp_session=test-session",
+          origin: "http://localhost",
+        },
+        body: JSON.stringify({ count: 1 }),
+      }),
+      { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) }, DB: db },
+      { waitUntil() {}, passThroughOnException() {} },
+    );
+
+  const responses = await Promise.all([consume(), consume()]);
+  assert.deepEqual(
+    responses.map((response) => response.status).sort(),
+    [200, 429],
+  );
+  assert.equal(used, 20);
+  const rejected = responses.find((response) => response.status === 429);
+  assert.equal((await rejected.json()).code, "QUOTA_EXCEEDED");
+});
+
+test("past-due subscriptions do not keep paid access", async () => {
+  const worker = await loadWorker("payment-subscription-status");
+  const webhookSecret = "whsec_payment_policy_test";
+  const stripe = new Stripe("sk_test_payment_policy");
+  const event = {
+    id: "evt_subscription_past_due",
+    object: "event",
+    type: "customer.subscription.updated",
+    data: {
+      object: {
+        id: "sub_payment_policy",
+        object: "subscription",
+        customer: "cus_payment_policy",
+        status: "past_due",
+        metadata: { userId: "user_payment_policy", plan: "pro" },
+        cancel_at_period_end: false,
+        canceled_at: null,
+        items: {
+          data: [
+            {
+              current_period_start: 1_780_000_000,
+              current_period_end: 1_782_592_000,
+            },
+          ],
+        },
+      },
+    },
+  };
+  const payload = JSON.stringify(event);
+  const signature = stripe.webhooks.generateTestHeaderString({
+    payload,
+    secret: webhookSecret,
+  });
+  const executed = [];
+  const db = {
+    prepare(sql) {
+      return {
+        bind(...values) {
+          return {
+            sql,
+            values,
+            async run() {
+              return { meta: { changes: 1 } };
+            },
+          };
+        },
+      };
+    },
+    async batch(statements) {
+      executed.push(...statements);
+      return statements.map(() => ({ success: true }));
+    },
+  };
+
+  const response = await worker.fetch(
+    new Request("http://localhost/api/webhook", {
+      method: "POST",
+      headers: { "stripe-signature": signature },
+      body: payload,
+    }),
+    {
+      ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+      DB: db,
+      STRIPE_SECRET_KEY: "sk_test_payment_policy",
+      STRIPE_WEBHOOK_SECRET: webhookSecret,
+      STRIPE_PRICE_PRO: "price_pro_test",
+      STRIPE_PRICE_TEAM: "price_team_test",
+    },
+    { waitUntil() {}, passThroughOnException() {} },
+  );
+
+  assert.equal(response.status, 200);
+  const userPlanUpdate = executed.find(({ sql }) => /UPDATE users SET plan/.test(sql));
+  assert.ok(userPlanUpdate);
+  assert.equal(userPlanUpdate.values[0], "free");
+
+  executed.length = 0;
+  const checkoutEvent = {
+    id: "evt_checkout_unpaid",
+    object: "event",
+    type: "checkout.session.completed",
+    data: {
+      object: {
+        id: "cs_checkout_unpaid",
+        object: "checkout.session",
+        client_reference_id: "user_payment_policy",
+        metadata: { userId: "user_payment_policy", plan: "pro" },
+        payment_status: "unpaid",
+        payment_intent: null,
+      },
+    },
+  };
+  const checkoutPayload = JSON.stringify(checkoutEvent);
+  const checkoutSignature = stripe.webhooks.generateTestHeaderString({
+    payload: checkoutPayload,
+    secret: webhookSecret,
+  });
+  const checkoutResponse = await worker.fetch(
+    new Request("http://localhost/api/webhook", {
+      method: "POST",
+      headers: { "stripe-signature": checkoutSignature },
+      body: checkoutPayload,
+    }),
+    {
+      ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+      DB: db,
+      STRIPE_SECRET_KEY: "sk_test_payment_policy",
+      STRIPE_WEBHOOK_SECRET: webhookSecret,
+      STRIPE_PRICE_PRO: "price_pro_test",
+      STRIPE_PRICE_TEAM: "price_team_test",
+    },
+    { waitUntil() {}, passThroughOnException() {} },
+  );
+
+  assert.equal(checkoutResponse.status, 200);
+  assert.equal(
+    executed.some(({ sql }) => /UPDATE users SET plan/.test(sql)),
+    false,
+  );
+  const pendingOrderUpdate = executed.find(({ sql }) => /UPDATE orders SET status/.test(sql));
+  assert.ok(pendingOrderUpdate);
+  assert.equal(pendingOrderUpdate.values[0], "pending");
 });

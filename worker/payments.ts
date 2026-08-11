@@ -45,6 +45,10 @@ function monthlyCreditLimit(plan: string): number {
   return MONTHLY_CREDIT_LIMITS[plan] ?? MONTHLY_CREDIT_LIMITS.free;
 }
 
+function subscriptionGrantsAccess(status: Stripe.Subscription.Status): boolean {
+  return status === "active" || status === "trialing";
+}
+
 function sameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
   return !origin || origin === new URL(request.url).origin;
@@ -128,32 +132,41 @@ async function consumeCredits(
 
   const period = currentPeriod();
   const limit = monthlyCreditLimit(user.plan);
-  const record = await env.DB.prepare(
-    "SELECT used FROM credit_usage WHERE user_id = ? AND period = ?",
+  if (count > limit) {
+    return json(
+      { ok: false, code: "QUOTA_EXCEEDED", used: 0, remaining: limit, limit, requested: count },
+      429,
+    );
+  }
+
+  const now = new Date().toISOString();
+  const updated = await env.DB.prepare(
+    `INSERT INTO credit_usage (user_id, period, used, plan, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?)
+     ON CONFLICT(user_id, period) DO UPDATE SET
+       used = credit_usage.used + excluded.used,
+       plan = excluded.plan,
+       updated_at = excluded.updated_at
+     WHERE credit_usage.used + excluded.used <= ?
+     RETURNING used`,
   )
-    .bind(user.id, period)
+    .bind(user.id, period, count, user.plan, now, now, limit)
     .first<{ used: number }>();
-  const used = record?.used ?? 0;
-  if (used + count > limit) {
+
+  if (!updated) {
+    const record = await env.DB.prepare(
+      "SELECT used FROM credit_usage WHERE user_id = ? AND period = ?",
+    )
+      .bind(user.id, period)
+      .first<{ used: number }>();
+    const used = record?.used ?? limit;
     return json(
       { ok: false, code: "QUOTA_EXCEEDED", used, remaining: Math.max(0, limit - used), limit, requested: count },
       429,
     );
   }
 
-  const now = new Date().toISOString();
-  await env.DB.prepare(
-    `INSERT INTO credit_usage (user_id, period, used, plan, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?)
-     ON CONFLICT(user_id, period) DO UPDATE SET
-       used = credit_usage.used + excluded.used,
-       plan = excluded.plan,
-       updated_at = excluded.updated_at`,
-  )
-    .bind(user.id, period, count, user.plan, now, now)
-    .run();
-
-  const newUsed = used + count;
+  const newUsed = updated.used;
   return json({ ok: true, used: newUsed, remaining: Math.max(0, limit - newUsed), limit, consumed: count });
 }
 
@@ -230,12 +243,24 @@ async function processWebhookEvent(event: Stripe.Event, env: PaymentEnv): Promis
     const userId = session.client_reference_id || session.metadata?.userId;
     const plan = session.metadata?.plan;
     if (userId && (plan === "pro" || plan === "team")) {
-      await env.DB.batch([
+      const paid = session.payment_status === "paid" || session.payment_status === "no_payment_required";
+      const statements = [
         env.DB.prepare(
-          "UPDATE orders SET status = 'completed', stripe_payment_intent_id = ? WHERE stripe_checkout_session_id = ?",
-        ).bind(typeof session.payment_intent === "string" ? session.payment_intent : null, session.id),
-        env.DB.prepare("UPDATE users SET plan = ?, updated_at = ? WHERE id = ?").bind(plan, now, userId),
-      ]);
+          "UPDATE orders SET status = ?, stripe_payment_intent_id = ? WHERE stripe_checkout_session_id = ?",
+        ).bind(
+          paid ? "completed" : "pending",
+          typeof session.payment_intent === "string" ? session.payment_intent : null,
+          session.id,
+        ),
+      ];
+      if (paid) {
+        statements.push(
+          env.DB.prepare("UPDATE users SET plan = ?, updated_at = ? WHERE id = ?").bind(plan, now, userId),
+        );
+      } else {
+        console.warn(`[webhook] CHECKOUT_NOT_PAID event=${event.id} session=${session.id}`);
+      }
+      await env.DB.batch(statements);
     }
     return;
   }
@@ -279,7 +304,7 @@ async function processWebhookEvent(event: Stripe.Event, env: PaymentEnv): Promis
         now,
       ),
       env.DB.prepare("UPDATE users SET plan = ?, updated_at = ? WHERE id = ?").bind(
-        subscription.status === "canceled" || subscription.status === "unpaid" ? "free" : plan,
+        subscriptionGrantsAccess(subscription.status) ? plan : "free",
         now,
         userId,
       ),
