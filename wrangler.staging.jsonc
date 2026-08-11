@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "baichengpu-staging",
+  "main": "./worker/index.ts",
+  "compatibility_date": "2026-07-29",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "baichengpu-staging-db",
+      "database_id": "a6808948-a7aa-4487-a3e7-c9a18259ba9f",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "images": {
+    "binding": "IMAGES"
+  },
+  "vars": {
+    "ADMIN_EMAILS": "644373212@qq.com"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

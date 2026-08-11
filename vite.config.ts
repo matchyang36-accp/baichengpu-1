@@ -57,6 +57,10 @@ export default defineConfig(async () => {
 
   // Wrangler snapshots its log path while the Cloudflare plugin is imported.
   const { cloudflare } = await import("@cloudflare/vite-plugin");
+  const cloudflareConfigPath =
+    process.env.BAICHENGPU_DEPLOY_TARGET === "staging"
+      ? "wrangler.staging.jsonc"
+      : undefined;
 
   return {
     server: isCodexSeatbeltSandbox
@@ -66,6 +70,7 @@ export default defineConfig(async () => {
       backgroundRemovalRuntimeCompat(),
       vinext(),
       cloudflare({
+        configPath: cloudflareConfigPath,
         viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
       }),
     ],
