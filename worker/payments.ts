@@ -236,7 +236,11 @@ function subscriptionPeriod(subscription: Stripe.Subscription) {
   };
 }
 
-async function processWebhookEvent(event: Stripe.Event, env: PaymentEnv): Promise<void> {
+async function processWebhookEvent(
+  event: Stripe.Event,
+  env: PaymentEnv,
+  stripe: Stripe,
+): Promise<void> {
   const now = new Date().toISOString();
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
@@ -266,7 +270,8 @@ async function processWebhookEvent(event: Stripe.Event, env: PaymentEnv): Promis
   }
 
   if (event.type === "customer.subscription.created" || event.type === "customer.subscription.updated") {
-    const subscription = event.data.object;
+    const eventSubscription = event.data.object;
+    const subscription = await stripe.subscriptions.retrieve(eventSubscription.id);
     const userId = subscription.metadata.userId;
     const plan = subscription.metadata.plan === "team" ? "team" : "pro";
     const customerId = typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id;
@@ -353,7 +358,7 @@ async function handleWebhook(request: Request, env: PaymentEnv): Promise<Respons
       .run();
     if ((inserted.meta.changes ?? 0) === 0) return json({ received: true, duplicate: true });
 
-    await processWebhookEvent(event, env);
+    await processWebhookEvent(event, env, stripe);
     return json({ received: true });
   } catch (reason) {
     if (event) {

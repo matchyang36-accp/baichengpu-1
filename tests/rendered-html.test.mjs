@@ -914,7 +914,7 @@ test("credit consumption is atomic when requests reach the quota together", asyn
   assert.equal((await rejected.json()).code, "QUOTA_EXCEEDED");
 });
 
-test("past-due subscriptions do not keep paid access", async () => {
+test("subscription webhooks use current Stripe state when events arrive out of order", async () => {
   const worker = await loadWorker("payment-subscription-status");
   const webhookSecret = "whsec_payment_policy_test";
   const stripe = new Stripe("sk_test_payment_policy");
@@ -927,7 +927,7 @@ test("past-due subscriptions do not keep paid access", async () => {
         id: "sub_payment_policy",
         object: "subscription",
         customer: "cus_payment_policy",
-        status: "past_due",
+        status: "active",
         metadata: { userId: "user_payment_policy", plan: "pro" },
         cancel_at_period_end: false,
         canceled_at: null,
@@ -968,22 +968,38 @@ test("past-due subscriptions do not keep paid access", async () => {
     },
   };
 
-  const response = await worker.fetch(
-    new Request("http://localhost/api/webhook", {
-      method: "POST",
-      headers: { "stripe-signature": signature },
-      body: payload,
-    }),
-    {
-      ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
-      DB: db,
-      STRIPE_SECRET_KEY: "sk_test_payment_policy",
-      STRIPE_WEBHOOK_SECRET: webhookSecret,
-      STRIPE_PRICE_PRO: "price_pro_test",
-      STRIPE_PRICE_TEAM: "price_team_test",
-    },
-    { waitUntil() {}, passThroughOnException() {} },
-  );
+  const nativeFetch = globalThis.fetch;
+  globalThis.fetch = async (input, init) => {
+    if (String(input).includes("/v1/subscriptions/sub_payment_policy")) {
+      return Response.json({
+        ...event.data.object,
+        status: "past_due",
+      });
+    }
+    return nativeFetch(input, init);
+  };
+
+  let response;
+  try {
+    response = await worker.fetch(
+      new Request("http://localhost/api/webhook", {
+        method: "POST",
+        headers: { "stripe-signature": signature },
+        body: payload,
+      }),
+      {
+        ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+        DB: db,
+        STRIPE_SECRET_KEY: "sk_test_payment_policy",
+        STRIPE_WEBHOOK_SECRET: webhookSecret,
+        STRIPE_PRICE_PRO: "price_pro_test",
+        STRIPE_PRICE_TEAM: "price_team_test",
+      },
+      { waitUntil() {}, passThroughOnException() {} },
+    );
+  } finally {
+    globalThis.fetch = nativeFetch;
+  }
 
   assert.equal(response.status, 200);
   const userPlanUpdate = executed.find(({ sql }) => /UPDATE users SET plan/.test(sql));
