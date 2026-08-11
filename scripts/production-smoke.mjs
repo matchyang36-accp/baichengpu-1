@@ -9,6 +9,11 @@ const checks = [
     marker: "\u4ec0\u4e48\u662f\u6d4f\u89c8\u5668\u672c\u5730 AI \u62a0\u56fe",
   },
   { path: "/en/batch", status: 200, marker: "Batch" },
+  {
+    path: "/en/pricing",
+    status: 200,
+    marker: "Remove repetitive image work first",
+  },
   { path: "/en/auth?mode=login", status: 200, marker: "Sign in" },
   { path: "/en/forgot-password", status: 200, marker: "verification" },
   { path: "/admin/login", status: 200, marker: "Admin" },
