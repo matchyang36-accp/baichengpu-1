@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { useTranslations } from "../../i18n/client";
 
 type ResetStep = "request" | "confirm" | "success";
 
@@ -11,6 +12,8 @@ type ApiResult = {
 };
 
 export function PasswordResetForm() {
+  const { locale, t } = useTranslations();
+  const localePrefix = `/${locale}`;
   const [step, setStep] = useState<ResetStep>("request");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -30,13 +33,13 @@ export function PasswordResetForm() {
         { email },
       );
       if (!result.ok) {
-        setError(resetErrorMessage(result.code));
+        setError(resetErrorMessage(result.code, t));
         return;
       }
       setStep("confirm");
     } catch (requestError) {
       console.error("[password-reset-ui] REQUEST_FAILED", requestError);
-      setError("网络暂时不可用，请稍后重试。");
+      setError(t("auth.passwordReset.errors.network"));
     } finally {
       setIsPending(false);
     }
@@ -47,7 +50,7 @@ export function PasswordResetForm() {
     setError("");
 
     if (password !== passwordConfirm) {
-      setError("两次输入的密码不一致。");
+      setError(t("auth.passwordReset.errors.passwordMismatch"));
       return;
     }
 
@@ -58,7 +61,7 @@ export function PasswordResetForm() {
         { email, code, password },
       );
       if (!result.ok) {
-        setError(resetErrorMessage(result.code));
+        setError(resetErrorMessage(result.code, t));
         return;
       }
       setCode("");
@@ -67,7 +70,7 @@ export function PasswordResetForm() {
       setStep("success");
     } catch (confirmError) {
       console.error("[password-reset-ui] CONFIRM_FAILED", confirmError);
-      setError("网络暂时不可用，请稍后重试。");
+      setError(t("auth.passwordReset.errors.network"));
     } finally {
       setIsPending(false);
     }
@@ -77,12 +80,17 @@ export function PasswordResetForm() {
     return (
       <div className="auth-card">
         <div className="auth-card-copy">
-          <span className="eyebrow">密码已更新</span>
-          <h1>可以重新登录了</h1>
-          <p>为保护账户安全，旧登录会话已经全部失效。</p>
+          <span className="eyebrow">
+            {t("auth.passwordReset.successEyebrow")}
+          </span>
+          <h1>{t("auth.passwordReset.successTitle")}</h1>
+          <p>{t("auth.passwordReset.successDescription")}</p>
         </div>
-        <Link className="auth-submit auth-submit-link" href="/auth?mode=login">
-          返回登录
+        <Link
+          className="auth-submit auth-submit-link"
+          href={`${localePrefix}/auth?mode=login`}
+        >
+          {t("auth.passwordReset.backToLogin")}
         </Link>
       </div>
     );
@@ -91,19 +99,19 @@ export function PasswordResetForm() {
   return (
     <div className="auth-card">
       <div className="auth-card-copy">
-        <span className="eyebrow">账户安全</span>
-        <h1>忘记密码</h1>
+        <span className="eyebrow">{t("auth.passwordReset.eyebrow")}</span>
+        <h1>{t("auth.passwordReset.requestTitle")}</h1>
         <p>
           {step === "request"
-            ? "输入注册邮箱，我们会发送一次性验证码。"
-            : `验证码已发送至 ${email}，请设置新密码。`}
+            ? t("auth.passwordReset.requestDescription")
+            : t("auth.passwordReset.confirmDescription", { email })}
         </p>
       </div>
 
       {step === "request" ? (
         <form className="auth-form" onSubmit={requestCode}>
           <label>
-            注册邮箱
+            {t("auth.passwordReset.emailLabel")}
             <input
               autoComplete="email"
               inputMode="email"
@@ -115,19 +123,26 @@ export function PasswordResetForm() {
               placeholder="name@example.com"
             />
           </label>
-          <p className="auth-reset-hint">验证码 10 分钟后自动失效。</p>
+          <p className="auth-reset-hint">
+            {t("auth.passwordReset.expiryHint")}
+          </p>
           {error ? <AuthError message={error} /> : null}
           <button className="auth-submit" type="submit" disabled={isPending}>
-            {isPending ? "正在发送…" : "发送验证码"}
+            {isPending
+              ? t("auth.passwordReset.sendingCode")
+              : t("auth.passwordReset.sendCode")}
           </button>
           <p className="auth-switch">
-            想起密码了？<Link href="/auth?mode=login">返回登录</Link>
+            {t("auth.passwordReset.rememberedPassword")} {" "}
+            <Link href={`${localePrefix}/auth?mode=login`}>
+              {t("auth.passwordReset.backToLogin")}
+            </Link>
           </p>
         </form>
       ) : (
         <form className="auth-form" onSubmit={confirmReset}>
           <label>
-            6 位验证码
+            {t("auth.passwordReset.codeLabel")}
             <input
               autoComplete="one-time-code"
               inputMode="numeric"
@@ -143,7 +158,7 @@ export function PasswordResetForm() {
             />
           </label>
           <label>
-            新密码
+            {t("auth.passwordReset.newPasswordLabel")}
             <input
               autoComplete="new-password"
               minLength={10}
@@ -152,11 +167,11 @@ export function PasswordResetForm() {
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="至少 10 位，同时包含字母和数字"
+              placeholder={t("auth.passwordReset.newPasswordPlaceholder")}
             />
           </label>
           <label>
-            确认新密码
+            {t("auth.passwordReset.confirmPasswordLabel")}
             <input
               autoComplete="new-password"
               minLength={10}
@@ -165,16 +180,18 @@ export function PasswordResetForm() {
               type="password"
               value={passwordConfirm}
               onChange={(event) => setPasswordConfirm(event.target.value)}
-              placeholder="再次输入新密码"
+              placeholder={t("auth.passwordReset.confirmPasswordPlaceholder")}
             />
           </label>
           {error ? <AuthError message={error} /> : null}
           <button className="auth-submit" type="submit" disabled={isPending}>
-            {isPending ? "正在更新…" : "更新密码"}
+            {isPending
+              ? t("auth.passwordReset.updatingPassword")
+              : t("auth.passwordReset.updatePassword")}
           </button>
           <p className="auth-switch auth-reset-actions">
             <button type="button" onClick={() => setStep("request")}>
-              更换邮箱或重新发送
+              {t("auth.passwordReset.changeEmail")}
             </button>
           </p>
         </form>
@@ -204,19 +221,19 @@ async function postResetRequest(
   return response.ok && result.ok ? { ok: true } : result;
 }
 
-function resetErrorMessage(code?: string): string {
-  switch (code) {
-    case "RATE_LIMITED":
-      return "请求次数过多，请稍后再试。";
-    case "INVALID_OR_EXPIRED_CODE":
-      return "验证码错误或已失效，请重新获取。";
-    case "WEAK_PASSWORD":
-      return "密码至少需要 10 位，并同时包含字母和数字。";
-    case "EMAIL_SEND_FAILED":
-      return "邮件暂时未发送成功，请稍后重试。";
-    case "PASSWORD_RESET_NOT_CONFIGURED":
-      return "邮件重置服务尚未配置，请联系管理员。";
-    default:
-      return "操作没有完成，请稍后重试。";
-  }
+type Translate = ReturnType<typeof useTranslations>["t"];
+
+function resetErrorMessage(code: string | undefined, t: Translate): string {
+  const knownCodes = new Set([
+    "RATE_LIMITED",
+    "INVALID_OR_EXPIRED_CODE",
+    "WEAK_PASSWORD",
+    "EMAIL_SEND_FAILED",
+    "PASSWORD_RESET_NOT_CONFIGURED",
+  ]);
+  return t(
+    knownCodes.has(code ?? "")
+      ? `auth.passwordReset.errors.${code}`
+      : "auth.passwordReset.errors.default",
+  );
 }

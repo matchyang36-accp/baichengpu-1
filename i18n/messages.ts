@@ -406,6 +406,50 @@ export const messageRecords = {
 				"STORE_FAILED": "Server error. Please try again.",
 				"default": "The operation didn't complete. Please try again.",
 				"network": "Network temporarily unavailable. Please try again."
+			},
+			"passwordReset": {
+				"metadataTitle": "Forgot password | edit-photo",
+				"metadataDescription": "Securely reset your edit-photo account password with an email verification code.",
+				"ariaLabel": "Reset account password",
+				"backToTool": "Back to cutout tool",
+				"securityEyebrow": "Secure reset",
+				"securityTitle": "Each verification code works once, and old sessions are revoked",
+				"securityPoints": [
+					"Verification codes expire after 10 minutes",
+					"Repeated failed attempts trigger a temporary limit",
+					"New passwords are stored using salted key derivation"
+				],
+				"eyebrow": "Account security",
+				"requestTitle": "Forgot password",
+				"requestDescription": "Enter your registered email and we will send a one-time verification code.",
+				"confirmDescription": "The verification code was sent to {email}. Set your new password below.",
+				"emailLabel": "Registered email",
+				"expiryHint": "The verification code expires after 10 minutes.",
+				"sendCode": "Send verification code",
+				"sendingCode": "Sending…",
+				"rememberedPassword": "Remember your password?",
+				"backToLogin": "Back to sign in",
+				"codeLabel": "6-digit verification code",
+				"newPasswordLabel": "New password",
+				"newPasswordPlaceholder": "At least 10 characters with letters and numbers",
+				"confirmPasswordLabel": "Confirm new password",
+				"confirmPasswordPlaceholder": "Re-enter your new password",
+				"updatePassword": "Update password",
+				"updatingPassword": "Updating…",
+				"changeEmail": "Use another email or send a new code",
+				"successEyebrow": "Password updated",
+				"successTitle": "You can sign in again",
+				"successDescription": "For account security, all previous sign-in sessions have been revoked.",
+				"errors": {
+					"passwordMismatch": "Passwords do not match.",
+					"RATE_LIMITED": "Too many requests. Please try again later.",
+					"INVALID_OR_EXPIRED_CODE": "The code is incorrect or expired. Request a new one.",
+					"WEAK_PASSWORD": "Use at least 10 characters with both letters and numbers.",
+					"EMAIL_SEND_FAILED": "The email could not be sent. Please try again later.",
+					"PASSWORD_RESET_NOT_CONFIGURED": "Password reset email is not configured. Please contact support.",
+					"network": "Network temporarily unavailable. Please try again.",
+					"default": "The operation did not complete. Please try again."
+				}
 			}
 		},
 		account: {
@@ -1214,6 +1258,50 @@ export const messageRecords = {
 				"STORE_FAILED": "服务器错误，请稍后重试。",
 				"default": "操作没有完成，请稍后重试。",
 				"network": "网络暂时不可用，请稍后重试。"
+			},
+			"passwordReset": {
+				"metadataTitle": "忘记密码｜edit-photo",
+				"metadataDescription": "通过注册邮箱验证码安全重置 edit-photo 账户密码。",
+				"ariaLabel": "重置账户密码",
+				"backToTool": "返回抠图工具",
+				"securityEyebrow": "安全重置",
+				"securityTitle": "验证码只用一次，旧会话立即失效",
+				"securityPoints": [
+					"验证码 10 分钟后自动失效",
+					"连续输错会触发临时限制",
+					"新密码仍使用加盐派生存储"
+				],
+				"eyebrow": "账户安全",
+				"requestTitle": "忘记密码",
+				"requestDescription": "输入注册邮箱，我们会发送一次性验证码。",
+				"confirmDescription": "验证码已发送至 {email}，请设置新密码。",
+				"emailLabel": "注册邮箱",
+				"expiryHint": "验证码 10 分钟后自动失效。",
+				"sendCode": "发送验证码",
+				"sendingCode": "正在发送…",
+				"rememberedPassword": "想起密码了？",
+				"backToLogin": "返回登录",
+				"codeLabel": "6 位验证码",
+				"newPasswordLabel": "新密码",
+				"newPasswordPlaceholder": "至少 10 位，同时包含字母和数字",
+				"confirmPasswordLabel": "确认新密码",
+				"confirmPasswordPlaceholder": "再次输入新密码",
+				"updatePassword": "更新密码",
+				"updatingPassword": "正在更新…",
+				"changeEmail": "更换邮箱或重新发送",
+				"successEyebrow": "密码已更新",
+				"successTitle": "可以重新登录了",
+				"successDescription": "为保护账户安全，旧登录会话已经全部失效。",
+				"errors": {
+					"passwordMismatch": "两次输入的密码不一致。",
+					"RATE_LIMITED": "请求次数过多，请稍后再试。",
+					"INVALID_OR_EXPIRED_CODE": "验证码错误或已失效，请重新获取。",
+					"WEAK_PASSWORD": "密码至少需要 10 位，并同时包含字母和数字。",
+					"EMAIL_SEND_FAILED": "邮件暂时未发送成功，请稍后重试。",
+					"PASSWORD_RESET_NOT_CONFIGURED": "邮件重置服务尚未配置，请联系管理员。",
+					"network": "网络暂时不可用，请稍后重试。",
+					"default": "操作没有完成，请稍后重试。"
+				}
 			}
 		},
 		account: {

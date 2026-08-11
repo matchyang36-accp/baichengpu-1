@@ -3,6 +3,7 @@ const routes = [
   "/zh",
   "/en/batch",
   "/en/auth?mode=login",
+  "/en/forgot-password",
   "/en/pricing",
   "/en/blog",
   "/en/contact",

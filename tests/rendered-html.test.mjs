@@ -367,13 +367,22 @@ test("server-renders the independent registration page", async () => {
   assert.match(loginHtml, /Forgot password\?/);
 });
 
-test("server-renders the email verification password reset page", async () => {
-  const response = await render("/forgot-password");
+test("server-renders the Chinese email verification password reset page", async () => {
+  const response = await render("/zh/forgot-password");
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /忘记密码/);
   assert.match(html, /发送验证码/);
   assert.match(html, /验证码 10 分钟后自动失效/);
+});
+
+test("server-renders the English email verification password reset page", async () => {
+  const response = await render("/en/forgot-password");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /Forgot password/);
+  assert.match(html, /Send verification code/);
+  assert.match(html, /verification code expires after 10 minutes/);
 });
 
 test("resets a password with a one-time emailed code and revokes sessions", async () => {

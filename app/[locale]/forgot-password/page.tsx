@@ -1,1 +1,1 @@
-export { default, metadata } from "../../forgot-password/page";
+export { default, generateMetadata } from "../../forgot-password/page";
