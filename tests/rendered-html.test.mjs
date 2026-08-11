@@ -857,6 +857,87 @@ test("payment routes fail closed and degrade safely when Stripe is unavailable",
   });
 });
 
+test("checkout explicitly enables Managed Payments", async () => {
+  const worker = await loadWorker("managed-payments-checkout");
+  const executed = [];
+  const db = {
+    prepare(sql) {
+      return {
+        bind(...values) {
+          return {
+            async first() {
+              if (/FROM sessions/.test(sql)) {
+                return {
+                  id: "user_managed_payments",
+                  email: "seller@example.com",
+                  displayName: "Seller",
+                  plan: "free",
+                };
+              }
+              return null;
+            },
+            async run() {
+              executed.push({ sql, values });
+              return { meta: { changes: 1 } };
+            },
+          };
+        },
+      };
+    },
+  };
+  const nativeFetch = globalThis.fetch;
+  let checkoutParams;
+  globalThis.fetch = async (input, init) => {
+    if (String(input).includes("/v1/checkout/sessions")) {
+      checkoutParams = new URLSearchParams(String(init?.body ?? ""));
+      return Response.json({
+        id: "cs_test_managed_payments",
+        object: "checkout.session",
+        amount_total: 3900,
+        currency: "cny",
+        url: "https://checkout.stripe.com/c/pay/cs_test_managed_payments",
+      });
+    }
+    return nativeFetch(input, init);
+  };
+
+  let response;
+  try {
+    response = await worker.fetch(
+      new Request("http://localhost/api/checkout", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          cookie: "bcp_session=test-session",
+          origin: "http://localhost",
+        },
+        body: JSON.stringify({
+          plan: "pro",
+          locale: "en",
+          requestId: "managed-payment-test",
+        }),
+      }),
+      {
+        ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+        DB: db,
+        STRIPE_SECRET_KEY: "sk_test_managed_payments",
+        STRIPE_WEBHOOK_SECRET: "whsec_managed_payments",
+        STRIPE_PRICE_PRO: "price_pro_test",
+        STRIPE_PRICE_TEAM: "price_team_test",
+      },
+      { waitUntil() {}, passThroughOnException() {} },
+    );
+  } finally {
+    globalThis.fetch = nativeFetch;
+  }
+
+  assert.equal(response.status, 200);
+  assert.equal(checkoutParams?.get("mode"), "subscription");
+  assert.equal(checkoutParams?.get("managed_payments[enabled]"), "true");
+  assert.equal(checkoutParams?.get("line_items[0][price]"), "price_pro_test");
+  assert.ok(executed.some(({ sql }) => /INSERT INTO orders/.test(sql)));
+});
+
 test("credit consumption is atomic when requests reach the quota together", async () => {
   const worker = await loadWorker("payment-credit-atomicity");
   let used = 19;

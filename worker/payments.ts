@@ -200,6 +200,7 @@ async function createCheckout(
     const session = await stripe.checkout.sessions.create(
       {
         mode: "subscription",
+        managed_payments: { enabled: true },
         customer_email: user.email,
         client_reference_id: user.id,
         metadata: { userId: user.id, plan, locale },
