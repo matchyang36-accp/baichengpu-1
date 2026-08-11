@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import {
   ChangeEvent,
   DragEvent,
@@ -13,6 +15,10 @@ import {
 } from "react";
 import { AccountMenu, type AccountViewer } from "./AccountMenu";
 import { trackAnalyticsEvent } from "./AnalyticsTracker";
+import { BrandLogo } from "./BrandLogo";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { HomeSeoSections } from "./HomeSeoSections";
+import { useTranslations } from "../i18n/client";
 import {
   clearModelCache,
   registerModelCacheWorker,
@@ -26,7 +32,7 @@ import {
 type Stage = "idle" | "processing" | "done" | "error";
 type CleanupMode = "standard" | "strong" | "shadow";
 type ViewMode = "side-by-side" | "compare";
-type Platform = "taobao" | "pinduoduo" | "douyin";
+type Platform = "amazon" | "taobao" | "pinduoduo" | "douyin";
 
 const ManualMaskEditor = lazy(() =>
   import("./ManualMaskEditor").then((module) => ({
@@ -41,15 +47,7 @@ const DIAGNOSTIC_VERSION = "V10";
 const MODEL_INIT_TIMEOUT_MS = 120_000;
 const PRODUCT_CANVAS_SIZE = 1000;
 
-const PLATFORM_PRESETS: Array<{
-  id: Platform;
-  label: string;
-  shortLabel: string;
-}> = [
-  { id: "taobao", label: "淘宝主图", shortLabel: "淘宝" },
-  { id: "pinduoduo", label: "拼多多主图", shortLabel: "拼多多" },
-  { id: "douyin", label: "抖音小店主图", shortLabel: "抖音小店" },
-];
+const PLATFORM_IDS: Platform[] = ["amazon", "taobao", "pinduoduo", "douyin"];
 
 const CLEANUP_PRESETS: Record<
   CleanupMode,
@@ -347,7 +345,7 @@ export async function cleanForeground(
       if (isMeaningfulPart) selected.add(index);
     });
 
-    let seedMask = keep;
+    let seedMask: Uint8Array<ArrayBufferLike> = keep;
     selected.forEach((componentIndex) => {
       for (const index of components[componentIndex].pixels) {
         seedMask[index] = 1;
@@ -499,6 +497,19 @@ export function BackgroundRemover({
 }: {
   viewer: AccountViewer | null;
 }) {
+  const { locale, t } = useTranslations();
+  const localePrefix = `/${locale}`;
+  const platformPresets = PLATFORM_IDS.map((id) => ({
+    id,
+    label: t(`tool.platforms.${id}`),
+    shortLabel: t(`tool.platforms.${id}Short`),
+  }));
+  const cleanupLabels: Array<[CleanupMode, string]> = [
+    ["standard", t("tool.cleanup.standard")],
+    ["strong", t("tool.cleanup.strong")],
+    ["shadow", t("tool.cleanup.shadow")],
+  ];
+  const feedbackIssueOptions = t<string[]>("tool.feedback.issues");
   const inputRef = useRef<HTMLInputElement>(null);
   const retryFileRef = useRef<File | null>(null);
   const rawResultRef = useRef<Blob | null>(null);
@@ -510,9 +521,11 @@ export function BackgroundRemover({
   const [sourceUrl, setSourceUrl] = useState("");
   const [resultUrl, setResultUrl] = useState("");
   const [productUrl, setProductUrl] = useState("");
-  const [fileName, setFileName] = useState("baichengpu-cutout.png");
+  const [fileName, setFileName] = useState(
+    `edit-photo${t("tool.download.transparentSuffix")}`,
+  );
   const [progress, setProgress] = useState(0);
-  const [statusText, setStatusText] = useState("准备图片");
+  const [statusText, setStatusText] = useState(t("tool.status.preparing"));
   const [error, setError] = useState("");
   const [dragging, setDragging] = useState(false);
   const [cleanupMode, setCleanupMode] = useState<CleanupMode>("standard");
@@ -524,7 +537,7 @@ export function BackgroundRemover({
   const [panning, setPanning] = useState(false);
   const [comparePanMode, setComparePanMode] = useState(false);
   const [manualEditorOpen, setManualEditorOpen] = useState(false);
-  const [platform, setPlatform] = useState<Platform>("taobao");
+  const [platform, setPlatform] = useState<Platform>("amazon");
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [subjectScale, setSubjectScale] = useState(82);
   const [subjectX, setSubjectX] = useState(0);
@@ -558,13 +571,17 @@ export function BackgroundRemover({
   useEffect(() => () => clearUrls(), [clearUrls]);
 
   useEffect(() => {
-    void registerModelCacheWorker().catch(() => undefined);
+    void registerModelCacheWorker().catch((reason: unknown) => {
+      console.warn("[model-cache] SERVICE_WORKER_UNAVAILABLE", reason);
+    });
   }, []);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem("baichengpu-platform");
-    if (saved === "taobao" || saved === "pinduoduo" || saved === "douyin") {
-      setPlatform(saved);
+    const saved =
+      window.localStorage.getItem("edit-photo-platform") ??
+      window.localStorage.getItem("baichengpu-platform");
+    if (PLATFORM_IDS.includes(saved as Platform)) {
+      setPlatform(saved as Platform);
     }
   }, []);
 
@@ -675,7 +692,7 @@ export function BackgroundRemover({
         productUrlRef.current = nextProductUrl;
         setProductUrl(nextProductUrl);
       } catch (reason) {
-        console.error(reason);
+        console.error("[cutout] EDGE_REFINEMENT_FAILED", reason);
       } finally {
         setIsRefining(false);
       }
@@ -686,12 +703,12 @@ export function BackgroundRemover({
   const processFile = useCallback(
     async (file: File) => {
       if (!ACCEPTED_TYPES.includes(file.type)) {
-        setError("请选择 JPG、PNG 或 WebP 图片");
+        setError(t("tool.error.invalidType"));
         setStage("error");
         return;
       }
       if (file.size > MAX_FILE_SIZE) {
-        setError("图片不能超过 12MB，请压缩后再试");
+        setError(t("tool.error.tooLarge"));
         setStage("error");
         return;
       }
@@ -711,10 +728,10 @@ export function BackgroundRemover({
       setFeedbackIssues([]);
       setFeedbackSent(false);
       setFileName(
-        `${file.name.replace(/\.[^/.]+$/, "") || "product"}-透明底.png`,
+        `${file.name.replace(/\.[^/.]+$/, "") || t("tool.download.defaultName")}${t("tool.download.transparentSuffix")}`,
       );
       setProgress(4);
-      setStatusText("正在加载本地 AI 模型");
+      setStatusText(t("tool.status.loadingModel"));
       setError("");
       setRequiresReload(false);
       setStage("processing");
@@ -722,7 +739,11 @@ export function BackgroundRemover({
 
       let diagnosticPhase = "manifest";
       try {
-        await registerModelCacheWorker().catch(() => undefined);
+        try {
+          await registerModelCacheWorker();
+        } catch (reason) {
+          console.warn("[model-cache] SERVICE_WORKER_UNAVAILABLE", reason);
+        }
         const publicPath = new URL(
           MODEL_ASSET_PATH,
           window.location.href,
@@ -736,20 +757,19 @@ export function BackgroundRemover({
             output: {
               format: "image/png",
               quality: 1,
-              type: "foreground",
             },
             progress: (key: string, current: number, total: number) => {
               diagnosticPhase = key;
               const next = mapRemovalProgress(key, current, total);
               setProgress((value) => Math.max(value, next.progress));
-              setStatusText(next.status);
+              setStatusText(t(next.statusKey));
             },
           }),
           MODEL_INIT_TIMEOUT_MS,
         );
         rawResultRef.current = output;
         setCleanupMode("standard");
-        setStatusText("AI 正在净化边缘与背景杂点");
+        setStatusText(t("tool.status.cleaning"));
         setProgress(99);
         const cleanedOutput = await cleanForeground(output, "standard");
         const outputUrl = URL.createObjectURL(cleanedOutput);
@@ -763,7 +783,7 @@ export function BackgroundRemover({
         setStage("done");
         trackAnalyticsEvent("cutout_completed");
       } catch (reason) {
-        console.error(reason);
+        console.error("[cutout] PROCESSING_FAILED", reason);
         const errorMessage = getErrorMessage(reason);
         const detail = errorMessage.toLowerCase();
         const diagnosticCode = getDiagnosticCode(errorMessage);
@@ -778,15 +798,18 @@ export function BackgroundRemover({
         setRequiresReload(timedOut);
         setError(
           timedOut
-            ? "本地 AI 启动超过 2 分钟，浏览器运行环境可能已卡住。请刷新页面后重新处理。"
+            ? t("tool.error.timeout")
             : detail.includes("memory") || detail.includes("allocation")
-            ? "设备可用内存不足。请关闭其他页面，或换一张尺寸更小的图片后重试。"
-            : `本地模型没有加载完成。诊断版本：${DIAGNOSTIC_VERSION}；诊断码：${diagnosticCode}。请点击重试。`,
+            ? t("tool.error.outOfMemory")
+            : t("tool.error.modelNotReady", {
+                version: DIAGNOSTIC_VERSION,
+                code: diagnosticCode,
+              }),
         );
         setStage("error");
       }
     },
-    [clearUrls],
+    [clearUrls, t],
   );
 
   useEffect(() => {
@@ -830,17 +853,21 @@ export function BackgroundRemover({
     resultUrlRef.current = nextResultUrl;
     setResultUrl(nextResultUrl);
     setManualEditorOpen(false);
-    void cropTransparentForeground(blob).then((cropped) => {
-      if (productUrlRef.current) URL.revokeObjectURL(productUrlRef.current);
-      const nextProductUrl = URL.createObjectURL(cropped);
-      productUrlRef.current = nextProductUrl;
-      setProductUrl(nextProductUrl);
-    });
+    void cropTransparentForeground(blob)
+      .then((cropped) => {
+        if (productUrlRef.current) URL.revokeObjectURL(productUrlRef.current);
+        const nextProductUrl = URL.createObjectURL(cropped);
+        productUrlRef.current = nextProductUrl;
+        setProductUrl(nextProductUrl);
+      })
+      .catch((reason: unknown) => {
+        console.error("[cutout] PRODUCT_PREVIEW_CROP_FAILED", reason);
+      });
   };
 
   const selectPlatform = (nextPlatform: Platform) => {
     setPlatform(nextPlatform);
-    window.localStorage.setItem("baichengpu-platform", nextPlatform);
+    window.localStorage.setItem("edit-photo-platform", nextPlatform);
   };
 
   const downloadProductImage = async () => {
@@ -887,10 +914,12 @@ export function BackgroundRemover({
       });
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
-      const baseName =
-        fileName.replace(/-透明底\.png$/i, "") || "product";
+      const transparentSuffix = t("tool.download.transparentSuffix");
+      const baseName = fileName.endsWith(transparentSuffix)
+        ? fileName.slice(0, -transparentSuffix.length)
+        : fileName.replace(/\.png$/i, "");
       anchor.href = url;
-      anchor.download = `${baseName}-${platform}-白底主图.png`;
+      anchor.download = `${baseName}-${platform}${t("tool.download.whiteSuffix")}`;
       anchor.click();
       trackAnalyticsEvent("download");
       window.setTimeout(() => URL.revokeObjectURL(url), 5_000);
@@ -905,18 +934,23 @@ export function BackgroundRemover({
   ) => {
     setFeedbackChoice(rating);
     if (rating === "satisfied") setFeedbackSent(true);
-    await fetch("/api/quality-feedback", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        rating,
-        issues,
-        cleanupMode,
-        platform,
-        version: DIAGNOSTIC_VERSION,
-      }),
-      keepalive: true,
-    }).catch(() => undefined);
+    try {
+      const response = await fetch("/api/quality-feedback", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          rating,
+          issues,
+          cleanupMode,
+          platform,
+          version: DIAGNOSTIC_VERSION,
+        }),
+        keepalive: true,
+      });
+      if (!response.ok) throw new Error(`quality-feedback-${response.status}`);
+    } catch (reason) {
+      console.warn("[quality-feedback] SUBMISSION_FAILED", reason);
+    }
   };
 
   const toggleFeedbackIssue = (issue: string) => {
@@ -930,48 +964,49 @@ export function BackgroundRemover({
   return (
     <main className="site-shell">
       <header className="topbar">
-        <a className="brand" href="#" aria-label="白橙铺首页">
-          <span className="brand-mark" aria-hidden="true">
-            橙
-          </span>
-          <span>白橙铺</span>
+        <a className="brand" href={localePrefix} aria-label={t("tool.brand.homeLabel")}>
+          <BrandLogo />
+          <span>{t("tool.brand.name")}</span>
         </a>
-        <nav className="nav" aria-label="主导航">
-          <a href="#">首页</a>
-          <a href="#how-it-works">使用说明</a>
-          <a href="/batch">批量处理</a>
-          <a href="/pricing">专业版</a>
-          <a href="/contact">联系我们</a>
-          <span className="nav-pill">本地 AI · 免费</span>
+        <nav className="nav" aria-label={t("common.nav.label")}>
+          <a href={localePrefix}>{t("tool.nav.home")}</a>
+          <a href="#how-it-works">{t("tool.nav.howItWorks")}</a>
+          <a href={`${localePrefix}/batch`}>{t("tool.nav.batch")}</a>
+          <a href={`${localePrefix}/pricing`}>{t("tool.nav.pro")}</a>
+          <a href={`${localePrefix}/contact`}>{t("tool.nav.contact")}</a>
+          <span className="nav-pill">{t("tool.nav.pill")}</span>
         </nav>
+        <LanguageSwitcher />
         <AccountMenu viewer={viewer} />
       </header>
 
       <section className="hero">
         <div className="hero-copy">
-          <span className="eyebrow">AI 智能商品抠图</span>
+          <span className="eyebrow">{t("tool.hero.eyebrow")}</span>
           <h1>
-            商品图，一键<span>干净抠出</span>
+            {t("tool.hero.titlePrefix")}
+            <span>{t("tool.hero.titleHighlight")}</span>
           </h1>
           <p>
-            上传图片，AI 自动移除背景。本地处理，无需注册，直接下载透明
-            PNG。
+            {t("tool.hero.descPrefix")}
+            <strong>{t("tool.hero.descHighlight")}</strong>
+            {t("tool.hero.descSuffix")}
           </p>
-          <div className="trust-row" aria-label="产品特点">
-            <span>✓ 浏览器本地处理</span>
-            <span>✓ 原图尺寸导出</span>
-            <span>✓ 无需注册</span>
+          <div className="trust-row" aria-label={t("common.trust.label")}>
+            <span>{t("tool.trust.local")}</span>
+            <span>{t("tool.trust.originalSize")}</span>
+            <span>{t("tool.trust.noReg")}</span>
           </div>
         </div>
 
         <div className="workbench">
           <div className="workbench-head">
             <div>
-              <span className="step-kicker">在线工具 / 单张抠图</span>
-              <h2>上传商品图片</h2>
+              <span className="step-kicker">{t("tool.upload.stepKicker")}</span>
+              <h2>{t("tool.upload.title")}</h2>
             </div>
             <span className="privacy-chip">
-              <i aria-hidden="true">●</i> 图片不会上传
+              <i aria-hidden="true">●</i> {t("tool.upload.privacyNote")}
             </span>
           </div>
 
@@ -990,7 +1025,7 @@ export function BackgroundRemover({
                 className="upload-orb"
                 type="button"
                 onClick={() => inputRef.current?.click()}
-                aria-label="选择商品图片"
+                aria-label={t("tool.upload.selectLabel")}
               >
                 <span className="upload-arrow-icon" aria-hidden="true">
                   <i className="upload-arrow-head" />
@@ -998,16 +1033,16 @@ export function BackgroundRemover({
                   <i className="upload-arrow-tray" />
                 </span>
               </button>
-              <h3>拖一张商品图到这里</h3>
-              <p>或点击选择、直接粘贴截图</p>
+              <h3>{t("tool.upload.dropTitle")}</h3>
+              <p>{t("tool.upload.dropHint")}</p>
               <button
                 className="primary-button"
                 type="button"
                 onClick={() => inputRef.current?.click()}
               >
-                选择商品图片
+                {t("tool.upload.select")}
               </button>
-              <small>支持 JPG / PNG / WebP · 最大 12MB</small>
+              <small>{t("tool.upload.formatHint")}</small>
             </div>
           )}
 
@@ -1015,7 +1050,7 @@ export function BackgroundRemover({
             <div className="processing-panel" aria-live="polite">
               <div className="preview-frame source-preview">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={sourceUrl} alt="待处理的商品原图" />
+                <img src={sourceUrl} alt={t("tool.upload.originalAlt")} />
                 <div className="scan-line" />
               </div>
               <div className="processing-copy">
@@ -1023,8 +1058,8 @@ export function BackgroundRemover({
                 <h3>{statusText}</h3>
                 <p>
                   {processingSeconds >= 45
-                    ? "首次初始化可能需要 1–2 分钟，请继续保持页面打开。"
-                    : "请保持页面打开，图片始终留在你的设备上。"}
+                    ? t("tool.status.firstInitHint")
+                    : t("tool.status.processingHint")}
                 </p>
                 <div className="progress-track">
                   <span style={{ width: `${progress}%` }} />
@@ -1032,10 +1067,10 @@ export function BackgroundRemover({
                 <small className="processing-meta">
                   <span>{progress}%</span>
                   <span>
-                    已等待{" "}
+                    {t("tool.status.elapsed")} {" "}
                     {processingSeconds < 60
-                      ? `${processingSeconds} 秒`
-                      : `${Math.floor(processingSeconds / 60)} 分 ${processingSeconds % 60} 秒`}
+                      ? `${processingSeconds} ${t("tool.status.seconds")}`
+                      : `${Math.floor(processingSeconds / 60)} ${t("tool.status.minutes")} ${processingSeconds % 60} ${t("tool.status.secondsUnit")}`}
                   </span>
                 </small>
               </div>
@@ -1047,7 +1082,7 @@ export function BackgroundRemover({
               {viewMode === "side-by-side" ? (
                 <div className="result-grid">
                   <figure>
-                    <span>原图</span>
+                    <span>{t("tool.result.original")}</span>
                     <div
                       className={`preview-frame image-pan-stage ${
                         zoom > 100 ? "is-pannable" : ""
@@ -1060,13 +1095,13 @@ export function BackgroundRemover({
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={sourceUrl}
-                        alt="商品原图"
+                        alt={t("tool.result.originalAlt")}
                         style={{ transform: imageTransform }}
                       />
                     </div>
                   </figure>
                   <figure>
-                    <span className="result-badge">透明底</span>
+                    <span className="result-badge">{t("tool.result.transparent")}</span>
                     <div
                       className={`preview-frame checkerboard image-pan-stage ${
                         zoom > 100 ? "is-pannable" : ""
@@ -1079,7 +1114,7 @@ export function BackgroundRemover({
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={resultUrl}
-                        alt="已经移除背景的商品图"
+                        alt={t("tool.result.removedBgAlt")}
                         style={{ transform: imageTransform }}
                       />
                     </div>
@@ -1095,15 +1130,17 @@ export function BackgroundRemover({
                   onPointerUp={stopImagePan}
                   onPointerCancel={stopImagePan}
                 >
-                  <span className="compare-label compare-label-left">原图</span>
+                  <span className="compare-label compare-label-left">
+                    {t("tool.result.original")}
+                  </span>
                   <span className="compare-label compare-label-right">
-                    透明底
+                    {t("tool.result.transparent")}
                   </span>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     className="compare-result"
                     src={resultUrl}
-                    alt="透明背景处理结果"
+                    alt={t("tool.result.transparentAlt")}
                     style={{ transform: imageTransform }}
                   />
                   <div
@@ -1115,7 +1152,7 @@ export function BackgroundRemover({
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={sourceUrl}
-                      alt="用于对比的商品原图"
+                      alt={t("tool.result.compareAlt")}
                       style={{ transform: imageTransform }}
                     />
                   </div>
@@ -1135,30 +1172,39 @@ export function BackgroundRemover({
                     max="100"
                     value={comparePosition}
                     disabled={comparePanMode}
-                    aria-label={`原图与透明图对比位置 ${comparePosition}%`}
+                    aria-label={t("tool.result.compareSliderLabel", {
+                      position: comparePosition,
+                    })}
                     onChange={(event) =>
                       setComparePosition(Number(event.target.value))
                     }
                   />
                 </div>
               )}
-              <div className="zoom-controls" aria-label="图片缩放控制">
-                <span>{zoom > 100 ? "拖动查看细节" : "查看细节"}</span>
+              <div
+                className="zoom-controls"
+                aria-label={t("tool.view.zoomControlsLabel")}
+              >
+                <span>
+                  {zoom > 100
+                    ? t("tool.view.zoomDragHint")
+                    : t("tool.view.zoomHint")}
+                </span>
                 <div>
                   <button
                     type="button"
                     disabled={zoom <= 50}
                     onClick={() => setZoom((value) => Math.max(50, value - 25))}
-                    aria-label="缩小图片"
+                    aria-label={t("common.actions.zoomOut")}
                   >
-                    − 缩小
+                    {t("tool.view.zoomOut")}
                   </button>
                   <button
                     className="zoom-value"
                     type="button"
                     disabled={zoom === 100}
                     onClick={() => setZoom(100)}
-                    aria-label={`当前缩放 ${zoom}%，点击恢复原始比例`}
+                    aria-label={t("tool.view.currentZoom", { zoom })}
                   >
                     {zoom}%
                   </button>
@@ -1168,12 +1214,15 @@ export function BackgroundRemover({
                     onClick={() =>
                       setZoom((value) => Math.min(500, value + 25))
                     }
-                    aria-label="放大图片"
+                    aria-label={t("common.actions.zoomIn")}
                   >
-                    ＋ 放大
+                    {t("tool.view.zoomIn")}
                   </button>
                 </div>
-                <div className="view-mode-switch" aria-label="图片查看模式">
+                <div
+                  className="view-mode-switch"
+                  aria-label={t("tool.view.viewModeLabel")}
+                >
                   <button
                     type="button"
                     className={comparePanMode ? "is-active" : ""}
@@ -1181,7 +1230,9 @@ export function BackgroundRemover({
                     aria-pressed={comparePanMode}
                     onClick={() => setComparePanMode((value) => !value)}
                   >
-                    {comparePanMode ? "正在拖动" : "拖动图片"}
+                    {comparePanMode
+                      ? t("tool.view.dragging")
+                      : t("tool.view.drag")}
                   </button>
                   <button
                     type="button"
@@ -1191,7 +1242,7 @@ export function BackgroundRemover({
                     aria-pressed={viewMode === "side-by-side"}
                     onClick={() => setViewMode("side-by-side")}
                   >
-                    并排查看
+                    {t("tool.view.sideBySide")}
                   </button>
                   <button
                     type="button"
@@ -1199,7 +1250,7 @@ export function BackgroundRemover({
                     aria-pressed={viewMode === "compare"}
                     onClick={() => setViewMode("compare")}
                   >
-                    滑动对比
+                    {t("tool.view.compare")}
                   </button>
                 </div>
                 <button
@@ -1209,19 +1260,16 @@ export function BackgroundRemover({
                   onClick={download}
                 >
                   <span aria-hidden="true">↓</span>
-                  下载 PNG
+                  {t("tool.result.downloadPng")}
                 </button>
               </div>
-              <div className="cleanup-controls" aria-label="抠图净化强度">
-                <span>边缘净化</span>
+              <div
+                className="cleanup-controls"
+                aria-label={t("tool.cleanup.controlsLabel")}
+              >
+                <span>{t("tool.cleanup.label")}</span>
                 <div className="cleanup-options">
-                  {(
-                    [
-                      ["standard", "标准"],
-                      ["strong", "强力去杂"],
-                      ["shadow", "保留阴影"],
-                    ] as const
-                  ).map(([mode, label]) => (
+                  {cleanupLabels.map(([mode, label]) => (
                     <button
                       key={mode}
                       className={cleanupMode === mode ? "is-active" : ""}
@@ -1236,18 +1284,18 @@ export function BackgroundRemover({
                 </div>
                 <small>
                   {isRefining
-                    ? "正在重新净化…"
+                    ? t("tool.cleanup.reprocessing")
                     : cleanupMode === "strong"
-                      ? "适合复杂纹理与地面杂点"
+                      ? t("tool.cleanup.strongHint")
                       : cleanupMode === "shadow"
-                        ? "适合需要自然落地感的商品"
-                        : "适合大多数商品图片"}
+                        ? t("tool.cleanup.shadowHint")
+                        : t("tool.cleanup.standardHint")}
                 </small>
               </div>
               <div className="manual-edit-entry">
                 <div>
-                  <strong>边缘还有杂点或缺口？</strong>
-                  <span>用擦除与恢复画笔做最后修正，支持撤销。</span>
+                  <strong>{t("tool.cleanup.manualHint")}</strong>
+                  <span>{t("tool.cleanup.manualDesc")}</span>
                 </div>
                 <button
                   className="secondary-button"
@@ -1255,21 +1303,27 @@ export function BackgroundRemover({
                   disabled={isRefining || !rawResultRef.current}
                   onClick={() => setManualEditorOpen(true)}
                 >
-                  手动修边
+                  {t("tool.cleanup.manualButton")}
                 </button>
               </div>
 
-              <section className="product-composer" aria-label="电商白底主图">
+              <section
+                className="product-composer"
+                aria-label={t("tool.product.composerLabel")}
+              >
                 <div className="product-composer-head">
                   <div>
-                    <span className="step-kicker">02 / 电商成品图</span>
-                    <h3>一键生成平台白底主图</h3>
+                    <span className="step-kicker">{t("tool.product.stepKicker")}</span>
+                    <h3>{t("tool.product.title")}</h3>
                   </div>
                   <span>{PRODUCT_CANVAS_SIZE} × {PRODUCT_CANVAS_SIZE}px</span>
                 </div>
 
-                <div className="platform-options" aria-label="选择电商平台">
-                  {PLATFORM_PRESETS.map((preset) => (
+                <div
+                  className="platform-options"
+                  aria-label={t("tool.product.platformLabel")}
+                >
+                  {platformPresets.map((preset) => (
                     <button
                       type="button"
                       key={preset.id}
@@ -1287,12 +1341,12 @@ export function BackgroundRemover({
                   <div
                     className="product-canvas"
                     style={{ backgroundColor }}
-                    aria-label="白底主图预览"
+                    aria-label={t("tool.product.previewLabel")}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={productUrl || resultUrl}
-                      alt="商品主图预览"
+                      alt={t("tool.product.previewAlt")}
                       style={{
                         width: `${subjectScale}%`,
                         height: `${subjectScale}%`,
@@ -1305,7 +1359,7 @@ export function BackgroundRemover({
                   </div>
                   <div className="product-controls">
                     <div>
-                      <span>背景颜色</span>
+                      <span>{t("tool.product.bgColor")}</span>
                       <div className="color-options">
                         {["#ffffff", "#f6f3ec", "#eef7f2", "#fff1eb"].map(
                           (color) => (
@@ -1316,7 +1370,7 @@ export function BackgroundRemover({
                                 backgroundColor === color ? "is-active" : ""
                               }
                               style={{ backgroundColor: color }}
-                              aria-label={`选择背景色 ${color}`}
+                              aria-label={t("tool.product.selectColorLabel", { color })}
                               onClick={() => setBackgroundColor(color)}
                             />
                           ),
@@ -1324,7 +1378,7 @@ export function BackgroundRemover({
                         <input
                           type="color"
                           value={backgroundColor}
-                          aria-label="自定义背景颜色"
+                          aria-label={t("tool.product.customColorLabel")}
                           onChange={(event) =>
                             setBackgroundColor(event.target.value)
                           }
@@ -1332,7 +1386,7 @@ export function BackgroundRemover({
                       </div>
                     </div>
                     <label>
-                      商品大小
+                      {t("tool.product.size")}
                       <input
                         type="range"
                         min="55"
@@ -1345,7 +1399,7 @@ export function BackgroundRemover({
                       <strong>{subjectScale}%</strong>
                     </label>
                     <label>
-                      左右位置
+                      {t("tool.product.posX")}
                       <input
                         type="range"
                         min="-20"
@@ -1358,7 +1412,7 @@ export function BackgroundRemover({
                       <strong>{subjectX}</strong>
                     </label>
                     <label>
-                      上下位置
+                      {t("tool.product.posY")}
                       <input
                         type="range"
                         min="-20"
@@ -1378,7 +1432,7 @@ export function BackgroundRemover({
                           setNaturalShadow(event.target.checked)
                         }
                       />
-                      添加自然阴影
+                      {t("tool.product.shadow")}
                     </label>
                   </div>
                 </div>
@@ -1390,7 +1444,7 @@ export function BackgroundRemover({
                   onClick={download}
                   disabled={isRefining}
                 >
-                  下载透明 PNG
+                  {t("tool.product.downloadTransparent")}
                 </button>
                 <button
                   className="secondary-button"
@@ -1398,20 +1452,25 @@ export function BackgroundRemover({
                   disabled={isRefining || exportingProduct}
                   onClick={() => void downloadProductImage()}
                 >
-                  {exportingProduct ? "正在生成…" : "下载白底主图"}
+                  {exportingProduct
+                    ? t("tool.product.generating")
+                    : t("tool.product.downloadWhite")}
                 </button>
                 <button className="text-button" type="button" onClick={reset}>
-                  再处理一张
+                  {t("tool.product.again")}
                 </button>
               </div>
-              <section className="quality-feedback" aria-label="抠图质量反馈">
+              <section
+                className="quality-feedback"
+                aria-label={t("tool.feedback.label")}
+              >
                 {feedbackSent ? (
-                  <p>谢谢反馈，我们会用它继续优化商品图效果。</p>
+                  <p>{t("tool.feedback.thanks")}</p>
                 ) : (
                   <>
                     <div>
-                      <strong>这张抠图能直接使用吗？</strong>
-                      <span>反馈不包含你的图片</span>
+                      <strong>{t("tool.feedback.title")}</strong>
+                      <span>{t("tool.feedback.hint")}</span>
                     </div>
                     <div className="quality-feedback-actions">
                       <button
@@ -1423,7 +1482,7 @@ export function BackgroundRemover({
                           void sendQualityFeedback("satisfied", [])
                         }
                       >
-                        满意
+                        {t("tool.feedback.satisfied")}
                       </button>
                       <button
                         type="button"
@@ -1435,12 +1494,12 @@ export function BackgroundRemover({
                           setFeedbackSent(false);
                         }}
                       >
-                        不满意
+                        {t("tool.feedback.unsatisfied")}
                       </button>
                     </div>
                     {feedbackChoice === "unsatisfied" && (
                       <div className="feedback-issues">
-                        {["有杂点", "边缘缺失", "阴影错误", "透明物体", "主体识别错误"].map(
+                        {feedbackIssueOptions.map(
                           (issue) => (
                             <button
                               type="button"
@@ -1468,7 +1527,7 @@ export function BackgroundRemover({
                             );
                           }}
                         >
-                          提交问题
+                          {t("tool.feedback.submit")}
                         </button>
                       </div>
                     )}
@@ -1481,7 +1540,7 @@ export function BackgroundRemover({
           {stage === "error" && (
             <div className="error-panel" role="alert">
               <span aria-hidden="true">!</span>
-              <h3>这次没处理成功</h3>
+              <h3>{t("tool.error.title")}</h3>
               <p>{error}</p>
               <div className="result-actions">
                 <button
@@ -1495,10 +1554,12 @@ export function BackgroundRemover({
                     }
                   }}
                 >
-                  {requiresReload ? "刷新页面重试" : "重试处理"}
+                  {requiresReload
+                    ? t("tool.error.reload")
+                    : t("tool.error.retry")}
                 </button>
                 <button className="text-button" type="button" onClick={reset}>
-                  重新选择
+                  {t("tool.error.select")}
                 </button>
               </div>
             </div>
@@ -1525,50 +1586,71 @@ export function BackgroundRemover({
         </Suspense>
       )}
 
-      <section className="proof-strip" id="how-it-works">
+      <section
+        className="proof-strip"
+        id="how-it-works"
+        aria-label={t("tool.steps.label")}
+      >
         <div>
-          <strong>3 步</strong>
-          <span>上传 → 自动抠图 → 下载</span>
+          <strong>{t("tool.steps.step1Title")}</strong>
+          <span>{t("tool.steps.step1Desc")}</span>
         </div>
         <div>
-          <strong>0 上传</strong>
-          <span>处理过程只发生在本地</span>
+          <strong>{t("tool.steps.step2Title")}</strong>
+          <span>{t("tool.steps.step2Desc")}</span>
         </div>
         <div>
-          <strong>1 张起</strong>
-          <span>先免费验证真实商品图</span>
+          <strong>{t("tool.steps.step3Title")}</strong>
+          <span>{t("tool.steps.step3Desc")}</span>
         </div>
       </section>
 
       <section className="next-step" id="roadmap">
         <div>
-          <span className="eyebrow">接下来要做的事</span>
-          <h2>不是多一个工具，是少一堆重复劳动。</h2>
+          <span className="eyebrow">{t("tool.cta.eyebrow")}</span>
+          <h2>{t("tool.cta.title")}</h2>
         </div>
-        <a className="roadmap-card" href="/batch">
-          <span>体验版已开放</span>
-          <h3>批量商品白底图</h3>
-          <p>一次选择多张商品图，自动排队抠图，完成后打包下载透明 PNG。</p>
+        <a className="roadmap-card" href={`${localePrefix}/batch`}>
+          <span>{t("tool.cta.batchBadge")}</span>
+          <h3>{t("tool.cta.batchTitle")}</h3>
+          <p>{t("tool.cta.batchDesc")}</p>
         </a>
       </section>
 
+      <HomeSeoSections locale={locale} />
+
       <footer>
-        <span>© 2026 白橙铺</span>
+        <div className="footer-identity">
+          <span>{t("tool.footer.copyright")}</span>
+          <Link
+            className="footer-admin-link"
+            href="/admin/login?return_to=%2Fadmin"
+          >
+            {t("admin.login.title")}
+          </Link>
+        </div>
         <div className="footer-links">
-          <a href="/blog">使用指南</a>
-          <a href="/pricing">专业版方案</a>
-          <a href="/privacy">隐私说明</a>
-          <a href="/contact">联系我们</a>
+          <a href={`${localePrefix}/blog`}>{t("tool.footer.guide")}</a>
+          <a href={`${localePrefix}/pricing`}>{t("tool.footer.pricing")}</a>
+          <a href={`${localePrefix}/privacy`}>{t("tool.footer.privacy")}</a>
+          <a href={`${localePrefix}/disclaimer`}>{t("tool.footer.disclaimer")}</a>
+          <a href={`${localePrefix}/contact`}>{t("tool.footer.contact")}</a>
           <button
             type="button"
             onClick={() => {
-              void clearModelCache().then(() => {
-                setCacheCleared(true);
-                window.setTimeout(() => setCacheCleared(false), 2_000);
-              });
+              void clearModelCache()
+                .then(() => {
+                  setCacheCleared(true);
+                  window.setTimeout(() => setCacheCleared(false), 2_000);
+                })
+                .catch((reason: unknown) => {
+                  console.warn("[model-cache] CLEAR_FAILED", reason);
+                });
             }}
           >
-            {cacheCleared ? "缓存已清除" : "清除模型缓存"}
+            {cacheCleared
+              ? t("tool.footer.cacheCleared")
+              : t("tool.footer.clearCache")}
           </button>
         </div>
       </footer>

@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
+import { getTranslator } from "../../i18n/core";
+import { getLocaleFromHeaders } from "../../i18n/translator";
 import { BatchRemover } from "./BatchRemover";
 import { getAccountUser } from "../account-auth";
+import { localizedAlternates } from "../seo";
 
-export const metadata: Metadata = {
-  title: "批量抠图｜白橙铺",
-  description: "多张商品图片在浏览器本地自动排队抠图，打包下载透明 PNG。",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocaleFromHeaders();
+  const t = getTranslator(locale);
+  return {
+    title: t("metadata.batch.title"),
+    description: t("metadata.batch.description"),
+    alternates: localizedAlternates(locale, "/batch"),
+  };
+}
 
 export const dynamic = "force-dynamic";
 

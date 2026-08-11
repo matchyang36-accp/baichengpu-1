@@ -1,11 +1,18 @@
 /** Cloudflare Worker entry point for the vinext-starter template. */
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
+import { handlePaymentRequest } from "./payments";
 
 interface Env {
   ASSETS: Fetcher;
   DB: D1Database;
   ADMIN_EMAILS?: string;
+  RESEND_API_KEY?: string;
+  PASSWORD_RESET_FROM?: string;
+  STRIPE_SECRET_KEY?: string;
+  STRIPE_WEBHOOK_SECRET?: string;
+  STRIPE_PRICE_PRO?: string;
+  STRIPE_PRICE_TEAM?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -24,6 +31,7 @@ type SessionUser = {
   id: string;
   email: string;
   displayName: string;
+  plan: string;
 };
 
 type StoredCredential = SessionUser & {
@@ -42,11 +50,16 @@ const AUTH_BODY_LIMIT_BYTES = 16 * 1024;
 const AUTH_RATE_WINDOW_MS = 15 * 60 * 1000;
 const AUTH_RATE_BLOCK_MS = 30 * 60 * 1000;
 const AUTH_RATE_MAX_ATTEMPTS = 8;
+const PASSWORD_RESET_CODE_MAX_AGE_MS = 10 * 60 * 1000;
+const PASSWORD_RESET_MAX_ATTEMPTS = 5;
+const PASSWORD_RESET_MAX_EMAILS_PER_HOUR = 3;
+const LOCALE_HEADER = "x-baichengpu-locale";
 const INTERNAL_USER_HEADERS = {
   id: "x-baichengpu-user-id",
   email: "x-baichengpu-user-email",
   name: "x-baichengpu-user-name",
   admin: "x-baichengpu-admin",
+  plan: "x-baichengpu-user-plan",
 } as const;
 
 function json(value: unknown, status: number, headers?: HeadersInit) {
@@ -257,7 +270,8 @@ async function readSessionUser(
       `SELECT
         users.id AS id,
         users.email AS email,
-        users.display_name AS displayName
+        users.display_name AS displayName,
+        users.plan AS plan
       FROM sessions
       INNER JOIN users ON users.id = sessions.user_id
       WHERE sessions.token_hash = ?
@@ -338,6 +352,228 @@ async function clearAuthRateLimit(
   const ip = request.headers.get("cf-connecting-ip") ?? "local";
   const key = await sha256(`${ip}|${email}`);
   await db.prepare("DELETE FROM auth_rate_limits WHERE key = ?").bind(key).run();
+}
+
+function generatePasswordResetCode(): string {
+  const random = crypto.getRandomValues(new Uint32Array(1))[0] % 1_000_000;
+  return random.toString().padStart(6, "0");
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+async function sendPasswordResetEmail(
+  env: Env,
+  email: string,
+  displayName: string,
+  code: string,
+  requestId: string,
+): Promise<void> {
+  if (!env.RESEND_API_KEY) throw new Error("RESEND_NOT_CONFIGURED");
+  const sender =
+    env.PASSWORD_RESET_FROM ?? "白橙铺 <no-reply@send.edit-photo.com>";
+  const safeName = escapeHtml(displayName || "用户");
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${env.RESEND_API_KEY}`,
+      "content-type": "application/json",
+      "idempotency-key": `password-reset-${requestId}`,
+    },
+    body: JSON.stringify({
+      from: sender,
+      to: [email],
+      subject: "白橙铺密码重置验证码",
+      text: `你好，${displayName || "用户"}。你的白橙铺密码重置验证码是：${code}。验证码 10 分钟内有效。如果不是你本人操作，请忽略此邮件。`,
+      html: `<div style="font-family:Arial,'Microsoft YaHei',sans-serif;line-height:1.7;color:#172033;max-width:560px;margin:auto;padding:32px"><p>${safeName}，你好：</p><p>你正在重置白橙铺账户密码，本次验证码为：</p><div style="font-size:34px;font-weight:800;letter-spacing:8px;color:#7846f5;background:#f5f1ff;border-radius:16px;padding:18px 22px;text-align:center">${code}</div><p>验证码将在 10 分钟后失效，并且最多可尝试 ${PASSWORD_RESET_MAX_ATTEMPTS} 次。</p><p style="color:#6b7280">如果不是你本人操作，请忽略此邮件。请勿将验证码转发给任何人。</p></div>`,
+    }),
+  });
+  if (!response.ok) {
+    throw new Error(`RESEND_FAILED_${response.status}`);
+  }
+}
+
+async function handlePasswordResetRequest(
+  request: Request,
+  env: Env,
+): Promise<Response> {
+  if (!isSameOrigin(request)) {
+    return json({ ok: false, code: "INVALID_ORIGIN" }, 403);
+  }
+  if (!env.RESEND_API_KEY) {
+    return json({ ok: false, code: "EMAIL_NOT_CONFIGURED" }, 503);
+  }
+  const body = await readSmallJson(request);
+  const email = normalizeEmail(body?.email);
+  if (!email) return json({ ok: false, code: "INVALID_INPUT" }, 400);
+
+  const genericSuccess = () => json({ ok: true }, 200);
+  const user = await env.DB
+    .prepare(
+      "SELECT id, display_name AS displayName FROM users WHERE email = ? AND status = 'active' LIMIT 1",
+    )
+    .bind(email)
+    .first<{ id: string; displayName: string }>();
+  if (!user) return genericSuccess();
+
+  const recentRequests = await env.DB
+    .prepare(
+      `SELECT COUNT(*) AS count
+      FROM password_reset_codes
+      WHERE user_id = ? AND created_at >= ?`,
+    )
+    .bind(user.id, new Date(Date.now() - 60 * 60 * 1000).toISOString())
+    .first<{ count: number }>();
+  if ((recentRequests?.count ?? 0) >= PASSWORD_RESET_MAX_EMAILS_PER_HOUR) {
+    return genericSuccess();
+  }
+
+  const id = crypto.randomUUID();
+  const code = generatePasswordResetCode();
+  const credential = await hashPassword(code);
+  const now = new Date();
+  const expiresAt = new Date(
+    now.getTime() + PASSWORD_RESET_CODE_MAX_AGE_MS,
+  ).toISOString();
+  await env.DB
+    .prepare(
+      `INSERT INTO password_reset_codes (
+        id, user_id, code_hash, code_salt, code_iterations, attempts,
+        created_at, expires_at, used_at
+      ) VALUES (?, ?, ?, ?, ?, 0, ?, ?, NULL)`,
+    )
+    .bind(
+      id,
+      user.id,
+      credential.hash,
+      credential.salt,
+      credential.iterations,
+      now.toISOString(),
+      expiresAt,
+    )
+    .run();
+
+  try {
+    await sendPasswordResetEmail(env, email, user.displayName, code, id);
+  } catch (reason) {
+    await env.DB
+      .prepare("DELETE FROM password_reset_codes WHERE id = ?")
+      .bind(id)
+      .run();
+    console.error("[password-reset] EMAIL_SEND_FAILED", reason);
+    return json({ ok: false, code: "EMAIL_SEND_FAILED" }, 503);
+  }
+  await env.DB
+    .prepare(
+      "UPDATE password_reset_codes SET used_at = ? WHERE user_id = ? AND used_at IS NULL AND id != ?",
+    )
+    .bind(now.toISOString(), user.id, id)
+    .run();
+  return genericSuccess();
+}
+
+async function handlePasswordResetConfirm(
+  request: Request,
+  env: Env,
+): Promise<Response> {
+  if (!isSameOrigin(request)) {
+    return json({ ok: false, code: "INVALID_ORIGIN" }, 403);
+  }
+  const body = await readSmallJson(request);
+  const email = normalizeEmail(body?.email);
+  const code = typeof body?.code === "string" ? body.code.trim() : "";
+  const password = body?.password;
+  if (!email || !/^\d{6}$/.test(code) || !isStrongPassword(password)) {
+    return json(
+      {
+        ok: false,
+        code:
+          typeof password === "string" && !isStrongPassword(password)
+            ? "WEAK_PASSWORD"
+            : "INVALID_INPUT",
+      },
+      400,
+    );
+  }
+  if (!(await rateLimitAuth(request, env.DB, `reset-confirm:${email}`))) {
+    return json({ ok: false, code: "RATE_LIMITED" }, 429);
+  }
+
+  const reset = await env.DB
+    .prepare(
+      `SELECT
+        password_reset_codes.id AS id,
+        password_reset_codes.user_id AS userId,
+        password_reset_codes.code_hash AS codeHash,
+        password_reset_codes.code_salt AS codeSalt,
+        password_reset_codes.code_iterations AS codeIterations,
+        password_reset_codes.attempts AS attempts
+      FROM password_reset_codes
+      INNER JOIN users ON users.id = password_reset_codes.user_id
+      WHERE users.email = ?
+        AND users.status = 'active'
+        AND password_reset_codes.used_at IS NULL
+        AND password_reset_codes.expires_at > ?
+      ORDER BY password_reset_codes.created_at DESC
+      LIMIT 1`,
+    )
+    .bind(email, new Date().toISOString())
+    .first<{
+      id: string;
+      userId: string;
+      codeHash: string;
+      codeSalt: string;
+      codeIterations: number;
+      attempts: number;
+    }>();
+  if (!reset || reset.attempts >= PASSWORD_RESET_MAX_ATTEMPTS) {
+    return json({ ok: false, code: "CODE_INVALID_OR_EXPIRED" }, 400);
+  }
+
+  const matches = await verifyPassword(
+    code,
+    reset.codeHash,
+    reset.codeSalt,
+    reset.codeIterations,
+  );
+  if (!matches) {
+    await env.DB
+      .prepare("UPDATE password_reset_codes SET attempts = attempts + 1 WHERE id = ?")
+      .bind(reset.id)
+      .run();
+    return json({ ok: false, code: "CODE_INVALID_OR_EXPIRED" }, 400);
+  }
+
+  const credential = await hashPassword(password);
+  const now = new Date().toISOString();
+  await env.DB.batch([
+    env.DB
+      .prepare(
+        `UPDATE users SET
+          password_hash = ?, password_salt = ?, password_iterations = ?,
+          updated_at = ?
+        WHERE id = ?`,
+      )
+      .bind(
+        credential.hash,
+        credential.salt,
+        credential.iterations,
+        now,
+        reset.userId,
+      ),
+    env.DB
+      .prepare("UPDATE password_reset_codes SET used_at = ? WHERE id = ?")
+      .bind(now, reset.id),
+    env.DB.prepare("DELETE FROM sessions WHERE user_id = ?").bind(reset.userId),
+  ]);
+  await clearAuthRateLimit(request, env.DB, `reset-confirm:${email}`);
+  return json({ ok: true }, 200);
 }
 
 async function handleAuthRequest(
@@ -1018,6 +1254,30 @@ const worker = {
 
     if (
       request.method === "POST" &&
+      url.pathname === "/api/auth/password-reset/request"
+    ) {
+      try {
+        return await handlePasswordResetRequest(request, env);
+      } catch (reason) {
+        console.error("[password-reset] REQUEST_FAILED", reason);
+        return json({ ok: false, code: "STORE_FAILED" }, 500);
+      }
+    }
+
+    if (
+      request.method === "POST" &&
+      url.pathname === "/api/auth/password-reset/confirm"
+    ) {
+      try {
+        return await handlePasswordResetConfirm(request, env);
+      } catch (reason) {
+        console.error("[password-reset] CONFIRM_FAILED", reason);
+        return json({ ok: false, code: "STORE_FAILED" }, 500);
+      }
+    }
+
+    if (
+      request.method === "POST" &&
       (url.pathname === "/api/auth/register" ||
         url.pathname === "/api/auth/login" ||
         url.pathname === "/api/auth/logout")
@@ -1038,6 +1298,18 @@ const worker = {
     const isAdmin =
       authenticatedUser !== null &&
       isAdminEmail(authenticatedUser.email, env.ADMIN_EMAILS);
+
+    try {
+      const paymentResponse = await handlePaymentRequest(
+        request,
+        env,
+        authenticatedUser,
+      );
+      if (paymentResponse) return paymentResponse;
+    } catch (reason) {
+      console.error("[payments] REQUEST_FAILED", reason);
+      return json({ ok: false, code: "PAYMENT_STORE_FAILED" }, 500);
+    }
 
     if (url.pathname === "/api/analytics/event" && request.method === "POST") {
       try {
@@ -1070,7 +1342,7 @@ const worker = {
     if (url.pathname.startsWith("/admin") && request.method === "GET") {
       if (url.pathname === "/admin/login") {
         if (isAdmin) {
-          return Response.redirect(new URL("/admin/users", request.url), 302);
+          return Response.redirect(new URL("/admin", request.url), 302);
         }
       } else if (!authenticatedUser) {
         return Response.redirect(
@@ -1331,7 +1603,12 @@ const worker = {
         encodeURIComponent(authenticatedUser.displayName),
       );
       appHeaders.set(INTERNAL_USER_HEADERS.admin, isAdmin ? "1" : "0");
+      appHeaders.set(INTERNAL_USER_HEADERS.plan, authenticatedUser.plan || "free");
     }
+    appHeaders.set(
+      LOCALE_HEADER,
+      /^\/zh(?:\/|$)/.test(url.pathname) ? "zh" : "en",
+    );
     const appRequest = new Request(request, { headers: appHeaders });
     const response = await handler.fetch(appRequest, env, ctx);
     const headers = new Headers(response.headers);

@@ -1,17 +1,11 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import type { Locale } from "../../i18n/config";
+import { getPricingContent } from "./content";
 
-const NEED_OPTIONS = [
-  "复杂背景抠图",
-  "批量处理提速",
-  "平台主图模板",
-  "图片尺寸统一",
-  "品牌背景替换",
-  "团队协作",
-];
-
-export function InterestForm() {
+export function InterestForm({ locale }: { locale: Locale }) {
+  const copy = getPricingContent(locale).form;
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<"idle" | "success" | "error">("idle");
   const [selectedNeeds, setSelectedNeeds] = useState<string[]>([]);
@@ -30,7 +24,8 @@ export function InterestForm() {
     setSubmitting(true);
     setResult("idle");
 
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const payload = {
       role: form.get("role"),
       monthlyVolume: form.get("monthlyVolume"),
@@ -38,8 +33,7 @@ export function InterestForm() {
       contact: form.get("contact"),
       note: form.get("note"),
       needs: selectedNeeds,
-      source:
-        new URLSearchParams(window.location.search).get("from") ?? "pricing",
+      source: new URLSearchParams(window.location.search).get("from") ?? "pricing",
       website: form.get("website"),
     };
 
@@ -49,11 +43,12 @@ export function InterestForm() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!response.ok) throw new Error("submit-failed");
+      if (!response.ok) throw new Error(`request-failed:${response.status}`);
       setResult("success");
-      event.currentTarget.reset();
+      formElement.reset();
       setSelectedNeeds([]);
-    } catch {
+    } catch (reason) {
+      console.error("[pro-interest-ui] SUBMISSION_FAILED", reason);
       setResult("error");
     } finally {
       setSubmitting(false);
@@ -63,67 +58,58 @@ export function InterestForm() {
   return (
     <section className="interest-section" id="pro-interest">
       <div className="interest-copy">
-        <span className="eyebrow">专业版内测申请</span>
-        <h2>用 1 分钟告诉我们，你每天在重复什么。</h2>
-        <p>
-          我们会优先邀请需求匹配的用户。提交后可继续添加微信，便于沟通真实图片场景。
-        </p>
+        <span className="eyebrow">{copy.eyebrow}</span>
+        <h2>{copy.title}</h2>
+        <p>{copy.description}</p>
         <div className="interest-promise">
-          <strong>只收集必要信息</strong>
-          <span>不上传图片，不发送营销短信，不会自动扣费。</span>
+          <strong>{copy.promiseTitle}</strong>
+          <span>{copy.promiseDescription}</span>
         </div>
       </div>
 
       {result === "success" ? (
         <div className="interest-success" role="status">
           <span aria-hidden="true">✓</span>
-          <h3>申请已收到</h3>
-          <p>下一步请添加微信并备注“专业版内测”，我们会结合你的场景安排体验。</p>
-          <a className="primary-button" href="/contact?from=pro-success">
-            查看微信二维码
+          <h3>{copy.successTitle}</h3>
+          <p>{copy.successDescription}</p>
+          <a className="primary-button" href={`/${locale}/contact?from=pro-success`}>
+            {copy.successLink}
           </a>
         </div>
       ) : (
         <form className="interest-form" onSubmit={submit}>
           <label>
-            你的工作角色
+            {copy.roleLabel}
             <select name="role" required defaultValue="">
-              <option value="" disabled>
-                请选择
-              </option>
-              <option value="ecommerce">电商运营 / 店主</option>
-              <option value="new-media">新媒体编辑</option>
-              <option value="photography">摄影 / 设计</option>
-              <option value="team-lead">团队负责人</option>
-              <option value="other">其他</option>
+              <option value="" disabled>{copy.selectPlaceholder}</option>
+              {copy.roleOptions.map((option) => (
+                <option value={option.value} key={option.value}>{option.label}</option>
+              ))}
             </select>
           </label>
 
           <label>
-            每月大约处理多少张图片
+            {copy.volumeLabel}
             <select name="monthlyVolume" required defaultValue="">
-              <option value="" disabled>
-                请选择
-              </option>
-              <option value="1-20">1–20 张</option>
-              <option value="21-100">21–100 张</option>
-              <option value="101-500">101–500 张</option>
-              <option value="500+">500 张以上</option>
+              <option value="" disabled>{copy.selectPlaceholder}</option>
+              {copy.volumeOptions.map((option) => (
+                <option value={option.value} key={option.value}>{option.label}</option>
+              ))}
             </select>
           </label>
 
           <fieldset>
-            <legend>最希望解决的问题（可多选）</legend>
+            <legend>{copy.needsLabel}</legend>
             <div className="need-options">
-              {NEED_OPTIONS.map((need) => (
+              {copy.needOptions.map((option) => (
                 <button
                   type="button"
-                  key={need}
-                  className={selectedNeeds.includes(need) ? "is-active" : ""}
-                  aria-pressed={selectedNeeds.includes(need)}
-                  onClick={() => toggleNeed(need)}
+                  key={option.value}
+                  className={selectedNeeds.includes(option.value) ? "is-active" : ""}
+                  aria-pressed={selectedNeeds.includes(option.value)}
+                  onClick={() => toggleNeed(option.value)}
                 >
-                  {need}
+                  {option.label}
                 </button>
               ))}
             </div>
@@ -131,56 +117,46 @@ export function InterestForm() {
 
           <div className="contact-fields">
             <label>
-              联系方式
-              <select name="contactChannel" required defaultValue="wechat">
-                <option value="wechat">微信号</option>
-                <option value="email">电子邮箱</option>
+              {copy.contactLabel}
+              <select name="contactChannel" required defaultValue="email">
+                {copy.contactOptions.map((option) => (
+                  <option value={option.value} key={option.value}>{option.label}</option>
+                ))}
               </select>
             </label>
             <label>
-              微信号或邮箱
+              {copy.contactInputLabel}
               <input
                 name="contact"
                 required
                 minLength={3}
                 maxLength={120}
-                placeholder="用于内测邀请"
+                placeholder={copy.contactInputPlaceholder}
                 autoComplete="email"
               />
             </label>
           </div>
 
           <label>
-            其他需求（选填）
-            <textarea
-              name="note"
-              maxLength={500}
-              rows={3}
-              placeholder="例如：主要处理服装图，希望保留自然阴影"
-            />
+            {copy.noteLabel}
+            <textarea name="note" maxLength={500} rows={3} placeholder={copy.notePlaceholder} />
           </label>
 
           <label className="interest-consent">
             <input type="checkbox" required />
-            <span>
-              我已阅读并同意<a href="/privacy">隐私说明</a>
-            </span>
+            <span>{copy.consentPrefix} <a href={`/${locale}/privacy`}>{copy.privacyLink}</a></span>
           </label>
 
           <label className="interest-honeypot" aria-hidden="true">
-            网站
+            {copy.honeypotLabel}
             <input name="website" tabIndex={-1} autoComplete="off" />
           </label>
 
           <button className="primary-button" type="submit" disabled={submitting}>
-            {submitting ? "正在提交…" : "提交内测申请"}
+            {submitting ? copy.submitting : copy.submit}
           </button>
 
-          {result === "error" && (
-            <p className="interest-error" role="alert">
-              暂时没有提交成功，请稍后重试，或直接通过联系页添加微信。
-            </p>
-          )}
+          {result === "error" && <p className="interest-error" role="alert">{copy.error}</p>}
         </form>
       )}
     </section>

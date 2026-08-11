@@ -1,65 +1,80 @@
 import type { Metadata } from "next";
+import type { Locale } from "../../i18n/config";
+import { getTranslator } from "../../i18n/core";
+import { getLocaleFromHeaders } from "../../i18n/translator";
 import { AccountMenu } from "../AccountMenu";
+import { BrandLogo } from "../BrandLogo";
+import { LanguageSwitcher } from "../LanguageSwitcher";
 import { getAccountUser } from "../account-auth";
+import { localizedAlternates } from "../seo";
 
-export const metadata: Metadata = {
-  title: "联系我们｜白橙铺",
-  description: "通过微信或电子邮件联系白橙铺。",
-};
+function localize(locale: Locale, path: string): string {
+  return `/${locale}${path === "/" ? "" : path}`;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocaleFromHeaders();
+  const t = getTranslator(locale);
+  return {
+    title: t("contact.title"),
+    description: t("contact.description"),
+    alternates: localizedAlternates(locale, "/contact"),
+  };
+}
 
 export const dynamic = "force-dynamic";
 
 export default async function ContactPage() {
-  const user = await getAccountUser();
+  const [user, locale] = await Promise.all([
+    getAccountUser(),
+    getLocaleFromHeaders(),
+  ]);
+  const t = getTranslator(locale);
+  const email = t("contact.email");
 
   return (
     <main className="contact-page">
       <header className="topbar contact-topbar">
-        <a className="brand" href="/" aria-label="返回白橙铺首页">
-          <span className="brand-mark" aria-hidden="true">
-            橙
-          </span>
-          <span>白橙铺</span>
+        <a className="brand" href={localize(locale, "/")} aria-label={`edit-photo · ${t("contact.title")}`}>
+          <BrandLogo />
+          <span>edit-photo</span>
         </a>
-        <nav className="nav" aria-label="联系页导航">
-          <a href="/">单张抠图</a>
-          <a href="/batch">批量版</a>
-          <a href="/pricing">专业版</a>
+        <nav className="nav" aria-label={t("common.nav.label")}>
+          <a href={localize(locale, "/")}>{t("common.nav.singleCutout")}</a>
+          <a href={localize(locale, "/batch")}>{t("common.nav.batch")}</a>
+          <a href={localize(locale, "/pricing")}>{t("common.nav.pricing")}</a>
         </nav>
-        <AccountMenu
-          viewer={
-            user
-              ? { displayName: user.displayName, email: user.email }
-              : null
-          }
-        />
+        <LanguageSwitcher />
+        <AccountMenu viewer={user ? { displayName: user.displayName, email: user.email } : null} />
       </header>
 
       <section className="contact-card" aria-labelledby="contact-title">
         <div className="contact-copy">
-          <span className="eyebrow">联系与合作</span>
-          <h1 id="contact-title">联系我们</h1>
-          <p>
-            批量抠图、商务合作或产品建议，欢迎扫码添加微信，也可以通过邮箱联系我们。
-          </p>
+          <span className="eyebrow">{t("contact.eyebrow")}</span>
+          <h1 id="contact-title">{t("contact.title_main")}</h1>
+          <p>{t("contact.description_main")}</p>
 
-          <a className="contact-email" href="mailto:matchyang36@gmail.com">
-            <span>联系邮箱</span>
-            <strong>matchyang36@gmail.com</strong>
+          <a className="contact-email" href={`mailto:${email}`}>
+            <span>{t("contact.emailLabel")}</span>
+            <strong>{email}</strong>
           </a>
 
-          <p className="contact-note">添加微信时请备注“白橙铺”，方便及时通过。</p>
-          <a className="contact-back-button" href="/">
-            返回抠图工具
+          <p className="contact-note">{t("contact.wechatNote")}</p>
+          <a className="contact-back-button" href={localize(locale, "/")}>
+            {t("contact.backButton")}
           </a>
         </div>
 
         <figure className="contact-qr-card">
           <img
             src="/contact-wechat.jpg"
-            alt="白橙铺微信联系二维码，扫码添加微信好友"
+            alt={t("contact.qrAlt")}
+            width={912}
+            height={1354}
+            loading="lazy"
+            decoding="async"
           />
-          <figcaption>微信扫码添加好友</figcaption>
+          <figcaption>{t("contact.wechatQr")}</figcaption>
         </figure>
       </section>
     </main>

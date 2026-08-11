@@ -1,0 +1,245 @@
+import type { Locale } from "../../i18n/config";
+import type { ArticleId } from "./article-ids";
+
+export type { ArticleId } from "./article-ids";
+
+type ListItem = { label?: string; text: string };
+export type ArticleBlock =
+  | { kind: "heading"; level?: 2 | 3; text: string }
+  | { kind: "paragraph"; text: string }
+  | { kind: "list"; items: ListItem[] }
+  | { kind: "source"; text: string; label: string; href: string };
+
+type LocalizedArticleBody = {
+  blocks: ArticleBlock[];
+  cta: { title: string; description: string; button: string };
+};
+
+export const ARTICLE_CONTENT: Record<ArticleId, Record<Locale, LocalizedArticleBody>> = {
+  "product-photo-tips": {
+    en: {
+      blocks: [
+        { kind: "paragraph", text: "A product image influences both click-through and conversion. Background removal works best when the source photo already has clean light, clear edges, and enough detail. A few decisions during shooting can save far more time than extra retouching later." },
+        { kind: "paragraph", text: "These six practical tips work with either a phone or a camera and make AI cutouts more reliable." },
+        { kind: "heading", text: "1. Use a plain background" },
+        { kind: "paragraph", text: "A background remover separates foreground from background. A plain white or light-gray surface gives it a much clearer boundary than a patterned table, textured fabric, or cluttered room." },
+        { kind: "paragraph", text: "White paper, a matte acrylic sheet, or a small light tent is enough for most products. Make sure the background color contrasts with the product, especially around thin edges." },
+        { kind: "heading", text: "2. Use bright, even light" },
+        { kind: "paragraph", text: "Low light creates noise and soft edges. Uneven light creates heavy shadows and reflections that can be mistaken for part of the product." },
+        { kind: "list", items: [
+          { label: "Window light", text: "Shoot beside a window in soft daylight, not direct sun." },
+          { label: "Light tent", text: "Useful for frequent product shoots because it keeps light controlled and even." },
+          { label: "Two-light setup", text: "Place lights on both sides at roughly 45 degrees to reduce one-sided shadows." },
+        ] },
+        { kind: "heading", text: "3. Keep the main angle simple" },
+        { kind: "paragraph", text: "A straight-on or slightly top-down view usually shows the product clearly and keeps its outline easy to read. Creative side angles can work as secondary images, but the main listing image should normally be direct and easy to compare." },
+        { kind: "heading", text: "4. Let the product fill the frame" },
+        { kind: "paragraph", text: "Leave some breathing room, but avoid making the subject tiny. A useful starting point is to let the product occupy about 60% to 80% of the frame. This preserves detail and reduces the need for a second crop after cutout." },
+        { kind: "heading", text: "5. Prepare transparent and reflective products carefully" },
+        { kind: "paragraph", text: "Glass, clear packaging, polished metal, and mirrors have ambiguous edges. Use a contrasting backdrop and control reflections so the silhouette remains visible." },
+        { kind: "list", items: [
+          { text: "Place a contrasting card behind the product." },
+          { text: "Use a polarizing filter when shooting with a compatible camera setup." },
+          { text: "Adjust exposure so the outline stays distinct." },
+          { text: "Plan for a quick manual edge touch-up after AI processing." },
+        ] },
+        { kind: "heading", text: "6. Capture enough resolution" },
+        { kind: "paragraph", text: "Start with a high-resolution original and resize later for each marketplace. Enlarging a small, blurry file cannot recover missing edge detail. On phones, check that the camera is using its full photo resolution rather than a messaging or screenshot mode." },
+        { kind: "heading", text: "Summary" },
+        { kind: "paragraph", text: "A plain background, even light, direct angle, useful subject size, careful treatment of difficult materials, and sufficient resolution make up most of a clean cutout workflow." },
+        { kind: "paragraph", text: "Once the source photo is ready, process it with edit-photo and inspect the edge at high zoom before publishing." },
+      ],
+      cta: { title: "Have a product photo ready?", description: "Remove its background locally in your browser and download a transparent PNG.", button: "Remove background free" },
+    },
+    zh: {
+      blocks: [
+        { kind: "paragraph", text: "商品主图质量直接影响点击率和转化率。抠图工具很重要，但如果拍摄阶段就把背景、光线和边缘处理好，后期效果会稳定很多，也能减少大量修图时间。" },
+        { kind: "paragraph", text: "下面 6 个方法用手机或相机都能做到。" },
+        { kind: "heading", text: "1. 选择纯色背景" },
+        { kind: "paragraph", text: "抠图工具需要区分商品和背景。纯白或浅灰背景比花纹桌面、布料和杂乱环境更容易识别。白纸、哑光亚克力板或小型摄影棚都可以。" },
+        { kind: "paragraph", text: "商品边缘较细或颜色较浅时，背景要与商品形成足够对比。" },
+        { kind: "heading", text: "2. 保证充足且均匀的光线" },
+        { kind: "paragraph", text: "光线不足会增加噪点并让边缘变糊；光线不均匀会产生重阴影和反光，算法可能把它们误认为商品的一部分。" },
+        { kind: "list", items: [
+          { label: "自然光", text: "白天靠窗使用柔和散射光，避免直射阳光。" },
+          { label: "柔光箱", text: "适合经常拍摄商品，光线更均匀可控。" },
+          { label: "双灯布光", text: "左右约 45 度各放一盏灯，减少单侧阴影。" },
+        ] },
+        { kind: "heading", text: "3. 主图角度保持简单" },
+        { kind: "paragraph", text: "正面平视或轻微俯拍通常最容易展示真实比例，轮廓也更清楚。侧面和创意角度可作为细节图，主图优先保证清晰易比较。" },
+        { kind: "heading", text: "4. 让商品占据足够画面" },
+        { kind: "paragraph", text: "四周保留少量空间，但不要让商品太小。可先以占画面 60% 到 80% 为参考，这样细节更清晰，抠图后也不必再次大幅裁剪。" },
+        { kind: "heading", text: "5. 特殊处理透明和反光材质" },
+        { kind: "paragraph", text: "玻璃、透明包装、金属和镜面物体的边界容易与背景混在一起，需要控制反光并保持轮廓对比。" },
+        { kind: "list", items: [
+          { text: "在商品后方放置对比明显的背景板。" },
+          { text: "相机拍摄时可根据设备使用偏振镜减少反光。" },
+          { text: "调整曝光，让轮廓保持清楚。" },
+          { text: "AI 处理后预留一次手动修边。" },
+        ] },
+        { kind: "heading", text: "6. 拍摄分辨率不要太低" },
+        { kind: "paragraph", text: "先保存高分辨率原图，再按不同平台要求缩放。小图放大无法恢复已经丢失的边缘细节。手机拍摄时应确认使用完整照片分辨率，而不是聊天软件压缩图或截图。" },
+        { kind: "heading", text: "总结" },
+        { kind: "paragraph", text: "纯色背景、均匀光线、清楚角度、合适比例、特殊材质处理和足够分辨率，是干净抠图最重要的六个基础。" },
+        { kind: "paragraph", text: "原图准备好后，可以用 edit-photo 处理，并在高倍率下检查边缘再上架。" },
+      ],
+      cta: { title: "准备好商品图了？", description: "在浏览器本地移除背景，免费下载透明 PNG。", button: "立即免费抠图" },
+    },
+  },
+  "transparent-png-guide": {
+    en: {
+      blocks: [
+        { kind: "paragraph", text: "E-commerce teams often hear the phrase “transparent PNG,” but the difference between a white background and a truly transparent background matters. This guide explains what transparency is, why JPG cannot store it, and how to create a reusable product asset." },
+        { kind: "heading", text: "What is a transparent background?" },
+        { kind: "paragraph", text: "A white-background photo still contains white pixels. It looks fine on a white page, but becomes a visible rectangle on gray, colored, or gradient layouts. A transparent image removes those background pixels and keeps only the product." },
+        { kind: "paragraph", text: "Think of it like a clear sticker: the product can be placed on any design without a white box around it." },
+        { kind: "heading", text: "PNG vs JPG" },
+        { kind: "list", items: [
+          { label: "JPG", text: "Does not support transparency. It is compact and well suited to ordinary photographic images." },
+          { label: "PNG", text: "Supports an alpha channel, so background pixels can be transparent. It is usually larger but ideal for cutout assets." },
+        ] },
+        { kind: "paragraph", text: "If a workflow requires a transparent background, export PNG. A JPG file cannot preserve transparency." },
+        { kind: "heading", text: "Why sellers need transparent product assets" },
+        { kind: "list", items: [
+          { label: "Detail pages", text: "Place the same product on different branded or lifestyle backgrounds." },
+          { label: "Campaign banners", text: "Reuse the cutout in promotions without masking it again." },
+          { label: "Multi-channel publishing", text: "Adapt one product asset to different marketplace layouts." },
+          { label: "Brand libraries", text: "Give designers a clean, reusable source asset." },
+        ] },
+        { kind: "heading", text: "How to make a transparent PNG" },
+        { kind: "heading", level: 3, text: "Method 1: AI background removal" },
+        { kind: "paragraph", text: "Upload a product photo, let the model identify the subject, then export the cutout as PNG. This is fast and works well for most clearly photographed products." },
+        { kind: "heading", level: 3, text: "Method 2: Manual selection" },
+        { kind: "paragraph", text: "For demanding edges, use a desktop editor with pen, selection, and mask tools. It takes longer but gives direct control over individual pixels." },
+        { kind: "heading", level: 3, text: "Method 3: Controlled background shooting" },
+        { kind: "paragraph", text: "A consistent studio background can simplify batch masking, especially for repeated product shoots. It still needs careful lighting and color separation." },
+        { kind: "heading", text: "Checklist before export" },
+        { kind: "list", items: [
+          { label: "Inspect edges", text: "Zoom in and look for color halos, missing details, and isolated noise." },
+          { label: "Keep the original", text: "Retain the source photo so the cutout can be regenerated later." },
+          { label: "Use clear names", text: "A suffix such as -transparent helps distinguish cutouts from white-background files." },
+          { label: "Standardize dimensions", text: "Keep a product set consistent before batch upload." },
+        ] },
+        { kind: "heading", text: "Summary" },
+        { kind: "paragraph", text: "A transparent PNG is a reusable product layer, not simply a photo with a white background. Use it as the clean source for marketplace images, banners, and branded layouts." },
+      ],
+      cta: { title: "Need a transparent PNG?", description: "Remove the background locally and export the result at the original dimensions.", button: "Create transparent PNG" },
+    },
+    zh: {
+      blocks: [
+        { kind: "paragraph", text: "电商工作中经常会听到“透明背景 PNG”。但白色背景和真正透明的背景不是一回事。下面用简单方式说明透明是什么、为什么 JPG 不能透明，以及如何制作可重复使用的商品素材。" },
+        { kind: "heading", text: "什么是透明背景？" },
+        { kind: "paragraph", text: "白底照片仍然包含白色像素，在白色页面上看不出来，但放到灰色、彩色或渐变背景上会出现明显白色方块。透明图会移除背景像素，只保留商品。" },
+        { kind: "paragraph", text: "可以把它理解为一张透明贴纸，商品能自然放到任何设计背景上。" },
+        { kind: "heading", text: "PNG 和 JPG 有什么区别？" },
+        { kind: "list", items: [
+          { label: "JPG", text: "不支持透明，体积较小，适合普通摄影图片。" },
+          { label: "PNG", text: "支持 Alpha 透明通道，背景像素可以没有颜色，适合抠图素材。" },
+        ] },
+        { kind: "paragraph", text: "只要流程要求透明背景，就应导出 PNG；JPG 无法保留透明信息。" },
+        { kind: "heading", text: "为什么卖家需要透明商品素材？" },
+        { kind: "list", items: [
+          { label: "详情页设计", text: "把同一商品放到不同品牌或场景背景。" },
+          { label: "活动横幅", text: "促销设计中复用商品，不必再次抠图。" },
+          { label: "多平台发布", text: "一份干净素材适配不同平台版式。" },
+          { label: "品牌素材库", text: "给设计人员保留可重复使用的源素材。" },
+        ] },
+        { kind: "heading", text: "如何制作透明背景 PNG？" },
+        { kind: "heading", level: 3, text: "方法一：AI 自动抠图" },
+        { kind: "paragraph", text: "上传商品图，让模型识别主体并移除背景，再导出 PNG。速度快，适合大多数拍摄清楚的商品。" },
+        { kind: "heading", level: 3, text: "方法二：手动选择与蒙版" },
+        { kind: "paragraph", text: "复杂边缘可以用桌面软件的钢笔、选择和蒙版工具精修，耗时更长，但能直接控制细节。" },
+        { kind: "heading", level: 3, text: "方法三：统一背景拍摄" },
+        { kind: "paragraph", text: "固定摄影背景可简化批量处理，适合重复拍摄同类商品，但仍要注意光线和颜色对比。" },
+        { kind: "heading", text: "导出前检查清单" },
+        { kind: "list", items: [
+          { label: "检查边缘", text: "放大查看色边、缺失细节和孤立杂点。" },
+          { label: "保留原图", text: "方便日后重新处理。" },
+          { label: "明确命名", text: "可使用 -transparent 后缀区分透明图与白底图。" },
+          { label: "统一尺寸", text: "同批商品先统一画布和比例再上传。" },
+        ] },
+        { kind: "heading", text: "总结" },
+        { kind: "paragraph", text: "透明 PNG 是可以重复组合的商品图层，不只是白色背景照片。它适合继续制作主图、横幅和品牌场景图。" },
+      ],
+      cta: { title: "需要制作透明 PNG？", description: "在浏览器本地移除背景，按原图尺寸导出结果。", button: "制作透明 PNG" },
+    },
+  },
+  "ecommerce-image-specs": {
+    en: {
+      blocks: [
+        { kind: "paragraph", text: "Marketplace image rules differ by country, category, campaign, and seller-program version. Treat this guide as a preparation checklist, then verify the current requirement in the seller dashboard before publishing." },
+        { kind: "heading", text: "A safer cross-platform master workflow" },
+        { kind: "list", items: [
+          { label: "Keep a high-resolution master", text: "Export smaller marketplace files from the master rather than enlarging a low-resolution image." },
+          { label: "Keep three reusable variants", text: "Transparent PNG, clean white-background image, and a lifestyle image." },
+          { label: "Use a square working canvas", text: "It is a practical starting point for many product listings, but confirm each channel before upload." },
+          { label: "Avoid permanent overlays", text: "Keep logos, copy, badges, and promotional graphics on separate design layers." },
+        ] },
+        { kind: "heading", text: "Amazon" },
+        { kind: "paragraph", text: "Amazon’s current general guidance says the MAIN image should show the actual product on a pure white background (RGB 255, 255, 255), the product should fill at least 85% of the frame, and text, logos, borders, color blocks, and watermarks should not be added. Category-specific rules can override general guidance." },
+        { kind: "paragraph", text: "Amazon also recommends enough resolution for zoom. Check Seller Central for the exact category and marketplace requirement immediately before upload." },
+        { kind: "source", text: "Current source checked August 2026:", label: "Amazon Seller Central product-image guidance", href: "https://sellercentral.amazon.com/seller-forums/discussions/t/ab884127-f9b4-4053-8096-4991e1d60d1f" },
+        { kind: "heading", text: "Taobao and Tmall" },
+        { kind: "paragraph", text: "Prepare a clean square product image, a white-background version, and additional detail or lifestyle images. Image count, size, overlays, and category requirements can differ between listing types, so confirm them in the publishing form and current rule center." },
+        { kind: "source", text: "Verify before publishing:", label: "Taobao rule center", href: "https://rulechannel.taobao.com/" },
+        { kind: "heading", text: "JD.com" },
+        { kind: "paragraph", text: "Use a clear, centered product image and keep a compressed web-ready export in addition to the high-resolution master. Check the current category template because file size and image slots can vary." },
+        { kind: "source", text: "Verify before publishing:", label: "JD rule center", href: "https://rule.jd.com/" },
+        { kind: "heading", text: "Pinduoduo" },
+        { kind: "paragraph", text: "Prepare both a square image and channel-specific promotional variants. Do not assume one fixed ratio or file-size rule applies to every listing, campaign, or category." },
+        { kind: "source", text: "Verify before publishing:", label: "Pinduoduo merchant portal", href: "https://mms.pinduoduo.com/" },
+        { kind: "heading", text: "Douyin Shop" },
+        { kind: "paragraph", text: "Use a clear main product image plus additional images that explain details and use scenarios. Verify current image ratios, counts, and promotional restrictions in the product-publishing page." },
+        { kind: "source", text: "Verify before publishing:", label: "Douyin E-commerce rule center", href: "https://rule.douyinec.com/" },
+        { kind: "heading", text: "Final publishing checklist" },
+        { kind: "list", items: [
+          { text: "Open the current seller publishing form for the exact category." },
+          { text: "Confirm dimensions, aspect ratio, file size, format, image count, and overlay restrictions." },
+          { text: "Inspect the cutout edge and white background at high zoom." },
+          { text: "Keep the master, transparent PNG, and final channel export as separate files." },
+        ] },
+        { kind: "heading", text: "Summary" },
+        { kind: "paragraph", text: "The stable principle is simple: start with a sharp master, keep the product clear, create reusable transparent and white-background variants, and verify the latest category rule before every publishing workflow." },
+      ],
+      cta: { title: "Preparing images for several marketplaces?", description: "Create a clean transparent master first, then export each channel variant.", button: "Start with a free cutout" },
+    },
+    zh: {
+      blocks: [
+        { kind: "paragraph", text: "电商平台的图片规则会因国家、类目、活动和卖家版本变化。本文适合作为准备清单，正式发布前仍应在卖家后台核对当前要求。" },
+        { kind: "heading", text: "更稳妥的跨平台母版流程" },
+        { kind: "list", items: [
+          { label: "保留高清母版", text: "从高清母版缩小导出，不要依赖低清图片放大。" },
+          { label: "保留三种素材", text: "透明 PNG、干净白底图和场景图。" },
+          { label: "准备方形工作画布", text: "方图适合作为多数商品图的起点，但上传前仍要核对平台。" },
+          { label: "装饰元素分层保存", text: "文字、Logo、角标和促销信息不要永久压进商品母版。" },
+        ] },
+        { kind: "heading", text: "亚马逊（Amazon）" },
+        { kind: "paragraph", text: "Amazon 当前通用指引要求 MAIN 主图展示实际销售商品，使用纯白背景（RGB 255, 255, 255），商品至少占画面 85%，且不应叠加文字、Logo、边框、色块或水印。具体类目规则可能覆盖通用要求。" },
+        { kind: "paragraph", text: "同时应准备足够分辨率以支持缩放，上传前在 Seller Central 核对目标站点和类目的最新规则。" },
+        { kind: "source", text: "2026 年 8 月核对来源：", label: "Amazon Seller Central 商品图片指引", href: "https://sellercentral.amazon.com/seller-forums/discussions/t/ab884127-f9b4-4053-8096-4991e1d60d1f" },
+        { kind: "heading", text: "淘宝与天猫" },
+        { kind: "paragraph", text: "建议准备清楚的方形商品图、白底版本和细节或场景图。不同类目和发布入口可能对尺寸、数量、叠加信息有不同要求，应以发布表单和规则中心为准。" },
+        { kind: "source", text: "发布前核对：", label: "淘宝规则中心", href: "https://rulechannel.taobao.com/" },
+        { kind: "heading", text: "京东" },
+        { kind: "paragraph", text: "准备商品居中的清晰主图，并同时保存高清母版和适合网页上传的压缩版本。文件大小和图片数量可能按类目变化。" },
+        { kind: "source", text: "发布前核对：", label: "京东规则平台", href: "https://rule.jd.com/" },
+        { kind: "heading", text: "拼多多" },
+        { kind: "paragraph", text: "建议同时准备方图和活动所需的渠道版本，不要假设所有类目和活动共用一个固定比例或文件大小。" },
+        { kind: "source", text: "发布前核对：", label: "拼多多商家后台", href: "https://mms.pinduoduo.com/" },
+        { kind: "heading", text: "抖音电商" },
+        { kind: "paragraph", text: "主图应清楚展示商品，附图可说明细节和使用场景。图片比例、数量和促销元素限制应在商品发布页核对。" },
+        { kind: "source", text: "发布前核对：", label: "抖音电商规则中心", href: "https://rule.douyinec.com/" },
+        { kind: "heading", text: "最终发布检查清单" },
+        { kind: "list", items: [
+          { text: "打开目标类目的最新发布表单。" },
+          { text: "核对尺寸、比例、文件大小、格式、数量和叠加元素限制。" },
+          { text: "高倍率检查抠图边缘和白底颜色。" },
+          { text: "分别保存高清母版、透明 PNG 和平台最终图。" },
+        ] },
+        { kind: "heading", text: "总结" },
+        { kind: "paragraph", text: "长期稳定的做法是：保留高清母版，让商品清晰突出，制作透明与白底版本，并在每次发布前核对目标类目的最新规则。" },
+      ],
+      cta: { title: "需要适配多个平台？", description: "先制作干净的透明商品母版，再导出不同渠道版本。", button: "从免费抠图开始" },
+    },
+  },
+};

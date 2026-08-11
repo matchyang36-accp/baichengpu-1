@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useState } from "react";
+import { useTranslations } from "../../i18n/client";
 
 type AuthMode = "login" | "register";
 
@@ -25,34 +26,22 @@ const initialForm: FormState = {
 };
 
 export function AuthForm({ initialMode, returnTo }: AuthFormProps) {
+  const { locale, t } = useTranslations();
+  const localePrefix = `/${locale}`;
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [form, setForm] = useState<FormState>(initialForm);
   const [error, setError] = useState("");
   const [isPending, setIsPending] = useState(false);
 
-  const copy = useMemo(
-    () =>
-      mode === "register"
-        ? {
-            eyebrow: "创建账户",
-            title: "保存你的产品权益",
-            description:
-              "注册只用于识别账户和承载会员权益，商品图片始终留在浏览器本地。",
-            submit: "免费注册",
-            switchLabel: "已有账户？",
-            switchAction: "直接登录",
-          }
-        : {
-            eyebrow: "欢迎回来",
-            title: "登录白橙铺",
-            description:
-              "继续使用你的账户与产品权益，抠图过程仍然不会上传原图。",
-            submit: "登录",
-            switchLabel: "还没有账户？",
-            switchAction: "免费注册",
-          },
-    [mode],
-  );
+  const copyKey = mode === "register" ? "auth.register" : "auth.login";
+  const copy = {
+    eyebrow: t(`${copyKey}.eyebrow`),
+    title: t(`${copyKey}.title`),
+    description: t(`${copyKey}.description`),
+    submit: t(`${copyKey}.submit`),
+    switchLabel: t(`${copyKey}.switchLabel`),
+    switchAction: t(`${copyKey}.switchAction`),
+  };
 
   function switchMode() {
     setMode((current) => (current === "login" ? "register" : "login"));
@@ -69,7 +58,7 @@ export function AuthForm({ initialMode, returnTo }: AuthFormProps) {
     setError("");
 
     if (mode === "register" && form.password !== form.passwordConfirm) {
-      setError("两次输入的密码不一致。");
+      setError(t("auth.form.passwordMismatch"));
       return;
     }
 
@@ -89,13 +78,17 @@ export function AuthForm({ initialMode, returnTo }: AuthFormProps) {
         code?: string;
       };
       if (!response.ok || !payload.ok) {
-        setError(authErrorMessage(payload.code));
+        const errorKey = AUTH_ERROR_CODES.has(payload.code ?? "")
+          ? `auth.errors.${payload.code}`
+          : "auth.errors.default";
+        setError(t(errorKey));
         return;
       }
 
       window.location.assign(returnTo);
-    } catch {
-      setError("网络暂时不可用，请稍后重试。");
+    } catch (reason) {
+      console.warn("[auth-ui] REQUEST_FAILED", reason);
+      setError(t("auth.errors.network"));
     } finally {
       setIsPending(false);
     }
@@ -112,7 +105,7 @@ export function AuthForm({ initialMode, returnTo }: AuthFormProps) {
       <form className="auth-form" onSubmit={submit}>
         {mode === "register" ? (
           <label>
-            显示名称
+            {t("auth.form.displayName")}
             <input
               autoComplete="name"
               maxLength={50}
@@ -124,13 +117,13 @@ export function AuthForm({ initialMode, returnTo }: AuthFormProps) {
                   displayName: event.target.value,
                 }))
               }
-              placeholder="例如：小橙店主"
+              placeholder={t("auth.form.displayNamePlaceholder")}
             />
           </label>
         ) : null}
 
         <label>
-          邮箱
+          {t("auth.form.email")}
           <input
             autoComplete="email"
             inputMode="email"
@@ -144,12 +137,12 @@ export function AuthForm({ initialMode, returnTo }: AuthFormProps) {
                 email: event.target.value,
               }))
             }
-            placeholder="name@example.com"
+            placeholder={t("auth.form.emailPlaceholder")}
           />
         </label>
 
         <label>
-          密码
+          {t("auth.form.password")}
           <input
             autoComplete={
               mode === "register" ? "new-password" : "current-password"
@@ -165,13 +158,13 @@ export function AuthForm({ initialMode, returnTo }: AuthFormProps) {
                 password: event.target.value,
               }))
             }
-            placeholder="至少 10 位，建议包含数字和符号"
+            placeholder={t("auth.form.passwordPlaceholder")}
           />
         </label>
 
         {mode === "register" ? (
           <label>
-            确认密码
+            {t("auth.form.confirmPassword")}
             <input
               autoComplete="new-password"
               minLength={10}
@@ -185,7 +178,7 @@ export function AuthForm({ initialMode, returnTo }: AuthFormProps) {
                   passwordConfirm: event.target.value,
                 }))
               }
-              placeholder="再次输入密码"
+              placeholder={t("auth.form.confirmPasswordPlaceholder")}
             />
           </label>
         ) : null}
@@ -197,8 +190,16 @@ export function AuthForm({ initialMode, returnTo }: AuthFormProps) {
         ) : null}
 
         <button className="auth-submit" type="submit" disabled={isPending}>
-          {isPending ? "请稍候…" : copy.submit}
+          {isPending ? t("auth.form.submitting") : copy.submit}
         </button>
+
+        {mode === "login" ? (
+          <p className="auth-switch">
+            <Link href={`${localePrefix}/forgot-password`}>
+              {t("auth.form.forgotPassword")}
+            </Link>
+          </p>
+        ) : null}
 
         <p className="auth-switch">
           {copy.switchLabel}
@@ -208,29 +209,22 @@ export function AuthForm({ initialMode, returnTo }: AuthFormProps) {
         </p>
 
         <p className="auth-terms">
-          注册或登录即表示你已阅读并同意
-          <Link href="/privacy">隐私说明</Link>。
+          {t("auth.form.termsPrefix")} {" "}
+          <Link href={`${localePrefix}/privacy`}>
+            {t("auth.form.privacyLink")}
+          </Link>
         </p>
       </form>
     </div>
   );
 }
 
-function authErrorMessage(code?: string): string {
-  switch (code) {
-    case "EMAIL_EXISTS":
-      return "该邮箱已经注册，请直接登录。";
-    case "INVALID_CREDENTIALS":
-      return "邮箱或密码不正确。";
-    case "WEAK_PASSWORD":
-      return "密码至少需要 10 位，并同时包含字母和数字。";
-    case "RATE_LIMITED":
-      return "尝试次数过多，请稍后再试。";
-    case "INVALID_INPUT":
-      return "请检查名称、邮箱和密码是否填写正确。";
-    case "ACCOUNT_DISABLED":
-      return "该账户暂时不可用，请联系我们。";
-    default:
-      return "操作没有完成，请稍后重试。";
-  }
-}
+const AUTH_ERROR_CODES = new Set([
+  "EMAIL_EXISTS",
+  "INVALID_CREDENTIALS",
+  "WEAK_PASSWORD",
+  "RATE_LIMITED",
+  "INVALID_INPUT",
+  "ACCOUNT_DISABLED",
+  "STORE_FAILED",
+]);

@@ -6,12 +6,14 @@ export type AccountUser = {
   displayName: string;
   email: string;
   isAdmin: boolean;
+  plan: string;
 };
 
 const USER_ID_HEADER = "x-baichengpu-user-id";
 const USER_EMAIL_HEADER = "x-baichengpu-user-email";
 const USER_NAME_HEADER = "x-baichengpu-user-name";
 const USER_ADMIN_HEADER = "x-baichengpu-admin";
+const USER_PLAN_HEADER = "x-baichengpu-user-plan";
 const AUTH_PATH = "/auth";
 
 export async function getAccountUser(): Promise<AccountUser | null> {
@@ -29,6 +31,7 @@ export async function getAccountUser(): Promise<AccountUser | null> {
     email,
     displayName,
     isAdmin: requestHeaders.get(USER_ADMIN_HEADER) === "1",
+    plan: requestHeaders.get(USER_PLAN_HEADER) || "free",
   };
 }
 
@@ -78,7 +81,10 @@ function safeRelativeReturnPath(value: string): string {
 }
 
 function safeAdminReturnPath(value: string): string {
-  if (!value.startsWith("/admin/") || value.startsWith("//")) {
+  if (
+    (value !== "/admin" && !value.startsWith("/admin/")) ||
+    value.startsWith("//")
+  ) {
     return "/admin/users";
   }
 

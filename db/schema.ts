@@ -1,4 +1,4 @@
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable(
   "users",
@@ -127,3 +127,70 @@ export const visitorEvents = sqliteTable(
     index("visitor_events_user_created_idx").on(table.userId, table.createdAt),
   ],
 );
+
+export const creditUsage = sqliteTable(
+  "credit_usage",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    period: text("period").notNull(),
+    used: integer("used").notNull().default(0),
+    plan: text("plan").notNull().default("free"),
+    createdAt: text("created_at").notNull(),
+    updatedAt: text("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("credit_usage_user_period_idx").on(table.userId, table.period),
+    index("credit_usage_period_idx").on(table.period),
+  ],
+);
+
+export const subscriptions = sqliteTable(
+  "subscriptions",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    stripeSubscriptionId: text("stripe_subscription_id").notNull(),
+    stripeCustomerId: text("stripe_customer_id").notNull(),
+    plan: text("plan").notNull(),
+    status: text("status").notNull().default("incomplete"),
+    currentPeriodStart: text("current_period_start").notNull(),
+    currentPeriodEnd: text("current_period_end").notNull(),
+    cancelAtPeriodEnd: integer("cancel_at_period_end", { mode: "boolean" }).notNull().default(false),
+    canceledAt: text("canceled_at"),
+    createdAt: text("created_at").notNull(),
+    updatedAt: text("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("subscriptions_stripe_subscription_unique_idx").on(table.stripeSubscriptionId),
+    index("subscriptions_user_idx").on(table.userId),
+    index("subscriptions_status_idx").on(table.status, table.currentPeriodEnd),
+  ],
+);
+
+export const orders = sqliteTable(
+  "orders",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    stripeCheckoutSessionId: text("stripe_checkout_session_id").notNull(),
+    stripePaymentIntentId: text("stripe_payment_intent_id"),
+    stripeInvoiceId: text("stripe_invoice_id"),
+    plan: text("plan").notNull(),
+    amount: integer("amount").notNull(),
+    currency: text("currency").notNull().default("cny"),
+    status: text("status").notNull().default("pending"),
+    createdAt: text("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("orders_checkout_session_unique_idx").on(table.stripeCheckoutSessionId),
+    index("orders_user_idx").on(table.userId, table.createdAt),
+    index("orders_status_idx").on(table.status),
+  ],
+);
+
+export const processedWebhookEvents = sqliteTable("processed_webhook_events", {
+  eventId: text("event_id").primaryKey(),
+  eventType: text("event_type").notNull(),
+  createdAt: text("created_at").notNull(),
+});

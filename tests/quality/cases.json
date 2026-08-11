@@ -1,0 +1,27 @@
+[
+  {
+    "id": "bottle-simple",
+    "source": "1.jpg",
+    "result": "bottle-simple.png",
+    "category": "single product / textured floor"
+  },
+  {
+    "id": "product-tall",
+    "source": "2.jpg",
+    "result": "product-tall.png",
+    "golden": "2-透明底 (1).png",
+    "category": "single product / portrait image"
+  },
+  {
+    "id": "complex-wide-1",
+    "source": "图片1.png",
+    "result": "complex-wide-1.png",
+    "category": "complex background / landscape image"
+  },
+  {
+    "id": "complex-wide-2",
+    "source": "图片2.png",
+    "result": "complex-wide-2.png",
+    "category": "complex background / landscape image"
+  }
+]

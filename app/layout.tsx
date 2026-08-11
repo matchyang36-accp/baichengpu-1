@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import Script from "next/script";
+import { TranslationProvider } from "../i18n/client";
+import { getLocaleFromHeaders } from "../i18n/translator";
+import { getTranslator } from "../i18n/core";
 import { AnalyticsTracker } from "./AnalyticsTracker";
+import { localizedAlternates, SITE_ORIGIN } from "./seo";
+import { OrganizationSchema } from "./lib/structured-data";
 import "./globals.css";
 
 /**
@@ -12,43 +16,39 @@ import "./globals.css";
 const ADSENSE_CLIENT_ID = "ca-pub-XXXXXXXXXXXXXXXX";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const requestHeaders = await headers();
-  const host =
-    requestHeaders.get("x-forwarded-host") ??
-    requestHeaders.get("host") ??
-    "localhost:3000";
-  const protocol =
-    requestHeaders.get("x-forwarded-proto") ??
-    (host.includes("localhost") ? "http" : "https");
-  const base = new URL(`${protocol}://${host}`);
+  const locale = await getLocaleFromHeaders();
+  const t = getTranslator(locale);
+  const base = new URL(SITE_ORIGIN);
 
   return {
     metadataBase: base,
-    title: "白橙铺｜商品图一键干净抠出",
-    description:
-      "面向电商卖家的免费本地商品图抠图工具。图片不上传，自动生成透明 PNG。",
+    title: t("metadata.home.title"),
+    description: t("metadata.home.description"),
+    alternates: localizedAlternates(locale),
     openGraph: {
-      title: "白橙铺｜商品图一键干净抠出",
-      description: "图片只在浏览器本地处理，免费生成透明 PNG。",
+      title: t("metadata.home.title"),
+      description: t("metadata.home.description"),
       type: "website",
-      images: [new URL("/og.png", base).toString()],
+      images: ["/og.png"],
     },
     twitter: {
       card: "summary_large_image",
-      title: "白橙铺｜商品图一键干净抠出",
-      description: "图片只在浏览器本地处理，免费生成透明 PNG。",
-      images: [new URL("/og.png", base).toString()],
+      title: t("metadata.home.title"),
+      description: t("metadata.home.description"),
+      images: ["/og.png"],
     },
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocaleFromHeaders();
+
   return (
-    <html lang="zh-CN">
+    <html lang={locale === "zh" ? "zh-CN" : "en"}>
       <head>
         {/* Google AdSense — 申请通过后替换 ADSENSE_CLIENT_ID 为你的真实发布商 ID */}
         {ADSENSE_CLIENT_ID !== "ca-pub-XXXXXXXXXXXXXXXX" && (
@@ -61,8 +61,9 @@ export default function RootLayout({
         )}
       </head>
       <body>
+        <OrganizationSchema locale={locale} />
         <AnalyticsTracker />
-        {children}
+        <TranslationProvider locale={locale}>{children}</TranslationProvider>
       </body>
     </html>
   );

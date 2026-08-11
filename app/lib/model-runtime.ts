@@ -53,33 +53,33 @@ export function mapRemovalProgress(
     if (isModel) {
       return {
         progress: Math.round(ratio >= 0.995 ? 72 : 20 + ratio * 50),
-        status:
+        statusKey:
           ratio >= 0.995
-            ? "模型下载完成，正在启动本地 AI"
-            : "首次使用，正在下载 AI 模型（约 66MB）",
+            ? "tool.status.modelDownloaded"
+            : "tool.status.modelDownloading",
       };
     }
     return {
       progress: Math.round(6 + ratio * 14),
-      status: "正在准备本地运行组件",
+      statusKey: "tool.status.runtimePreparing",
     };
   }
 
   if (key === "compute:decode") {
-    return { progress: 78, status: "正在读取并缩放商品图片" };
+    return { progress: 78, statusKey: "tool.status.decoding" };
   }
   if (key === "compute:inference") {
-    return { progress: 82, status: "AI 正在识别商品主体与边缘" };
+    return { progress: 82, statusKey: "tool.status.inference" };
   }
   if (key === "compute:mask") {
-    return { progress: 92, status: "正在生成透明边缘" };
+    return { progress: 92, statusKey: "tool.status.masking" };
   }
   if (key === "compute:encode") {
     return {
       progress: current >= total ? 98 : 96,
-      status: "正在生成透明 PNG",
+      statusKey: "tool.status.encoding",
     };
   }
 
-  return { progress: 6, status: "正在准备本地 AI 模型" };
+  return { progress: 6, statusKey: "tool.status.modelPreparing" };
 }

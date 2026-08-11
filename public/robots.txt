@@ -1,8 +1,0 @@
-User-agent: *
-Allow: /
-
-# Google AdSense 爬虫
-User-agent: Mediapartners-Google
-Allow: /
-
-Sitemap: https://edit-photo.com/sitemap.xml

@@ -44,15 +44,103 @@ test("server-renders the product homepage", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>白橙铺｜商品图一键干净抠出<\/title>/);
-  assert.match(html, /商品图，/);
-  assert.match(html, /浏览器本地处理/);
-  assert.match(html, /href="\/batch"/);
-  assert.match(html, /href="\/pricing"/);
-  assert.match(html, /href="\/privacy"/);
-  assert.match(html, /注册/);
-  assert.match(html, /登录/);
+  assert.match(html, /<html lang="en">/);
+  assert.match(html, /<title>Free AI Background Remover for Product Photos \| edit-photo<\/title>/);
+  assert.match(html, /AI Background Remover for/);
+  assert.match(html, /local processing/);
+  assert.match(html, /Language/);
+  assert.match(html, /href="\/en\/batch"/);
+  assert.match(html, /href="\/en\/pricing"/);
+  assert.match(html, /href="\/en\/privacy"/);
+  assert.match(html, /Sign up free/);
+  assert.match(html, /Sign in/);
+  assert.match(html, /Admin sign-in/);
+  assert.match(html, /"@type":"SoftwareApplication"/);
+  assert.match(html, /"@type":"Organization"/);
+  assert.match(html, /What is a local AI background remover/);
+  assert.match(html, /Amazon listings/);
+  assert.match(html, /Background removal FAQ/);
+  assert.match(html, /\/admin\/login\?return_to=%2Fadmin/);
   assert.doesNotMatch(html, /codex-preview|Building your site/);
+});
+
+test("renders locale-prefixed English and Chinese homepages", async () => {
+  const [englishResponse, chineseResponse] = await Promise.all([
+    render("/en"),
+    render("/zh"),
+  ]);
+  assert.equal(englishResponse.status, 200);
+  assert.equal(chineseResponse.status, 200);
+
+  const [englishHtml, chineseHtml] = await Promise.all([
+    englishResponse.text(),
+    chineseResponse.text(),
+  ]);
+  assert.match(englishHtml, /<html lang="en">/);
+  assert.match(englishHtml, /AI Background Remover for/);
+  assert.match(chineseHtml, /<html lang="zh-CN">/);
+  assert.match(chineseHtml, /免费 AI 抠图工具/);
+  assert.match(chineseHtml, /href="\/zh\/batch"/);
+});
+
+test("serves stable SEO discovery and locale metadata", async () => {
+  const [robotsResponse, sitemapResponse, pricingResponse] = await Promise.all([
+    render("/robots.txt"),
+    render("/sitemap.xml"),
+    render("/en/pricing"),
+  ]);
+
+  assert.equal(robotsResponse.status, 200);
+  assert.equal(sitemapResponse.status, 200);
+  assert.equal(pricingResponse.status, 200);
+
+  const [robotsText, sitemapXml, pricingHtml] = await Promise.all([
+    robotsResponse.text(),
+    sitemapResponse.text(),
+    pricingResponse.text(),
+  ]);
+
+  assert.match(robotsText, /Disallow: \/admin\//);
+  assert.match(robotsText, /Sitemap: https:\/\/edit-photo\.com\/sitemap\.xml/);
+  assert.match(sitemapXml, /https:\/\/edit-photo\.com\/en\/pricing/);
+  assert.match(sitemapXml, /https:\/\/edit-photo\.com\/zh\/pricing/);
+  assert.match(sitemapXml, /https:\/\/edit-photo\.com\/en\/disclaimer/);
+  assert.match(sitemapXml, /https:\/\/edit-photo\.com\/en\/blog\/product-photo-tips/);
+  assert.match(sitemapXml, /https:\/\/edit-photo\.com\/zh\/blog\/ecommerce-image-specs/);
+  assert.doesNotMatch(sitemapXml, /\/auth|\/admin|\/account/);
+  assert.match(pricingHtml, /rel="canonical" href="https:\/\/edit-photo\.com\/en\/pricing"/);
+  assert.match(pricingHtml, /hrefLang="zh-CN" href="https:\/\/edit-photo\.com\/zh\/pricing"/);
+  assert.match(pricingHtml, /hrefLang="x-default" href="https:\/\/edit-photo\.com\/en\/pricing"/);
+  assert.match(pricingHtml, /"@type":"FAQPage"/);
+});
+
+test("renders localized article bodies with discoverable SEO metadata", async () => {
+  const [englishResponse, chineseResponse] = await Promise.all([
+    render("/en/blog/ecommerce-image-specs"),
+    render("/zh/blog/ecommerce-image-specs"),
+  ]);
+
+  assert.equal(englishResponse.status, 200);
+  assert.equal(chineseResponse.status, 200);
+
+  const [englishHtml, chineseHtml] = await Promise.all([
+    englishResponse.text(),
+    chineseResponse.text(),
+  ]);
+
+  assert.match(englishHtml, /A safer cross-platform master workflow/);
+  assert.match(englishHtml, /Amazon Seller Central product-image guidance/);
+  assert.match(englishHtml, /"@type":"Article"/);
+  assert.match(
+    englishHtml,
+    /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/ecommerce-image-specs"/,
+  );
+  assert.match(
+    englishHtml,
+    /hrefLang="zh-CN" href="https:\/\/edit-photo\.com\/zh\/blog\/ecommerce-image-specs"/,
+  );
+  assert.match(chineseHtml, /发布前核对/);
+  assert.match(chineseHtml, /淘宝规则中心/);
 });
 
 test("renders signed-in account navigation and protected account page", async () => {
@@ -89,7 +177,7 @@ test("renders signed-in account navigation and protected account page", async ()
     homeResponse.text(),
     accountResponse.text(),
   ]);
-  assert.match(homeHtml, /我的账户/);
+  assert.match(homeHtml, /My account/);
   assert.match(accountHtml, /账户中心/);
   assert.match(accountHtml, /电商运营小白/);
   assert.match(accountHtml, /seller@example\.com/);
@@ -106,6 +194,13 @@ test("redirects anonymous visitors to the independent sign-in flow", async () =>
 });
 
 test("protects the user administration page with an admin email allowlist", async () => {
+  const anonymousHomeResponse = await render("/admin");
+  assert.equal(anonymousHomeResponse.status, 302);
+  assert.equal(
+    anonymousHomeResponse.headers.get("location"),
+    "http://localhost/admin/login?return_to=%2Fadmin",
+  );
+
   const anonymousResponse = await render("/admin/users");
   assert.equal(anonymousResponse.status, 302);
   assert.equal(
@@ -160,6 +255,20 @@ test("protects the user administration page with an admin email allowlist", asyn
   assert.match(html, /用户管理/);
   assert.match(html, /admin@example\.com/);
   assert.match(html, /导出 CSV/);
+
+  const adminHomeResponse = await render(
+    "/admin",
+    authenticatedHeaders,
+    sessionDb,
+    { ADMIN_EMAILS: "admin@example.com" },
+  );
+  assert.equal(adminHomeResponse.status, 200);
+  const adminHomeHtml = await adminHomeResponse.text();
+  assert.match(adminHomeHtml, /管理首页/);
+  assert.match(adminHomeHtml, /用户分析/);
+  assert.match(adminHomeHtml, /用户管理/);
+  assert.match(adminHomeHtml, /href="\/admin\/analytics"/);
+  assert.match(adminHomeHtml, /href="\/admin\/users"/);
 
   const analyticsResponse = await render(
     "/admin/analytics",
@@ -242,41 +351,195 @@ test("returns safe user data from the admin API", async () => {
 });
 
 test("server-renders the independent registration page", async () => {
-  const response = await render("/auth?mode=register&return_to=%2Faccount");
+  const [registerResponse, loginResponse] = await Promise.all([
+    render("/auth?mode=register&return_to=%2Faccount"),
+    render("/en/auth?mode=login&return_to=%2Fen%2Faccount"),
+  ]);
+  assert.equal(registerResponse.status, 200);
+  assert.equal(loginResponse.status, 200);
+  const [registerHtml, loginHtml] = await Promise.all([
+    registerResponse.text(),
+    loginResponse.text(),
+  ]);
+  assert.match(registerHtml, /Create account/);
+  assert.match(registerHtml, /Sign up free/);
+  assert.match(registerHtml, /Originals and results never uploaded/);
+  assert.match(loginHtml, /Forgot password\?/);
+});
+
+test("server-renders the email verification password reset page", async () => {
+  const response = await render("/forgot-password");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /创建账户/);
-  assert.match(html, /免费注册/);
-  assert.match(html, /原图和结果不上传服务器/);
+  assert.match(html, /忘记密码/);
+  assert.match(html, /发送验证码/);
+  assert.match(html, /验证码 10 分钟后自动失效/);
+});
+
+test("resets a password with a one-time emailed code and revokes sessions", async () => {
+  const worker = await loadWorker("password-reset");
+  const executed = [];
+  let resetRecord = null;
+  let deliveredCode = "";
+  const nativeFetch = globalThis.fetch;
+  globalThis.fetch = async (input, init) => {
+    if (String(input) === "https://api.resend.com/emails") {
+      const email = JSON.parse(init.body);
+      deliveredCode = email.text.match(/(\d{6})/)?.[1] ?? "";
+      return Response.json({ id: "email-1" }, { status: 200 });
+    }
+    return nativeFetch(input, init);
+  };
+
+  const statementFor = (sql, values = []) => ({
+    async first() {
+      if (/SELECT id, display_name AS displayName FROM users/.test(sql)) {
+        return { id: "user-1", displayName: "Seller" };
+      }
+      if (/COUNT\(\*\) AS count[\s\S]*password_reset_codes/.test(sql)) {
+        return { count: 0 };
+      }
+      if (/FROM auth_rate_limits/.test(sql)) return null;
+      if (/FROM password_reset_codes[\s\S]*INNER JOIN users/.test(sql)) {
+        return resetRecord;
+      }
+      return null;
+    },
+    async run() {
+      executed.push({ sql, values });
+      if (/INSERT INTO password_reset_codes/.test(sql)) {
+        resetRecord = {
+          id: values[0],
+          userId: values[1],
+          codeHash: values[2],
+          codeSalt: values[3],
+          codeIterations: values[4],
+          attempts: 0,
+        };
+      }
+      return { success: true, meta: { changes: 1 } };
+    },
+  });
+  const db = {
+    prepare(sql) {
+      return {
+        bind(...values) {
+          return statementFor(sql, values);
+        },
+      };
+    },
+    async batch(statements) {
+      for (const statement of statements) await statement.run();
+      return [];
+    },
+  };
+  const env = {
+    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    DB: db,
+    RESEND_API_KEY: "test-key",
+    PASSWORD_RESET_FROM: "白橙铺 <no-reply@send.edit-photo.com>",
+  };
+  const ctx = { waitUntil() {}, passThroughOnException() {} };
+
+  try {
+    const requestResponse = await worker.fetch(
+      new Request("http://localhost/api/auth/password-reset/request", {
+        method: "POST",
+        headers: { origin: "http://localhost", "content-type": "application/json" },
+        body: JSON.stringify({ email: "seller@example.com" }),
+      }),
+      env,
+      ctx,
+    );
+    assert.equal(requestResponse.status, 200);
+    assert.equal(deliveredCode.length, 6);
+    assert.ok(resetRecord);
+    assert.notEqual(resetRecord.codeHash, deliveredCode);
+
+    const confirmResponse = await worker.fetch(
+      new Request("http://localhost/api/auth/password-reset/confirm", {
+        method: "POST",
+        headers: { origin: "http://localhost", "content-type": "application/json" },
+        body: JSON.stringify({
+          email: "seller@example.com",
+          code: deliveredCode,
+          password: "NewSeller2026!",
+        }),
+      }),
+      env,
+      ctx,
+    );
+    assert.equal(confirmResponse.status, 200);
+    assert.deepEqual(await confirmResponse.json(), { ok: true });
+    assert.ok(executed.some(({ sql }) => /UPDATE users SET/.test(sql)));
+    assert.ok(executed.some(({ sql }) => /DELETE FROM sessions WHERE user_id/.test(sql)));
+  } finally {
+    globalThis.fetch = nativeFetch;
+  }
 });
 
 test("server-renders the professional plan and privacy pages", async () => {
-  const [pricingResponse, privacyResponse] = await Promise.all([
+  const [pricingResponse, zhPricingResponse, privacyResponse, zhPrivacyResponse] = await Promise.all([
     render("/pricing"),
+    render("/zh/pricing"),
     render("/privacy"),
+    render("/zh/privacy"),
   ]);
   assert.equal(pricingResponse.status, 200);
+  assert.equal(zhPricingResponse.status, 200);
   assert.equal(privacyResponse.status, 200);
+  assert.equal(zhPrivacyResponse.status, 200);
 
-  const [pricingHtml, privacyHtml] = await Promise.all([
+  const [pricingHtml, zhPricingHtml, privacyHtml, zhPrivacyHtml] = await Promise.all([
     pricingResponse.text(),
+    zhPricingResponse.text(),
     privacyResponse.text(),
+    zhPrivacyResponse.text(),
   ]);
 
-  assert.match(pricingHtml, /专业版内测/);
-  assert.match(pricingHtml, /申请专业版内测/);
-  assert.match(pricingHtml, /团队与定制/);
-  assert.match(pricingHtml, /常见问题/);
-  assert.match(pricingHtml, /目前批量体验版免费开放/);
-  assert.match(pricingHtml, /专业版内测申请/);
-  assert.match(pricingHtml, /提交内测申请/);
+  assert.match(pricingHtml, /Pro beta/);
+  assert.match(pricingHtml, /¥39/);
+  assert.match(pricingHtml, /Get Pro/);
+  assert.match(pricingHtml, /¥199/);
+  assert.match(pricingHtml, /What to know before you start/);
+  assert.match(pricingHtml, /Submit beta application/);
 
-  assert.match(privacyHtml, /你的商品图片，留在你的设备里/);
-  assert.match(privacyHtml, /原图和生成结果不会上传/);
-  assert.match(privacyHtml, /模型文件与浏览器缓存/);
-  assert.match(privacyHtml, /质量反馈/);
-  assert.match(privacyHtml, /不会保存你的原始 IP 地址/);
-  assert.match(privacyHtml, /专业版内测申请/);
+  assert.match(zhPricingHtml, /专业版/);
+  assert.match(zhPricingHtml, /升级专业版/);
+  assert.match(zhPricingHtml, /团队版/);
+  assert.match(zhPricingHtml, /常见问题/);
+  assert.match(zhPricingHtml, /提交内测申请/);
+
+  assert.match(privacyHtml, /Your product images stay on your device/);
+  assert.match(privacyHtml, /never uploaded to our servers/);
+  assert.match(privacyHtml, /Model files &amp; browser cache/);
+  assert.match(privacyHtml, /never stores your raw IP address/);
+  assert.match(privacyHtml, /Cookies &amp; third-party ads/);
+
+  assert.match(zhPrivacyHtml, /你的商品图片，留在你的设备里/);
+  assert.match(zhPrivacyHtml, /原图和生成结果不会上传/);
+  assert.match(zhPrivacyHtml, /模型文件与浏览器缓存/);
+  assert.match(zhPrivacyHtml, /不会保存你的原始 IP 地址/);
+  assert.match(zhPrivacyHtml, /专业版内测申请/);
+});
+
+test("server-renders localized disclaimers with canonical metadata", async () => {
+  const [englishResponse, chineseResponse] = await Promise.all([
+    render("/en/disclaimer"),
+    render("/zh/disclaimer"),
+  ]);
+  assert.equal(englishResponse.status, 200);
+  assert.equal(chineseResponse.status, 200);
+
+  const [englishHtml, chineseHtml] = await Promise.all([
+    englishResponse.text(),
+    chineseResponse.text(),
+  ]);
+  assert.match(englishHtml, /No guarantee of results/);
+  assert.match(englishHtml, /Provided &quot;as is&quot;/);
+  assert.match(englishHtml, /rel="canonical" href="https:\/\/edit-photo\.com\/en\/disclaimer"/);
+  assert.match(chineseHtml, /结果不保证/);
+  assert.match(chineseHtml, /内容版权/);
 });
 
 test("stores privacy-aware anonymous analytics without a raw IP", async () => {
@@ -510,4 +773,76 @@ test("registers, logs in and logs out with a D1-backed session", async () => {
   assert.match(logoutResponse.headers.get("set-cookie") ?? "", /Max-Age=0/);
   assert.ok(executed.some(({ sql }) => /INSERT INTO users/.test(sql)));
   assert.ok(executed.some(({ sql }) => /INSERT INTO sessions/.test(sql)));
+});
+
+test("payment routes fail closed and degrade safely when Stripe is unavailable", async () => {
+  const worker = await loadWorker("payment-configuration");
+  const ctx = {
+    waitUntil() {},
+    passThroughOnException() {},
+  };
+  const assets = { fetch: async () => new Response("Not found", { status: 404 }) };
+
+  const anonymousResponse = await worker.fetch(
+    new Request("http://localhost/api/checkout", {
+      method: "POST",
+      headers: { "content-type": "application/json", origin: "http://localhost" },
+      body: JSON.stringify({ plan: "pro" }),
+    }),
+    { ASSETS: assets, DB: {} },
+    ctx,
+  );
+  assert.equal(anonymousResponse.status, 401);
+  assert.deepEqual(await anonymousResponse.json(), { ok: false, code: "AUTH_REQUIRED" });
+
+  const sessionDb = {
+    prepare(sql) {
+      return {
+        bind() {
+          return {
+            async first() {
+              if (/FROM sessions/.test(sql)) {
+                return {
+                  id: "user_payment_test",
+                  email: "seller@example.com",
+                  displayName: "Seller",
+                  plan: "free",
+                };
+              }
+              return null;
+            },
+          };
+        },
+      };
+    },
+  };
+  const partialConfigurationResponse = await worker.fetch(
+    new Request("http://localhost/api/checkout", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        cookie: "bcp_session=test-session",
+        origin: "http://localhost",
+      },
+      body: JSON.stringify({ plan: "pro" }),
+    }),
+    { ASSETS: assets, DB: sessionDb, STRIPE_SECRET_KEY: "sk_test_config_only" },
+    ctx,
+  );
+  assert.equal(partialConfigurationResponse.status, 503);
+  assert.deepEqual(await partialConfigurationResponse.json(), {
+    ok: false,
+    code: "PAYMENT_CONFIG_INCOMPLETE",
+  });
+
+  const webhookResponse = await worker.fetch(
+    new Request("http://localhost/api/webhook", { method: "POST", body: "{}" }),
+    { ASSETS: assets, DB: {} },
+    ctx,
+  );
+  assert.equal(webhookResponse.status, 503);
+  assert.deepEqual(await webhookResponse.json(), {
+    ok: false,
+    code: "PAYMENT_NOT_CONFIGURED",
+  });
 });

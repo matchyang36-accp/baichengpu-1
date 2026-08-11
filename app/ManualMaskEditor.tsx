@@ -62,12 +62,12 @@ export function ManualMaskEditor({
 
     const prepare = async () => {
       setPrepareError(false);
-      const editedBlob =
-        resultBlob ??
-        (await fetch(resultUrl).then((response) => {
-          if (!response.ok) throw new Error("manual-edit-image-unavailable");
-          return response.blob();
-        }));
+      let editedBlob = resultBlob;
+      if (!editedBlob) {
+        const response = await fetch(resultUrl);
+        if (!response.ok) throw new Error("manual-edit-image-unavailable");
+        editedBlob = await response.blob();
+      }
       [editedBitmap, restoreBitmap] = await Promise.all([
         createImageBitmap(editedBlob),
         createImageBitmap(restoreBlob),

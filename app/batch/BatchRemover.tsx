@@ -13,7 +13,12 @@ import {
 import { AccountMenu, type AccountViewer } from "../AccountMenu";
 import { trackAnalyticsEvent } from "../AnalyticsTracker";
 import { cleanForeground } from "../BackgroundRemover";
+import { BrandLogo } from "../BrandLogo";
+import { LanguageSwitcher } from "../LanguageSwitcher";
+import { useTranslations } from "../../i18n/client";
+import type { Translator } from "../../i18n/core";
 import { registerModelCacheWorker } from "../lib/model-cache";
+import { runBatchPool, selectBatchConcurrency } from "../lib/batch-performance";
 import {
   mapRemovalProgress,
   removeBackgroundLocal,
@@ -55,25 +60,27 @@ const MAX_FILE_SIZE = 12 * 1024 * 1024;
 const MODEL_ASSET_PATH = "/bg-removal/";
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-function outputName(fileName: string) {
-  return `${fileName.replace(/\.[^/.]+$/, "") || "product"}-透明底.png`;
+function outputName(fileName: string, t: Translator) {
+  return `${fileName.replace(/\.[^/.]+$/, "") || t("batch.download.defaultName")}${t("batch.download.transparentSuffix")}`;
 }
 
-function formatDuration(seconds: number | null) {
-  if (seconds === null) return "正在估算";
-  if (seconds <= 0) return "已完成";
-  if (seconds < 60) return `约 ${Math.max(1, Math.ceil(seconds))} 秒`;
+function formatDuration(seconds: number | null, t: Translator) {
+  if (seconds === null) return t("batch.duration.estimating");
+  if (seconds <= 0) return t("batch.duration.completed");
+  if (seconds < 60) {
+    return `${t("batch.duration.approx")}${Math.max(1, Math.ceil(seconds))} ${t("batch.duration.seconds")}`;
+  }
   const minutes = Math.floor(seconds / 60);
   const remainder = Math.ceil(seconds % 60);
-  return `约 ${minutes} 分 ${remainder} 秒`;
+  return `${t("batch.duration.approx")}${minutes} ${t("batch.duration.minutes")} ${remainder} ${t("batch.duration.seconds")}`;
 }
 
-function formatItemDuration(durationMs?: number) {
+function formatItemDuration(durationMs: number | undefined, t: Translator) {
   if (!durationMs) return "";
   const seconds = Math.max(1, Math.round(durationMs / 1000));
   return seconds < 60
-    ? `${seconds} 秒`
-    : `${Math.floor(seconds / 60)} 分 ${seconds % 60} 秒`;
+    ? `${seconds} ${t("batch.duration.seconds")}`
+    : `${Math.floor(seconds / 60)} ${t("batch.duration.minutes")} ${seconds % 60} ${t("batch.duration.seconds")}`;
 }
 
 function crc32(bytes: Uint8Array) {
@@ -91,6 +98,12 @@ function makeRecord(length: number, writer: (view: DataView) => void) {
   const bytes = new Uint8Array(length);
   writer(new DataView(bytes.buffer));
   return bytes;
+}
+
+function copyToArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  const copy = new Uint8Array(bytes.byteLength);
+  copy.set(bytes);
+  return copy.buffer;
 }
 
 async function createZip(
@@ -142,7 +155,8 @@ async function createZip(
     view.setUint32(16, offset, true);
   });
 
-  return new Blob([...localParts, ...centralParts, end], {
+  const zipParts = [...localParts, ...centralParts, end].map(copyToArrayBuffer);
+  return new Blob(zipParts, {
     type: "application/zip",
   });
 }
@@ -152,6 +166,8 @@ export function BatchRemover({
 }: {
   viewer: AccountViewer | null;
 }) {
+  const { locale, t } = useTranslations();
+  const localePrefix = `/${locale}`;
   const inputRef = useRef<HTMLInputElement>(null);
   const itemsRef = useRef<BatchItem[]>([]);
   const [items, setItems] = useState<BatchItem[]>([]);
@@ -164,7 +180,9 @@ export function BatchRemover({
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
 
   useEffect(() => {
-    void registerModelCacheWorker().catch(() => undefined);
+    void registerModelCacheWorker().catch((reason: unknown) => {
+      console.warn("[model-cache] SERVICE_WORKER_UNAVAILABLE", reason);
+    });
   }, []);
 
   useEffect(() => {
@@ -184,7 +202,7 @@ export function BatchRemover({
   const addFiles = (incoming: File[]) => {
     const remaining = MAX_BATCH_SIZE - itemsRef.current.length;
     if (remaining <= 0) {
-      setNotice(`体验版每批最多 ${MAX_BATCH_SIZE} 张，请先处理或清空当前任务。`);
+      setNotice(t("batch.notices.maxBatch", { max: MAX_BATCH_SIZE }));
       return;
     }
 
@@ -207,8 +225,11 @@ export function BatchRemover({
     setRunProgress(null);
     setNotice(
       skipped > 0
-        ? `已加入 ${added.length} 张，另有 ${skipped} 张因格式、大小或数量限制被跳过。`
-        : `已加入 ${added.length} 张图片。`,
+        ? t("batch.notices.addedSkipped", {
+            added: added.length,
+            skipped,
+          })
+        : t("batch.notices.added", { added: added.length }),
     );
   };
 
@@ -244,8 +265,13 @@ export function BatchRemover({
 
     setProcessing(true);
     trackAnalyticsEvent("batch_started");
-    const accelerated = false;
-    const concurrency = 1;
+    const deviceNavigator = navigator as Navigator & { deviceMemory?: number };
+    const concurrency = selectBatchConcurrency(targets.length, {
+      hardwareConcurrency: navigator.hardwareConcurrency,
+      deviceMemory: deviceNavigator.deviceMemory,
+      mobile: window.matchMedia("(pointer: coarse)").matches,
+    });
+    const accelerated = concurrency > 1;
     setRunProgress({
       completed: 0,
       total: targets.length,
@@ -254,14 +280,17 @@ export function BatchRemover({
       overallPercent: 0,
       failed: 0,
     });
-    setNotice("正在准备本地 AI 模型；当前设备将采用稳定的单任务模式。");
-    await registerModelCacheWorker().catch(() => undefined);
+    setNotice(t("batch.notices.modelLoading"));
+    try {
+      await registerModelCacheWorker();
+    } catch (reason) {
+      console.warn("[model-cache] SERVICE_WORKER_UNAVAILABLE", reason);
+    }
     const publicPath = new URL(MODEL_ASSET_PATH, window.location.href).toString();
 
     try {
       await verifyModelAssets(publicPath);
       const startedAt = performance.now();
-      let cursor = 0;
       let finished = 0;
       let failed = 0;
 
@@ -280,7 +309,6 @@ export function BatchRemover({
             output: {
               format: "image/png",
               quality: 1,
-              type: "foreground",
             },
             progress: (key: string, current: number, total: number) => {
               const mapped = mapRemovalProgress(key, current, total);
@@ -324,13 +352,13 @@ export function BatchRemover({
             durationMs: performance.now() - itemStartedAt,
           });
         } catch (reason) {
-          console.error(reason);
+          console.error("[batch] ITEM_PROCESSING_FAILED", reason);
           failed += 1;
           updateItem(item.id, {
             status: "error",
             progress: 0,
             durationMs: performance.now() - itemStartedAt,
-            error: "处理失败，可单独重试",
+            error: t("batch.items.error"),
           });
         }
         finished += 1;
@@ -349,17 +377,7 @@ export function BatchRemover({
         });
       };
 
-      const worker = async () => {
-        while (cursor < targets.length) {
-          const item = targets[cursor];
-          cursor += 1;
-          await processItem(item);
-        }
-      };
-
-      await Promise.all(
-        Array.from({ length: concurrency }, () => worker()),
-      );
+      await runBatchPool(targets, concurrency, processItem);
       setRunProgress({
         completed: targets.length,
         total: targets.length,
@@ -370,13 +388,13 @@ export function BatchRemover({
       });
       setNotice(
         failed > 0
-          ? `本轮完成，${failed} 张失败，可在对应图片上单独重试。`
-          : "本批次处理完成，可逐张预览、修边或打包下载。",
+          ? t("batch.notices.doneWithFailures", { failed })
+          : t("batch.notices.done"),
       );
       trackAnalyticsEvent("batch_completed");
     } catch (reason) {
-      console.error(reason);
-      setNotice("本地模型没有加载完成，请检查网络后重试。");
+      console.error("[batch] MODEL_INITIALIZATION_FAILED", reason);
+      setNotice(t("batch.notices.modelFail"));
     } finally {
       setProcessing(false);
     }
@@ -393,7 +411,7 @@ export function BatchRemover({
     if (!item.resultUrl) return;
     const anchor = document.createElement("a");
     anchor.href = item.resultUrl;
-    anchor.download = outputName(item.file.name);
+    anchor.download = outputName(item.file.name, t);
     anchor.click();
     trackAnalyticsEvent("download");
   };
@@ -408,17 +426,20 @@ export function BatchRemover({
     try {
       const zip = await createZip(
         completed.map((item) => ({
-          name: outputName(item.file.name),
+          name: outputName(item.file.name, t),
           blob: item.resultBlob,
         })),
       );
       const url = URL.createObjectURL(zip);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = `白橙铺-批量抠图-${completed.length}张.zip`;
+      anchor.download = t("batch.download.zipName", { count: completed.length });
       anchor.click();
       trackAnalyticsEvent("download");
       window.setTimeout(() => URL.revokeObjectURL(url), 5_000);
+    } catch (reason) {
+      console.error("[batch] ZIP_CREATION_FAILED", reason);
+      setNotice(t("batch.notices.zipFail"));
     } finally {
       setPreparingZip(false);
     }
@@ -464,31 +485,30 @@ export function BatchRemover({
   return (
     <main className="batch-page">
       <header className="topbar">
-        <a className="brand" href="/" aria-label="返回白橙铺首页">
-          <span className="brand-mark" aria-hidden="true">
-            橙
-          </span>
-          <span>白橙铺</span>
+        <a className="brand" href={localePrefix} aria-label={t("batch.brand.homeLabel")}>
+          <BrandLogo />
+          <span>{t("common.brand.name")}</span>
         </a>
-        <nav className="nav" aria-label="批量版导航">
-          <a href="/">单张抠图</a>
-          <a href="/pricing">专业版</a>
-          <a href="/contact">联系我们</a>
-          <span className="nav-pill">批量体验版</span>
+        <nav className="nav" aria-label={t("batch.nav.label")}>
+          <a href={localePrefix}>{t("batch.nav.single")}</a>
+          <a href={`${localePrefix}/pricing`}>{t("batch.nav.pro")}</a>
+          <a href={`${localePrefix}/contact`}>{t("batch.nav.contact")}</a>
+          <span className="nav-pill">{t("batch.nav.pill")}</span>
         </nav>
+        <LanguageSwitcher />
         <AccountMenu viewer={viewer} />
       </header>
 
       <section className="batch-hero">
         <div>
-          <span className="eyebrow">02 / 批量工作台</span>
-          <h1>多张商品图，<br />排队一次抠完。</h1>
-          <p>一次选择最多 20 张，AI 在浏览器内逐张处理，图片不会上传。</p>
+          <span className="eyebrow">{t("batch.hero.eyebrow")}</span>
+          <h1>{t("batch.hero.titleLine1")}<br />{t("batch.hero.titleLine2")}</h1>
+          <p>{t("batch.hero.subtitle", { max: MAX_BATCH_SIZE })}</p>
         </div>
-        <div className="batch-stats" aria-label="批量任务状态">
-          <span><strong>{items.length}</strong> 已选择</span>
-          <span><strong>{completedCount}</strong> 已完成</span>
-          <span><strong>{pendingCount}</strong> 待处理</span>
+        <div className="batch-stats" aria-label={t("batch.stats.label")}>
+          <span><strong>{items.length}</strong> {t("batch.stats.selectedLabel")}</span>
+          <span><strong>{completedCount}</strong> {t("batch.stats.completedLabel")}</span>
+          <span><strong>{pendingCount}</strong> {t("batch.stats.pendingLabel")}</span>
         </div>
       </section>
 
@@ -506,8 +526,8 @@ export function BatchRemover({
           onDrop={onDrop}
         >
           <div>
-            <strong>把多张商品图拖到这里</strong>
-            <span>支持 JPG / PNG / WebP · 单张最大 12MB</span>
+            <strong>{t("batch.dropzone.title")}</strong>
+            <span>{t("batch.dropzone.hint")}</span>
           </div>
           <button
             className="secondary-button"
@@ -515,7 +535,7 @@ export function BatchRemover({
             disabled={processing}
             onClick={() => inputRef.current?.click()}
           >
-            选择多张图片
+            {t("batch.dropzone.button")}
           </button>
           <input
             ref={inputRef}
@@ -534,19 +554,21 @@ export function BatchRemover({
             {runProgress && (
               <div className="batch-run-status" role="status">
                 <span>
-                  批次进度
+                  {t("batch.progress.batchProgress")}
                   <strong>
                     {runProgress.overallPercent}%
                   </strong>
                 </span>
                 <span>
-                  预计剩余
-                  <strong>{formatDuration(runProgress.etaSeconds)}</strong>
+                  {t("batch.progress.estimatedRemaining")}
+                  <strong>{formatDuration(runProgress.etaSeconds, t)}</strong>
                 </span>
                 <span>
-                  处理模式
+                  {t("batch.progress.processingMode")}
                   <strong>
-                    {runProgress.accelerated ? "多线程加速" : "稳定模式"}
+                    {runProgress.accelerated
+                      ? t("batch.progress.multiThread")
+                      : t("batch.progress.stableMode")}
                   </strong>
                 </span>
                 <div className="batch-overall-progress" aria-hidden="true">
@@ -562,8 +584,11 @@ export function BatchRemover({
                 onClick={() => void processAll()}
               >
                 {processing && runProgress
-                  ? `处理中 ${runProgress.completed}/${runProgress.total}`
-                  : `开始处理 ${pendingCount} 张`}
+                  ? t("batch.progress.processing", {
+                      completed: runProgress.completed,
+                      total: runProgress.total,
+                    })
+                  : t("batch.progress.starting", { n: pendingCount })}
               </button>
               <button
                 className="secondary-button"
@@ -571,7 +596,11 @@ export function BatchRemover({
                 disabled={processing || completedCount === 0 || preparingZip}
                 onClick={() => void downloadZip()}
               >
-                {preparingZip ? "正在打包…" : `打包下载 ${completedCount} 张`}
+                {preparingZip
+                  ? t("batch.actions.packaging")
+                  : t("batch.actions.downloadAllCount", {
+                      count: completedCount,
+                    })}
               </button>
               <button
                 className="batch-clear"
@@ -579,27 +608,34 @@ export function BatchRemover({
                 disabled={processing}
                 onClick={clearAll}
               >
-                清空任务
+                {t("batch.actions.clear")}
               </button>
             </div>
 
-            <div className="batch-grid" aria-label="批量图片任务">
+            <div className="batch-grid" aria-label={t("batch.download.gridLabel")}>
               {items.map((item, index) => (
                 <article className={`batch-item is-${item.status}`} key={item.id}>
                   <div className="batch-thumb">
                     <img
                       src={item.resultUrl || item.sourceUrl}
-                      alt={`${item.file.name} ${item.status === "done" ? "抠图结果" : "原图"}`}
+                      alt={`${item.file.name} ${
+                        item.status === "done"
+                          ? t("batch.items.resultAlt")
+                          : t("batch.items.sourceAlt")
+                      }`}
                     />
                     <span>{String(index + 1).padStart(2, "0")}</span>
                   </div>
                   <div className="batch-item-copy">
                     <strong title={item.file.name}>{item.file.name}</strong>
                     <span>
-                      {item.status === "queued" && "等待处理"}
-                      {item.status === "processing" && `处理中 ${item.progress}%`}
+                      {item.status === "queued" && t("batch.items.queued")}
+                      {item.status === "processing" &&
+                        t("batch.items.processing", { progress: item.progress })}
                       {item.status === "done" &&
-                        `处理完成 · ${formatItemDuration(item.durationMs)}`}
+                        t("batch.items.done", {
+                          duration: formatItemDuration(item.durationMs, t),
+                        })}
                       {item.status === "error" && item.error}
                     </span>
                     <div className="batch-progress" aria-hidden="true">
@@ -617,10 +653,10 @@ export function BatchRemover({
                           type="button"
                           onClick={() => setPreviewItemId(item.id)}
                         >
-                          预览
+                          {t("batch.items.preview")}
                         </button>
                         <button type="button" onClick={() => downloadOne(item)}>
-                          下载
+                          {t("batch.items.download")}
                         </button>
                       </>
                     )}
@@ -630,7 +666,7 @@ export function BatchRemover({
                         disabled={processing}
                         onClick={() => void processItems([item])}
                       >
-                        单独重试
+                        {t("batch.items.retry")}
                       </button>
                     )}
                     <button
@@ -638,7 +674,7 @@ export function BatchRemover({
                       disabled={processing}
                       onClick={() => removeItem(item.id)}
                     >
-                      移除
+                      {t("batch.items.remove")}
                     </button>
                   </div>
                 </article>
@@ -653,12 +689,12 @@ export function BatchRemover({
           <section className="batch-preview-modal">
             <div className="batch-preview-head">
               <div>
-                <span className="step-kicker">批量结果预览</span>
+                <span className="step-kicker">{t("batch.preview.title")}</span>
                 <h2 title={previewItem.file.name}>{previewItem.file.name}</h2>
               </div>
               <button
                 type="button"
-                aria-label="关闭结果预览"
+                aria-label={t("batch.preview.close")}
                 onClick={() => setPreviewItemId(null)}
               >
                 ×
@@ -666,15 +702,21 @@ export function BatchRemover({
             </div>
             <div className="batch-preview-grid">
               <figure>
-                <figcaption>原图</figcaption>
+                <figcaption>{t("batch.preview.original")}</figcaption>
                 <div className="preview-frame">
-                  <img src={previewItem.sourceUrl} alt="批量商品原图" />
+                  <img
+                    src={previewItem.sourceUrl}
+                    alt={t("batch.preview.sourceAlt")}
+                  />
                 </div>
               </figure>
               <figure>
-                <figcaption>透明底</figcaption>
+                <figcaption>{t("batch.preview.transparent")}</figcaption>
                 <div className="preview-frame checkerboard">
-                  <img src={previewItem.resultUrl} alt="批量抠图结果" />
+                  <img
+                    src={previewItem.resultUrl}
+                    alt={t("batch.preview.resultAlt")}
+                  />
                 </div>
               </figure>
             </div>
@@ -685,7 +727,7 @@ export function BatchRemover({
                   type="button"
                   onClick={() => setEditingItemId(previewItem.id)}
                 >
-                  手动修边
+                  {t("batch.preview.manualEdit")}
                 </button>
               )}
               <button
@@ -693,7 +735,7 @@ export function BatchRemover({
                 type="button"
                 onClick={() => downloadOne(previewItem)}
               >
-                下载透明 PNG
+                {t("batch.preview.downloadPng")}
               </button>
             </div>
           </section>
