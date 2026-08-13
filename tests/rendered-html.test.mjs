@@ -268,8 +268,10 @@ test("protects the user administration page with an admin email allowlist", asyn
   assert.match(adminHomeHtml, /管理首页/);
   assert.match(adminHomeHtml, /用户分析/);
   assert.match(adminHomeHtml, /用户管理/);
+  assert.match(adminHomeHtml, /收费观察/);
   assert.match(adminHomeHtml, /href="\/admin\/analytics"/);
   assert.match(adminHomeHtml, /href="\/admin\/users"/);
+  assert.match(adminHomeHtml, /href="\/admin\/billing"/);
 
   const analyticsResponse = await render(
     "/admin/analytics",
@@ -281,6 +283,50 @@ test("protects the user administration page with an admin email allowlist", asyn
   const analyticsHtml = await analyticsResponse.text();
   assert.match(analyticsHtml, /访问分析/);
   assert.match(analyticsHtml, /最近访客/);
+
+  const billingResponse = await render(
+    "/admin/billing",
+    authenticatedHeaders,
+    sessionDb,
+    { ADMIN_EMAILS: "admin@example.com" },
+  );
+  assert.equal(billingResponse.status, 200);
+  const billingHtml = await billingResponse.text();
+  assert.match(billingHtml, /订单与订阅/);
+  assert.match(billingHtml, /最近订单/);
+});
+
+test("returns billing summaries only to an authenticated administrator", async () => {
+  const worker = await loadWorker("admin-billing");
+  const db = {
+    prepare(sql) {
+      const statement = {
+        bind() { return statement; },
+        async first() {
+          if (/FROM sessions/.test(sql)) return { id: "admin-1", email: "admin@example.com", displayName: "Admin", plan: "free" };
+          if (/FROM orders/.test(sql)) return { total: 2, paid: 1, pending: 1, revenue: 3900 };
+          if (/FROM subscriptions/.test(sql)) return { total: 1, active: 1, pastDue: 0, canceled: 0 };
+          return null;
+        },
+        async all() {
+          if (/FROM orders/.test(sql)) return { results: [{ id: 1, email: "buyer@example.com", displayName: "Buyer", plan: "pro", amount: 3900, currency: "cny", status: "completed", createdAt: "2026-08-13T00:00:00.000Z" }] };
+          if (/FROM subscriptions/.test(sql)) return { results: [{ id: 1, email: "buyer@example.com", displayName: "Buyer", plan: "pro", status: "active", currentPeriodEnd: "2026-09-13T00:00:00.000Z", cancelAtPeriodEnd: 0, canceledAt: null, updatedAt: "2026-08-13T00:00:00.000Z" }] };
+          return { results: [] };
+        },
+      };
+      return statement;
+    },
+  };
+  const ctx = { waitUntil() {}, passThroughOnException() {} };
+  const assets = { fetch: async () => new Response("Not found", { status: 404 }) };
+  const anonymous = await worker.fetch(new Request("http://localhost/api/admin/billing"), { ASSETS: assets, DB: db, ADMIN_EMAILS: "admin@example.com" }, ctx);
+  assert.equal(anonymous.status, 401);
+  const response = await worker.fetch(new Request("http://localhost/api/admin/billing", { headers: { cookie: "bcp_session=admin-session-token" } }), { ASSETS: assets, DB: db, ADMIN_EMAILS: "admin@example.com" }, ctx);
+  assert.equal(response.status, 200);
+  const payload = await response.json();
+  assert.deepEqual(payload.summary, { orders: 2, paidOrders: 1, pendingOrders: 1, revenue: 3900, activeSubscriptions: 1, pastDueSubscriptions: 0, canceledSubscriptions: 0 });
+  assert.equal(payload.orders[0].email, "buyer@example.com");
+  assert.equal("stripeCustomerId" in payload.subscriptions[0], false);
 });
 
 test("returns safe user data from the admin API", async () => {

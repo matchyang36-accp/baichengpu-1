@@ -23,6 +23,12 @@ const adminFeatures = [
     title: "用户管理",
     description: "查询注册用户、调整账户状态与套餐，并导出运营数据。",
   },
+  {
+    href: "/admin/billing",
+    eyebrow: "订单与订阅",
+    title: "收费观察",
+    description: "查看付款订单、订阅状态、待处理订单与异常续费。",
+  },
 ] as const;
 
 export default async function AdminHomePage() {
@@ -39,6 +45,7 @@ export default async function AdminHomePage() {
           <Link href="/admin" aria-current="page">管理首页</Link>
           <Link href="/admin/analytics">访问分析</Link>
           <Link href="/admin/users">用户管理</Link>
+          <Link href="/admin/billing">收费观察</Link>
           <Link href="/">返回网站</Link>
         </nav>
       </header>

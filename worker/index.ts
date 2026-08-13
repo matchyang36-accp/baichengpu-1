@@ -887,6 +887,84 @@ async function handleAdminUsersRequest(
 ): Promise<Response> {
   const url = new URL(request.url);
 
+  if (url.pathname === "/api/admin/billing" && request.method === "GET") {
+    const [orderStats, subscriptionStats, orders, subscriptions] = await Promise.all([
+      db
+        .prepare(
+          `SELECT
+            COUNT(*) AS total,
+            SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS paid,
+            SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending,
+            SUM(CASE WHEN status = 'completed' THEN amount ELSE 0 END) AS revenue
+          FROM orders`,
+        )
+        .first<{ total: number; paid: number; pending: number; revenue: number }>(),
+      db
+        .prepare(
+          `SELECT
+            COUNT(*) AS total,
+            SUM(CASE WHEN status IN ('active', 'trialing') THEN 1 ELSE 0 END) AS active,
+            SUM(CASE WHEN status = 'past_due' THEN 1 ELSE 0 END) AS pastDue,
+            SUM(CASE WHEN status = 'canceled' THEN 1 ELSE 0 END) AS canceled
+          FROM subscriptions`,
+        )
+        .first<{ total: number; active: number; pastDue: number; canceled: number }>(),
+      db
+        .prepare(
+          `SELECT
+            orders.id,
+            users.email,
+            users.display_name AS displayName,
+            orders.plan,
+            orders.amount,
+            orders.currency,
+            orders.status,
+            orders.created_at AS createdAt
+          FROM orders
+          JOIN users ON users.id = orders.user_id
+          ORDER BY orders.created_at DESC
+          LIMIT 50`,
+        )
+        .all<Record<string, unknown>>(),
+      db
+        .prepare(
+          `SELECT
+            subscriptions.id,
+            users.email,
+            users.display_name AS displayName,
+            subscriptions.plan,
+            subscriptions.status,
+            subscriptions.current_period_end AS currentPeriodEnd,
+            subscriptions.cancel_at_period_end AS cancelAtPeriodEnd,
+            subscriptions.canceled_at AS canceledAt,
+            subscriptions.updated_at AS updatedAt
+          FROM subscriptions
+          JOIN users ON users.id = subscriptions.user_id
+          ORDER BY subscriptions.updated_at DESC
+          LIMIT 50`,
+        )
+        .all<Record<string, unknown>>(),
+    ]);
+
+    return json(
+      {
+        ok: true,
+        summary: {
+          orders: orderStats?.total ?? 0,
+          paidOrders: orderStats?.paid ?? 0,
+          pendingOrders: orderStats?.pending ?? 0,
+          revenue: orderStats?.revenue ?? 0,
+          activeSubscriptions: subscriptionStats?.active ?? 0,
+          pastDueSubscriptions: subscriptionStats?.pastDue ?? 0,
+          canceledSubscriptions: subscriptionStats?.canceled ?? 0,
+        },
+        orders: orders.results ?? [],
+        subscriptions: subscriptions.results ?? [],
+      },
+      200,
+    );
+  }
+
   if (url.pathname === "/api/admin/analytics" && request.method === "GET") {
     const requestedRange = Number.parseInt(
       url.searchParams.get("days") ?? "30",

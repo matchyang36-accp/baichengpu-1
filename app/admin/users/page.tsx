@@ -26,6 +26,7 @@ async function AdminUsersContent() {
         <nav className="nav" aria-label="管理员导航">
           <Link href="/admin/analytics">访问分析</Link>
           <Link href="/admin/users" aria-current="page">用户管理</Link>
+          <Link href="/admin/billing">收费观察</Link>
           <Link href="/">单张抠图</Link>
           <Link href="/batch">批量版</Link>
         </nav>

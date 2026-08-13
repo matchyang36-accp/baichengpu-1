@@ -24,6 +24,7 @@ async function AdminAnalyticsContent() {
         <nav className="nav" aria-label="管理员导航">
           <Link href="/admin/analytics" aria-current="page">访问分析</Link>
           <Link href="/admin/users">用户管理</Link>
+          <Link href="/admin/billing">收费观察</Link>
           <Link href="/">返回网站</Link>
         </nav>
       </header>

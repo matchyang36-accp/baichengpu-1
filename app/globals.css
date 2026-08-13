@@ -84,7 +84,7 @@
   display: grid;
   max-width: 1320px;
   margin: 0 auto;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 22px;
 }
 
@@ -998,6 +998,31 @@ button {
 
 .account-plan-card .secondary-button {
   margin-top: auto;
+}
+
+.billing-status {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #eef1f7;
+  color: #596277;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.billing-status.is-success {
+  background: #e9f9f0;
+  color: #15784f;
+}
+
+.billing-status.is-warning {
+  background: #fff4dc;
+  color: #9a6400;
+}
+
+.billing-status.is-danger {
+  background: #fff0ec;
+  color: #c44128;
 }
 
 .account-plan-card button.secondary-button {
