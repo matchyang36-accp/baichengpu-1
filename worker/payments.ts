@@ -26,6 +26,7 @@ const PAYMENT_PATHS = new Set([
   "/api/checkout",
   "/api/webhook",
   "/api/subscription",
+  "/api/billing-portal",
   "/api/orders",
 ]);
 
@@ -390,6 +391,43 @@ async function subscriptionResponse(env: PaymentEnv, user: PaymentUser): Promise
   });
 }
 
+async function createBillingPortal(
+  request: Request,
+  env: PaymentEnv,
+  user: PaymentUser,
+): Promise<Response> {
+  if (!sameOrigin(request)) return json({ ok: false, code: "INVALID_ORIGIN" }, 403);
+  const configuration = stripeConfiguration(env);
+  if (!configuration.enabled) {
+    if ("missing" in configuration) {
+      console.error(`[payments] CONFIG_MISSING keys=${configuration.missing.join(",")}`);
+      return json({ ok: false, code: "PAYMENT_CONFIG_INCOMPLETE" }, 503);
+    }
+    return json({ ok: false, code: "PAYMENT_NOT_CONFIGURED" }, 503);
+  }
+
+  const subscription = await env.DB.prepare(
+    "SELECT stripe_customer_id FROM subscriptions WHERE user_id = ? ORDER BY created_at DESC LIMIT 1",
+  )
+    .bind(user.id)
+    .first<{ stripe_customer_id: string }>();
+  if (!subscription?.stripe_customer_id) {
+    return json({ ok: false, code: "SUBSCRIPTION_NOT_FOUND" }, 404);
+  }
+
+  try {
+    const portal = await stripeClient(configuration.secretKey).billingPortal.sessions.create({
+      customer: subscription.stripe_customer_id,
+      return_url: `${new URL(request.url).origin}/account`,
+    });
+    if (!portal.url) throw new Error("Stripe did not return a billing portal URL.");
+    return json({ ok: true, url: portal.url });
+  } catch (reason) {
+    console.error(`[payments] BILLING_PORTAL_FAILED user=${user.id}`, reason);
+    return json({ ok: false, code: "BILLING_PORTAL_FAILED" }, 502);
+  }
+}
+
 async function ordersResponse(env: PaymentEnv, user: PaymentUser): Promise<Response> {
   const result = await env.DB.prepare(
     "SELECT plan, amount, currency, status, created_at AS createdAt FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT 20",
@@ -413,6 +451,9 @@ export async function handlePaymentRequest(
   if (pathname === "/api/credits/consume" && request.method === "POST") return consumeCredits(request, env, user);
   if (pathname === "/api/checkout" && request.method === "POST") return createCheckout(request, env, user);
   if (pathname === "/api/subscription" && request.method === "GET") return subscriptionResponse(env, user);
+  if (pathname === "/api/billing-portal" && request.method === "POST") {
+    return createBillingPortal(request, env, user);
+  }
   if (pathname === "/api/orders" && request.method === "GET") return ordersResponse(env, user);
   return json({ ok: false, code: "METHOD_NOT_ALLOWED" }, 405);
 }

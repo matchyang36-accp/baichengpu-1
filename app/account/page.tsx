@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { requireAccountUser } from "../account-auth";
 import { LogoutButton } from "./LogoutButton";
+import { SubscriptionPanel } from "./SubscriptionPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -54,21 +55,7 @@ async function AccountContent() {
           </p>
         </article>
 
-        <article className="account-plan-card">
-          <div>
-            <span className="account-card-label">当前方案</span>
-            <h2>免费体验版</h2>
-            <p>单张与批量抠图继续在本地运行，不上传原图。</p>
-          </div>
-          <ul>
-            <li>透明 PNG 与电商白底图</li>
-            <li>手动修边和边缘净化</li>
-            <li>最多 20 张批量体验</li>
-          </ul>
-          <Link className="secondary-button" href="/pricing">
-            查看专业版
-          </Link>
-        </article>
+        <SubscriptionPanel initialPlan={user.plan} />
       </section>
 
       <section className="account-privacy-card">

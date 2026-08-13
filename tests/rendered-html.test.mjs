@@ -845,6 +845,20 @@ test("payment routes fail closed and degrade safely when Stripe is unavailable",
     code: "PAYMENT_CONFIG_INCOMPLETE",
   });
 
+  const partialPortalResponse = await worker.fetch(
+    new Request("http://localhost/api/billing-portal", {
+      method: "POST",
+      headers: { cookie: "bcp_session=test-session", origin: "http://localhost" },
+    }),
+    { ASSETS: assets, DB: sessionDb, STRIPE_SECRET_KEY: "sk_test_config_only" },
+    ctx,
+  );
+  assert.equal(partialPortalResponse.status, 503);
+  assert.deepEqual(await partialPortalResponse.json(), {
+    ok: false,
+    code: "PAYMENT_CONFIG_INCOMPLETE",
+  });
+
   const webhookResponse = await worker.fetch(
     new Request("http://localhost/api/webhook", { method: "POST", body: "{}" }),
     { ASSETS: assets, DB: {} },
@@ -936,6 +950,131 @@ test("checkout explicitly enables Managed Payments", async () => {
   assert.equal(checkoutParams?.get("managed_payments[enabled]"), "true");
   assert.equal(checkoutParams?.get("line_items[0][price]"), "price_pro_test");
   assert.ok(executed.some(({ sql }) => /INSERT INTO orders/.test(sql)));
+});
+
+test("billing portal is authenticated and bound to the current user's Stripe customer", async () => {
+  const worker = await loadWorker("billing-portal-customer-binding");
+  const ctx = { waitUntil() {}, passThroughOnException() {} };
+  const assets = { fetch: async () => new Response("Not found", { status: 404 }) };
+  const anonymousResponse = await worker.fetch(
+    new Request("http://localhost/api/billing-portal", { method: "POST" }),
+    { ASSETS: assets, DB: {} },
+    ctx,
+  );
+  assert.equal(anonymousResponse.status, 401);
+
+  const queriedUserIds = [];
+  const db = {
+    prepare(sql) {
+      return {
+        bind(...values) {
+          return {
+            async first() {
+              if (/FROM sessions/.test(sql)) {
+                return {
+                  id: "user_billing_portal",
+                  email: "billing@example.com",
+                  displayName: "Billing User",
+                  plan: "pro",
+                };
+              }
+              if (/stripe_customer_id FROM subscriptions/.test(sql)) {
+                queriedUserIds.push(values[0]);
+                return { stripe_customer_id: "cus_current_user" };
+              }
+              return null;
+            },
+          };
+        },
+      };
+    },
+  };
+  const nativeFetch = globalThis.fetch;
+  let portalParams;
+  globalThis.fetch = async (input, init) => {
+    if (String(input).includes("/v1/billing_portal/sessions")) {
+      portalParams = new URLSearchParams(String(init?.body ?? ""));
+      return Response.json({
+        id: "bps_test_current_user",
+        object: "billing_portal.session",
+        url: "https://billing.stripe.com/p/session/test",
+      });
+    }
+    return nativeFetch(input, init);
+  };
+
+  let response;
+  try {
+    response = await worker.fetch(
+      new Request("http://localhost/api/billing-portal", {
+        method: "POST",
+        headers: { cookie: "bcp_session=test-session", origin: "http://localhost" },
+      }),
+      {
+        ASSETS: assets,
+        DB: db,
+        STRIPE_SECRET_KEY: "sk_test_billing_portal",
+        STRIPE_WEBHOOK_SECRET: "whsec_billing_portal",
+        STRIPE_PRICE_PRO: "price_pro_test",
+        STRIPE_PRICE_TEAM: "price_team_test",
+      },
+      ctx,
+    );
+  } finally {
+    globalThis.fetch = nativeFetch;
+  }
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), {
+    ok: true,
+    url: "https://billing.stripe.com/p/session/test",
+  });
+  assert.deepEqual(queriedUserIds, ["user_billing_portal"]);
+  assert.equal(portalParams?.get("customer"), "cus_current_user");
+  assert.equal(portalParams?.get("return_url"), "http://localhost/account");
+});
+
+test("billing portal fails closed when the signed-in user has no Stripe subscription", async () => {
+  const worker = await loadWorker("billing-portal-no-subscription");
+  const ctx = { waitUntil() {}, passThroughOnException() {} };
+  const db = {
+    prepare(sql) {
+      return {
+        bind() {
+          return {
+            async first() {
+              if (/FROM sessions/.test(sql)) {
+                return {
+                  id: "user_without_subscription",
+                  email: "free@example.com",
+                  displayName: "Free User",
+                  plan: "free",
+                };
+              }
+              return null;
+            },
+          };
+        },
+      };
+    },
+  };
+  const response = await worker.fetch(
+    new Request("http://localhost/api/billing-portal", {
+      method: "POST",
+      headers: { cookie: "bcp_session=test-session", origin: "http://localhost" },
+    }),
+    {
+      ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+      DB: db,
+      STRIPE_SECRET_KEY: "sk_test_billing_portal",
+      STRIPE_WEBHOOK_SECRET: "whsec_billing_portal",
+      STRIPE_PRICE_PRO: "price_pro_test",
+      STRIPE_PRICE_TEAM: "price_team_test",
+    },
+    ctx,
+  );
+  assert.equal(response.status, 404);
+  assert.deepEqual(await response.json(), { ok: false, code: "SUBSCRIPTION_NOT_FOUND" });
 });
 
 test("credit consumption is atomic when requests reach the quota together", async () => {
