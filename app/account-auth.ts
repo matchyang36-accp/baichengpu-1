@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { safeAdminReturnPath } from "../shared/admin-navigation";
 
 export type AccountUser = {
   id: string;
@@ -77,28 +78,6 @@ function safeRelativeReturnPath(value: string): string {
     return `${url.pathname}${url.search}${url.hash}`;
   } catch {
     return "/";
-  }
-}
-
-function safeAdminReturnPath(value: string): string {
-  if (
-    (value !== "/admin" && !value.startsWith("/admin/")) ||
-    value.startsWith("//")
-  ) {
-    return "/admin/users";
-  }
-
-  try {
-    const url = new URL(value, "https://app.local");
-    if (
-      url.origin !== "https://app.local" ||
-      url.pathname === "/admin/login"
-    ) {
-      return "/admin/users";
-    }
-    return `${url.pathname}${url.search}${url.hash}`;
-  } catch {
-    return "/admin/users";
   }
 }
 

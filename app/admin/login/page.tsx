@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAccountUser } from "../../account-auth";
+import { safeAdminReturnPath } from "../../../shared/admin-navigation";
 import { AdminLoginForm } from "./AdminLoginForm";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +25,7 @@ export default async function AdminLoginPage({
   if (user?.isAdmin) redirect("/admin/users");
 
   const params = await searchParams;
-  const returnTo = safeAdminReturnTo(params.return_to);
+  const returnTo = safeAdminReturnPath(params.return_to);
 
   return (
     <main className="auth-page">
@@ -54,23 +55,4 @@ export default async function AdminLoginPage({
       </section>
     </main>
   );
-}
-
-function safeAdminReturnTo(value?: string): string {
-  if (!value?.startsWith("/admin/") || value.startsWith("//")) {
-    return "/admin/users";
-  }
-
-  try {
-    const url = new URL(value, "https://app.local");
-    if (
-      url.origin !== "https://app.local" ||
-      url.pathname === "/admin/login"
-    ) {
-      return "/admin/users";
-    }
-    return `${url.pathname}${url.search}${url.hash}`;
-  } catch {
-    return "/admin/users";
-  }
 }

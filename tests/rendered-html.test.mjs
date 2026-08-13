@@ -209,6 +209,23 @@ test("protects the user administration page with an admin email allowlist", asyn
     "http://localhost/admin/login?return_to=%2Fadmin%2Fusers",
   );
 
+  const anonymousRscResponse = await render("/admin/users.rsc?_rsc=test");
+  assert.equal(anonymousRscResponse.status, 302);
+  assert.equal(
+    anonymousRscResponse.headers.get("location"),
+    "http://localhost/admin/login?return_to=%2Fadmin%2Fusers",
+  );
+
+  const directRscDocumentResponse = await render(
+    "/admin/users.rsc?_rsc=test",
+    { "sec-fetch-dest": "document" },
+  );
+  assert.equal(directRscDocumentResponse.status, 302);
+  assert.equal(
+    directRscDocumentResponse.headers.get("location"),
+    "http://localhost/admin/users",
+  );
+
   const loginResponse = await render("/admin/login");
   assert.equal(loginResponse.status, 200);
   const loginHtml = await loginResponse.text();

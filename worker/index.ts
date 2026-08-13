@@ -1,6 +1,10 @@
 /** Cloudflare Worker entry point for the vinext-starter template. */
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
+import {
+  normalizeAdminPagePath,
+  safeAdminReturnPath,
+} from "../shared/admin-navigation";
 import { handlePaymentRequest } from "./payments";
 
 interface Env {
@@ -1418,14 +1422,22 @@ const worker = {
     }
 
     if (url.pathname.startsWith("/admin") && request.method === "GET") {
-      if (url.pathname === "/admin/login") {
+      const adminPagePath = normalizeAdminPagePath(url.pathname);
+      const isDocumentRequest =
+        request.headers.get("sec-fetch-dest") === "document";
+
+      if (url.pathname.endsWith(".rsc") && isDocumentRequest) {
+        return Response.redirect(new URL(adminPagePath, request.url), 302);
+      }
+
+      if (adminPagePath === "/admin/login") {
         if (isAdmin) {
           return Response.redirect(new URL("/admin", request.url), 302);
         }
       } else if (!authenticatedUser) {
         return Response.redirect(
           new URL(
-            `/admin/login?return_to=${encodeURIComponent(url.pathname)}`,
+            `/admin/login?return_to=${encodeURIComponent(safeAdminReturnPath(url.pathname))}`,
             request.url,
           ),
           302,
