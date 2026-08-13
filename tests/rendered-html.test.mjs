@@ -1134,3 +1134,84 @@ test("subscription webhooks use current Stripe state when events arrive out of o
   assert.ok(pendingOrderUpdate);
   assert.equal(pendingOrderUpdate.values[0], "pending");
 });
+
+test("duplicate Stripe webhook events are acknowledged without applying membership twice", async () => {
+  const worker = await loadWorker("payment-webhook-idempotency");
+  const webhookSecret = "whsec_idempotency_test";
+  const stripe = new Stripe("sk_test_idempotency");
+  const event = {
+    id: "evt_checkout_duplicate",
+    object: "event",
+    type: "checkout.session.completed",
+    data: {
+      object: {
+        id: "cs_checkout_duplicate",
+        object: "checkout.session",
+        client_reference_id: "user_idempotency",
+        metadata: { userId: "user_idempotency", plan: "pro" },
+        payment_status: "paid",
+        payment_intent: "pi_idempotency",
+      },
+    },
+  };
+  const payload = JSON.stringify(event);
+  const signature = stripe.webhooks.generateTestHeaderString({
+    payload,
+    secret: webhookSecret,
+  });
+  let eventInsertAttempts = 0;
+  let membershipUpdates = 0;
+  const db = {
+    prepare(sql) {
+      return {
+        bind(...values) {
+          return {
+            sql,
+            values,
+            async run() {
+              if (/INSERT OR IGNORE INTO processed_webhook_events/.test(sql)) {
+                eventInsertAttempts += 1;
+                return { meta: { changes: eventInsertAttempts === 1 ? 1 : 0 } };
+              }
+              return { meta: { changes: 1 } };
+            },
+          };
+        },
+      };
+    },
+    async batch(statements) {
+      membershipUpdates += statements.filter(({ sql }) => /UPDATE users SET plan/.test(sql)).length;
+      return statements.map(() => ({ success: true }));
+    },
+  };
+  const env = {
+    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    DB: db,
+    STRIPE_SECRET_KEY: "sk_test_idempotency",
+    STRIPE_WEBHOOK_SECRET: webhookSecret,
+    STRIPE_PRICE_PRO: "price_pro_test",
+    STRIPE_PRICE_TEAM: "price_team_test",
+  };
+  const makeRequest = () =>
+    new Request("http://localhost/api/webhook", {
+      method: "POST",
+      headers: { "stripe-signature": signature },
+      body: payload,
+    });
+
+  const firstResponse = await worker.fetch(makeRequest(), env, {
+    waitUntil() {},
+    passThroughOnException() {},
+  });
+  const duplicateResponse = await worker.fetch(makeRequest(), env, {
+    waitUntil() {},
+    passThroughOnException() {},
+  });
+
+  assert.equal(firstResponse.status, 200);
+  assert.deepEqual(await firstResponse.json(), { received: true });
+  assert.equal(duplicateResponse.status, 200);
+  assert.deepEqual(await duplicateResponse.json(), { received: true, duplicate: true });
+  assert.equal(eventInsertAttempts, 2);
+  assert.equal(membershipUpdates, 1);
+});

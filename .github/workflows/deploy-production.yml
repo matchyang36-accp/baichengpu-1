@@ -67,4 +67,4 @@ jobs:
 
       - name: Deploy production Worker
         if: steps.config.outputs.ready == 'true'
-        run: pnpm exec wrangler deploy
+        run: pnpm exec wrangler deploy --config dist/server/wrangler.json
