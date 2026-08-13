@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 
 const ADMIN_EMAIL = "644373212@qq.com";
@@ -78,6 +79,12 @@ export function AdminLoginForm({ returnTo }: AdminLoginFormProps) {
             placeholder="请输入管理员账户密码"
           />
         </label>
+
+        <p className="auth-switch auth-admin-reset-link">
+          <Link href="/zh/forgot-password?source=admin">
+            忘记管理员密码？
+          </Link>
+        </p>
 
         {error ? (
           <p className="auth-error" role="alert">

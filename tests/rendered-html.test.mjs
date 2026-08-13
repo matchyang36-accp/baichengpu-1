@@ -214,6 +214,11 @@ test("protects the user administration page with an admin email allowlist", asyn
   const loginHtml = await loginResponse.text();
   assert.match(loginHtml, /登录管理后台/);
   assert.match(loginHtml, /644373212@qq\.com/);
+  assert.match(loginHtml, /忘记管理员密码/);
+  assert.match(
+    loginHtml,
+    /href="\/zh\/forgot-password\?source=admin"/,
+  );
   assert.doesNotMatch(loginHtml, /免费注册/);
 
   const authenticatedHeaders = {

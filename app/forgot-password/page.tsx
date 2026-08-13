@@ -20,10 +20,21 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function ForgotPasswordPage() {
+type ForgotPasswordPageProps = {
+  searchParams: Promise<{
+    source?: string;
+  }>;
+};
+
+export default async function ForgotPasswordPage({
+  searchParams,
+}: ForgotPasswordPageProps) {
   const locale = await getLocaleFromHeaders();
   const t = getTranslator(locale);
   const localePrefix = `/${locale}`;
+  const params = await searchParams;
+  const loginHref =
+    params.source === "admin" ? "/admin/login" : undefined;
   const user = await getAccountUser();
   if (user) redirect(`${localePrefix}/account`);
 
@@ -52,7 +63,7 @@ export default async function ForgotPasswordPage() {
         className="auth-shell"
         aria-label={t("auth.passwordReset.ariaLabel")}
       >
-        <PasswordResetForm />
+        <PasswordResetForm loginHref={loginHref} />
         <aside className="auth-trust-card">
           <span>{t("auth.passwordReset.securityEyebrow")}</span>
           <h2>{t("auth.passwordReset.securityTitle")}</h2>

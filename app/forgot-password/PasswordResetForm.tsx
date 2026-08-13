@@ -11,9 +11,14 @@ type ApiResult = {
   code?: string;
 };
 
-export function PasswordResetForm() {
+type PasswordResetFormProps = {
+  loginHref?: string;
+};
+
+export function PasswordResetForm({ loginHref }: PasswordResetFormProps) {
   const { locale, t } = useTranslations();
   const localePrefix = `/${locale}`;
+  const resolvedLoginHref = loginHref ?? `${localePrefix}/auth?mode=login`;
   const [step, setStep] = useState<ResetStep>("request");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -88,7 +93,7 @@ export function PasswordResetForm() {
         </div>
         <Link
           className="auth-submit auth-submit-link"
-          href={`${localePrefix}/auth?mode=login`}
+          href={resolvedLoginHref}
         >
           {t("auth.passwordReset.backToLogin")}
         </Link>
@@ -134,7 +139,7 @@ export function PasswordResetForm() {
           </button>
           <p className="auth-switch">
             {t("auth.passwordReset.rememberedPassword")} {" "}
-            <Link href={`${localePrefix}/auth?mode=login`}>
+            <Link href={resolvedLoginHref}>
               {t("auth.passwordReset.backToLogin")}
             </Link>
           </p>

@@ -1226,6 +1226,11 @@ button {
   margin-left: 0;
 }
 
+.auth-admin-reset-link {
+  margin-top: -6px;
+  text-align: right;
+}
+
 .auth-submit-link {
   display: grid;
   place-items: center;
