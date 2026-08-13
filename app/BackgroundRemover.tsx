@@ -441,7 +441,12 @@ function getErrorMessage(reason: unknown) {
 function getDiagnosticCode(message: string) {
   const normalized = message.toLowerCase();
   if (normalized.includes("model_init_timeout")) return "MODEL_TIMEOUT";
-  if (normalized.includes("failed to fetch")) return "MODEL_FETCH";
+  if (
+    normalized.includes("failed to fetch") ||
+    normalized.includes("model-fetch-failed")
+  ) {
+    return "MODEL_FETCH";
+  }
   if (normalized.includes("size") && normalized.includes("got")) {
     return "MODEL_SIZE";
   }
@@ -748,7 +753,11 @@ export function BackgroundRemover({
           MODEL_ASSET_PATH,
           window.location.href,
         ).toString();
-        await verifyModelAssets(publicPath);
+        await verifyModelAssets(publicPath, ({ downloaded, total }) => {
+          const modelDownloadProgress =
+            total > 0 ? 4 + Math.floor((downloaded / total) * 64) : 4;
+          setProgress((value) => Math.max(value, modelDownloadProgress));
+        });
         diagnosticPhase = "model-init";
         const output = await withTimeout(
           removeBackgroundLocal(file, {

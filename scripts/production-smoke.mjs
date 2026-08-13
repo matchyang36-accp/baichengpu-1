@@ -1,5 +1,10 @@
 const origin = process.env.SITE_ORIGIN ?? "https://edit-photo.com";
 const requestTimeoutMs = 15_000;
+const requiredModelResources = [
+  "/models/isnet_quint8",
+  "/onnxruntime-web/ort-wasm-simd-threaded.wasm",
+  "/onnxruntime-web/ort-wasm-simd-threaded.mjs",
+];
 
 const checks = [
   { path: "/en", status: 200, marker: "What is a local AI background remover" },
@@ -57,6 +62,41 @@ async function runCheck(label, check) {
   }
 }
 
+async function checkRequiredModelChunks() {
+  const manifestResponse = await fetch(
+    new URL("/bg-removal/resources.json", origin),
+    { signal: AbortSignal.timeout(requestTimeoutMs) },
+  );
+  if (!manifestResponse.ok) {
+    return { passed: false, status: manifestResponse.status };
+  }
+
+  const manifest = await manifestResponse.json();
+  const chunkNames = new Set();
+  for (const resourceKey of requiredModelResources) {
+    const resource = manifest[resourceKey];
+    if (!resource?.chunks?.length) {
+      return { passed: false, status: `missing ${resourceKey}` };
+    }
+    for (const chunk of resource.chunks) chunkNames.add(chunk.name);
+  }
+
+  for (const chunkName of chunkNames) {
+    const response = await fetch(
+      new URL(`/bg-removal/${chunkName}`, origin),
+      {
+        method: "HEAD",
+        signal: AbortSignal.timeout(requestTimeoutMs),
+      },
+    );
+    if (!response.ok) {
+      return { passed: false, status: `${response.status} ${chunkName}` };
+    }
+  }
+
+  return { passed: true, status: `${chunkNames.size} chunks` };
+}
+
 await Promise.all([
   ...checks.map(checkPage),
   runCheck("/admin anonymous protection", async () => {
@@ -85,6 +125,7 @@ await Promise.all([
       status: response.status,
     };
   }),
+  runCheck("required model chunks", checkRequiredModelChunks),
 ]);
 
 if (failures > 0) process.exitCode = 1;

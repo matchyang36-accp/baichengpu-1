@@ -1,6 +1,34 @@
 const MODEL_CACHE_PREFIX = "baichengpu-model-";
-const MODEL_CACHE_NAME = `${MODEL_CACHE_PREFIX}v1`;
+const MODEL_CACHE_NAME = `${MODEL_CACHE_PREFIX}v2`;
 const MODEL_PATH_PREFIX = "/bg-removal/";
+const MAX_NETWORK_REQUESTS = 2;
+let activeNetworkRequests = 0;
+const networkQueue = [];
+
+function runNextNetworkRequest() {
+  if (
+    activeNetworkRequests >= MAX_NETWORK_REQUESTS ||
+    networkQueue.length === 0
+  ) {
+    return;
+  }
+
+  activeNetworkRequests += 1;
+  const task = networkQueue.shift();
+  fetch(task.request)
+    .then(task.resolve, task.reject)
+    .finally(() => {
+      activeNetworkRequests -= 1;
+      runNextNetworkRequest();
+    });
+}
+
+function fetchWithLimit(request) {
+  return new Promise((resolve, reject) => {
+    networkQueue.push({ request, resolve, reject });
+    runNextNetworkRequest();
+  });
+}
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -25,23 +53,40 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-async function cacheSuccessfulResponse(request, response) {
+function cacheSuccessfulResponse(event, request, response) {
   if (response.ok && response.status === 200) {
-    const cache = await caches.open(MODEL_CACHE_NAME);
-    await cache.put(request, response.clone()).catch(() => undefined);
+    event.waitUntil(
+      caches
+        .open(MODEL_CACHE_NAME)
+        .then((cache) => cache.put(request, response.clone()))
+        .catch((reason) =>
+          console.warn("[model-cache] WRITE_FAILED", request.url, reason),
+        ),
+    );
   }
   return response;
 }
 
-async function cacheFirst(request) {
+async function cacheFirst(event, request) {
+  if (request.cache === "reload" || request.cache === "no-store") {
+    return cacheSuccessfulResponse(
+      event,
+      request,
+      await fetchWithLimit(request),
+    );
+  }
   const cached = await caches.match(request);
   if (cached) return cached;
-  return cacheSuccessfulResponse(request, await fetch(request));
+  return cacheSuccessfulResponse(event, request, await fetchWithLimit(request));
 }
 
-async function networkFirst(request) {
+async function networkFirst(event, request) {
   try {
-    return await cacheSuccessfulResponse(request, await fetch(request));
+    return cacheSuccessfulResponse(
+      event,
+      request,
+      await fetchWithLimit(request),
+    );
   } catch (reason) {
     const cached = await caches.match(request);
     if (cached) return cached;
@@ -63,8 +108,8 @@ self.addEventListener("fetch", (event) => {
 
   event.respondWith(
     url.pathname.endsWith("/resources.json")
-      ? networkFirst(request)
-      : cacheFirst(request),
+      ? networkFirst(event, request)
+      : cacheFirst(event, request),
   );
 });
 
