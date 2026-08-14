@@ -603,6 +603,14 @@ export const messageRecords = {
 				"descHighlight": "local processing",
 				"descSuffix": ", no registration, download transparent PNG."
 			},
+			"demo": {
+				"eyebrow": "Real cutout preview",
+				"title": "Watch the background disappear",
+				"caption": "A real product photo, shown before and after local AI processing.",
+				"original": "Original",
+				"result": "Transparent PNG",
+				"alt": "Animated comparison showing a tomato product photo changing from its original background to a transparent background"
+			},
 			"trust": {
 				"local": "✓ Browser-side processing",
 				"originalSize": "✓ Original-size export",
@@ -1454,6 +1462,14 @@ export const messageRecords = {
 				"descPrefix": "上传图片，AI 自动移除背景。",
 				"descHighlight": "本地处理",
 				"descSuffix": "，无需注册，直接下载透明 PNG。"
+			},
+			"demo": {
+				"eyebrow": "真实抠图预览",
+				"title": "看背景如何一键消失",
+				"caption": "使用真实商品照片，展示浏览器本地 AI 处理前后的效果。",
+				"original": "原图",
+				"result": "透明 PNG",
+				"alt": "番茄商品照片从原始背景切换为透明背景的动态对比效果"
 			},
 			"trust": {
 				"local": "✓ 浏览器本地处理",

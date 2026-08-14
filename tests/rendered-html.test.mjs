@@ -49,6 +49,9 @@ test("server-renders the product homepage", async () => {
   assert.match(html, /<title>Free AI Background Remover for Product Photos \| edit-photo<\/title>/);
   assert.match(html, /AI Background Remover for/);
   assert.match(html, /local processing/);
+  assert.match(html, /Watch the background disappear/);
+  assert.match(html, /\/images\/demo\/tomato-cutout-demo\.webp/);
+  assert.match(html, /\/images\/demo\/tomato-cutout-result\.webp/);
   assert.match(html, /Language/);
   assert.match(html, /href="\/en\/batch"/);
   assert.match(html, /href="\/en\/pricing"/);
@@ -79,8 +82,10 @@ test("renders locale-prefixed English and Chinese homepages", async () => {
   ]);
   assert.match(englishHtml, /<html lang="en">/);
   assert.match(englishHtml, /AI Background Remover for/);
+  assert.match(englishHtml, /Real cutout preview/);
   assert.match(chineseHtml, /<html lang="zh-CN">/);
   assert.match(chineseHtml, /免费 AI 抠图工具/);
+  assert.match(chineseHtml, /\/images\/demo\/tomato-cutout-demo\.webp/);
   assert.match(chineseHtml, /href="\/zh\/batch"/);
 });
 

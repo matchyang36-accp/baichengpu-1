@@ -1008,6 +1008,38 @@ export function BackgroundRemover({
           </div>
         </div>
 
+        <figure className="cutout-demo" aria-labelledby="cutout-demo-title">
+          <div className="cutout-demo-head">
+            <div>
+              <span className="step-kicker">{t("tool.demo.eyebrow")}</span>
+              <h2 id="cutout-demo-title">{t("tool.demo.title")}</h2>
+            </div>
+            <p>{t("tool.demo.caption")}</p>
+          </div>
+          <div className="cutout-demo-media">
+            <picture>
+              <source
+                media="(prefers-reduced-motion: reduce)"
+                srcSet="/images/demo/tomato-cutout-result.webp"
+              />
+              <img
+                src="/images/demo/tomato-cutout-demo.webp"
+                alt={t("tool.demo.alt")}
+                width="720"
+                height="480"
+                loading="eager"
+                fetchPriority="high"
+              />
+            </picture>
+            <span className="cutout-demo-badge is-original">
+              {t("tool.demo.original")}
+            </span>
+            <span className="cutout-demo-badge is-result">
+              {t("tool.demo.result")}
+            </span>
+          </div>
+        </figure>
+
         <div className="workbench">
           <div className="workbench-head">
             <div>
