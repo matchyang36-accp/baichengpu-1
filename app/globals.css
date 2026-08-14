@@ -1873,36 +1873,40 @@ button {
 }
 
 .cutout-demo {
-  width: min(760px, 100%);
+  width: min(253px, 100%);
   margin: 0 auto;
-  padding: 18px;
+  padding: 6px;
   border: 1px solid var(--line);
-  border-radius: 24px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 16px 45px rgba(42, 54, 78, 0.09);
+  box-shadow: 0 6px 18px rgba(42, 54, 78, 0.08);
 }
 
 .cutout-demo-head {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 2px 2px 14px;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 2px;
+  padding: 1px 1px 5px;
+}
+
+.cutout-demo .step-kicker {
+  font-size: 7px;
 }
 
 .cutout-demo-head h2 {
-  margin: 5px 0 0;
-  font-size: clamp(21px, 3vw, 30px);
-  letter-spacing: -0.04em;
+  margin: 2px 0 0;
+  font-size: 13px;
+  letter-spacing: -0.03em;
 }
 
 .cutout-demo-head p {
-  max-width: 340px;
+  max-width: none;
   margin: 0;
   color: var(--muted);
-  font-size: 13px;
-  line-height: 1.55;
-  text-align: right;
+  font-size: 7px;
+  line-height: 1.35;
+  text-align: left;
 }
 
 .cutout-demo-media {
@@ -1910,7 +1914,7 @@ button {
   overflow: hidden;
   aspect-ratio: 3 / 2;
   border: 1px solid var(--line);
-  border-radius: 17px;
+  border-radius: 7px;
   background-color: #fff;
   background-image:
     linear-gradient(45deg, #e8ebf0 25%, transparent 25%),
@@ -1934,23 +1938,23 @@ button {
 
 .cutout-demo-badge {
   position: absolute;
-  top: 14px;
+  top: 5px;
   z-index: 1;
-  padding: 7px 10px;
+  padding: 3px 5px;
   border-radius: 999px;
   color: #fff;
-  font-size: 11px;
+  font-size: 7px;
   font-weight: 900;
-  box-shadow: 0 5px 14px rgba(15, 23, 42, 0.14);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.14);
 }
 
 .cutout-demo-badge.is-original {
-  left: 14px;
+  left: 5px;
   background: rgba(15, 23, 42, 0.78);
 }
 
 .cutout-demo-badge.is-result {
-  right: 14px;
+  right: 5px;
   background: linear-gradient(135deg, #1687ef, #9b20ea);
 }
 
@@ -3951,42 +3955,6 @@ footer {
 
   .hero-copy > p {
     font-size: 15px;
-  }
-
-  .cutout-demo {
-    padding: 10px;
-    border-radius: 18px;
-  }
-
-  .cutout-demo-head {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 6px;
-    padding: 4px 4px 11px;
-  }
-
-  .cutout-demo-head p {
-    max-width: none;
-    font-size: 12px;
-    text-align: left;
-  }
-
-  .cutout-demo-media {
-    border-radius: 13px;
-  }
-
-  .cutout-demo-badge {
-    top: 9px;
-    padding: 5px 8px;
-    font-size: 9px;
-  }
-
-  .cutout-demo-badge.is-original {
-    left: 9px;
-  }
-
-  .cutout-demo-badge.is-result {
-    right: 9px;
   }
 
   .workbench {
