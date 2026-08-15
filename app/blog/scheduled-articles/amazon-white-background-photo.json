@@ -1,0 +1,192 @@
+{
+  "id": "amazon-white-background-photo",
+  "tag": "E-commerce Guide",
+  "title": "Amazon's White Background Rule: How to Pass Every Time (Without a Studio)",
+  "description": "Amazon requires pure white product photos. Here's how to meet the RGB 255 standard without a photography studio or Photoshop.",
+  "targetKeyword": "amazon white background photo",
+  "publishedAt": "2026-08-16T09:00:00.000Z",
+  "date": "2026-08-16",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "If you've ever had an Amazon listing suppressed for \"non-compliant main image,\" you know the pain. You spent hours on that photo. Amazon killed your listing in 30 seconds."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's what Amazon actually wants—and how to hit it every single time using tools you already have."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "What Amazon Really Requires"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Amazon's main image policy is strict:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Pure white background: RGB (255, 255, 255)"
+        },
+        {
+          "text": "Product fills 85%+ of the frame"
+        },
+        {
+          "text": "No text, logos, watermarks, or props"
+        },
+        {
+          "text": "No shadows, gradients, or off-white tones"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "A photographed white surface can still appear gray, yellow, or blue because of lighting, exposure, and camera white balance."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Camera Lie"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Even in a professional studio, cameras rarely capture true 255-white. Sensors interpret light, and there's almost always a slight cast—gray, yellow, or blue."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Which means you have two options:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Build and calibrate a controlled lighting setup, then finish the image in editing"
+        },
+        {
+          "text": "Shoot against a contrasting, uncluttered surface, then use background removal to create a compliant export"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "For many small catalogs, the second approach is faster to test and easier to repeat."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The 3-Minute Workflow"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Shoot your product on any background (a white sheet, a table, even carpet)"
+        },
+        {
+          "text": "Upload to edit-photo.com"
+        },
+        {
+          "text": "Remove the original background with one click"
+        },
+        {
+          "text": "Apply a pure white background (RGB 255) from the preset options"
+        },
+        {
+          "text": "Export a high-quality file that meets the current size and format rules for your Amazon category"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Before publishing, compare the export against Amazon's current product image requirements."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Common Mistakes That Get Listings Suppressed"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Off-white backgrounds. Cream, ivory, or \"warm white\" all fail Amazon's automated checks."
+        },
+        {
+          "text": "Heavy or artificial shadows. Keep the background pure white and verify that the image still follows the current category rules."
+        },
+        {
+          "text": "Reflections on glossy surfaces. Amazon's AI flags these as \"additional objects.\""
+        },
+        {
+          "text": "Cropping too tight. Product must fill 85%, not 100%. Leave a small margin."
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Why AI Beats Manual Editing"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Manual editing offers precise control but can take longer. AI background removal is a useful first pass for jewelry chains, hair, fur, and mesh, although difficult edges may still need manual refinement."
+    },
+    {
+      "kind": "paragraph",
+      "text": "For a larger catalog, test both quality and total review time on a small representative batch before choosing a workflow."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Bonus: Reuse for Every Platform"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Once you have a clean transparent PNG, you can drop your product onto:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Pure white → Amazon"
+        },
+        {
+          "text": "Lifestyle background → Instagram/Facebook ads"
+        },
+        {
+          "text": "Branded color → Shopify hero images"
+        },
+        {
+          "text": "Seasonal scenes → Email campaigns"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "One shoot. Infinite variations. Zero re-shooting."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Now"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Marketplace rules change. Check the current Amazon guidance, create a compliant master image, and keep the transparent source so future variants are easy to export."
+    },
+    {
+      "kind": "source",
+      "text": "Marketplace requirements can change. Review the current policy before exporting your final image.",
+      "label": "Amazon product image requirements",
+      "href": "https://sellercentral.amazon.com/help/hub/reference/external/G1881"
+    }
+  ],
+  "cta": {
+    "title": "Ready to test a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

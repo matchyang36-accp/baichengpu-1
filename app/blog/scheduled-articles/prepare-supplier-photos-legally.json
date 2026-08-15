@@ -1,0 +1,199 @@
+{
+  "id": "prepare-supplier-photos-legally",
+  "tag": "E-commerce Guide",
+  "title": "How Resellers Can Prepare Supplier Product Photos Legally",
+  "description": "A rights-first workflow for resellers preparing supplier product photos without making unsupported copyright or editing claims.",
+  "targetKeyword": "remove watermark from product photo",
+  "publishedAt": "2026-08-17T01:00:00.000Z",
+  "date": "2026-08-17",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "Resellers often receive supplier photos with logos, timestamps, or other elements that do not fit their storefront. The first question is not how to erase them, but whether you have permission to modify and publish the image."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's how to clean them up properly—and when it's actually okay to do so."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "First: The Legal Part (Read This)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Copyright and contract terms vary by country and supplier. Treat the following as a practical checklist, not legal advice:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "You have permission to use the image (e.g., your supplier gave you rights): ✅ Clean it up freely."
+        },
+        {
+          "text": "You bought the product and the supplier allows resale marketing: ✅ Confirm the image license and modification rights in writing."
+        },
+        {
+          "text": "You're scraping random images off the internet: ❌ Don't. That's copyright infringement."
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Do not assume a marketplace listing grants reuse rights. Check the supplier agreement and request an unwatermarked media pack whenever possible."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Why Watermarks Ruin Your Store"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Supplier branding can make a storefront feel inconsistent and may confuse customers about who is selling the product."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Professional resellers spend serious effort making photos look native to their brand. This is table stakes now, not optional."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Fast Way to Remove Watermarks"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Old solutions—Photoshop's Content-Aware Fill, Inpaint, GIMP—all require skill and time."
+    },
+    {
+      "kind": "paragraph",
+      "text": "A safer rights-first workflow:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Ask the supplier for the original, unwatermarked image and written permission to edit it"
+        },
+        {
+          "text": "If a clean source is unavailable, photograph the inventory yourself instead of reconstructing protected pixels"
+        },
+        {
+          "text": "Use edit-photo.com only to remove the background from images you are authorized to modify"
+        },
+        {
+          "text": "Inspect product details and colors against the real item"
+        },
+        {
+          "text": "Save the approved original and export as separate files"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "This workflow avoids misrepresenting the source image and gives you a cleaner, more defensible asset library."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Best Practices for Reseller Photos"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Always start with the highest resolution version your supplier provides. AI reconstruction quality depends on pixel data."
+        },
+        {
+          "text": "Keep the authorized high-resolution source unchanged; crop and resize only on export copies."
+        },
+        {
+          "text": "After removing watermarks, replace the background using edit-photo.com's background remover so your product looks like a native studio shot."
+        },
+        {
+          "text": "Add your own subtle branding if you want—a small logo in your color scheme builds recognition without looking cheap."
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "When AI Struggles"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Watermarks placed on:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "The product itself (across a shoe, on a bag surface)"
+        },
+        {
+          "text": "Faces or intricate patterns"
+        },
+        {
+          "text": "Text or logos on the product"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "...are harder. In those cases, either ask your supplier for a clean version, or reshoot the product yourself once you have inventory."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Reseller's Workflow"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Smart resellers batch this weekly:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Collect authorized supplier photos and their usage terms"
+        },
+        {
+          "text": "Replace marked files with clean supplier originals or your own photos"
+        },
+        {
+          "text": "Remove/replace backgrounds"
+        },
+        {
+          "text": "Add consistent brand elements"
+        },
+        {
+          "text": "Upload to storefront"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Total time: 1-2 hours for a full week's worth of new listings."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Skip the Photoshop Curve"
+    },
+    {
+      "kind": "paragraph",
+      "text": "A professional store starts with image rights, consistent originals, and a repeatable edit process. Use edit-photo.com for background removal on files you are authorized to edit."
+    },
+    {
+      "kind": "source",
+      "text": "For image rights questions, start with the license or supplier agreement and seek qualified legal advice when needed.",
+      "label": "U.S. Copyright Office: copyright basics",
+      "href": "https://www.copyright.gov/what-is-copyright/"
+    }
+  ],
+  "cta": {
+    "title": "Ready to test a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

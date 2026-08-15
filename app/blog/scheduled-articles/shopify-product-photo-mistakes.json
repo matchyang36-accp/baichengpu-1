@@ -1,0 +1,162 @@
+{
+  "id": "shopify-product-photo-mistakes",
+  "tag": "E-commerce Guide",
+  "title": "7 Product Photo Mistakes That Can Hurt Shopify Conversions",
+  "description": "Review seven common Shopify product photo mistakes and practical fixes for cleaner, more consistent storefront imagery.",
+  "targetKeyword": "shopify product photo mistakes",
+  "publishedAt": "2026-08-17T09:00:00.000Z",
+  "date": "2026-08-17",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "Your Shopify traffic is fine. Your ad spend is reasonable. But conversions? Stuck at 1.2%."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Before blaming your pricing or your funnel, look at your product photos. Nine times out of ten, that's where the leak is."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Mistake #1: Inconsistent Backgrounds"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Some products on white, some on gray, some with shadows, some without. Your storefront looks like a garage sale."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Fix: Standardize every image. Use edit-photo.com to strip original backgrounds and apply one consistent color across your entire catalog. 20 minutes for a small store, one afternoon for a bigger one."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Mistake #2: Low Resolution"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Shopify accepts high-resolution product media within its published limits. Start from the sharpest original you have and choose dimensions that support zoom without slowing the page unnecessarily."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Fix: Always work from originals. Never save-then-resave JPEGs (quality compounds down every time)."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Mistake #3: Product Off-Center or Awkwardly Cropped"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Feet cut off. Left-heavy compositions. Weirdly tilted angles."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Fix: Center the product and keep consistent breathing room. Use the platform-main-image presets when you need standardized square exports."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Mistake #4: Distracting Original Backgrounds"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Your kitchen. Your carpet. Your dog in the corner."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Fix: Remove them. Every product page should feel like a controlled studio. Even lifestyle shots should feel intentional, not accidental."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Mistake #5: Mismatched Lighting"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Half your products glow warmly. Half look cold and clinical. Customers subconsciously feel the inconsistency."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Fix: Once backgrounds are removed and standardized, lighting differences fade into the background (literally)."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Mistake #6: Watermarks and Logos from Suppliers"
+    },
+    {
+      "kind": "paragraph",
+      "text": "If you are reselling, supplier marks can make the catalog inconsistent and may signal unclear image rights."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Fix: Request clean, licensed originals from the supplier or reshoot the product. Do not remove ownership marks without permission."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Mistake #7: No Lifestyle Context"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Pure white photos convert well for Amazon. On Shopify, you need emotion. A candle on a rustic table. A necklace on a model. A gadget in use."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Fix: Take your clean transparent PNG (from removing the background) and drop it onto lifestyle scenes. One product photo → 5 marketing assets."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The 30-Minute Store Refresh"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's what to do this weekend:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Pick your 10 best-selling products"
+        },
+        {
+          "text": "Run all their photos through edit-photo.com for consistent backgrounds"
+        },
+        {
+          "text": "Replace supplier-marked files with licensed clean originals or your own photos"
+        },
+        {
+          "text": "Standardize sizes and cropping"
+        },
+        {
+          "text": "Re-upload to Shopify"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Measure the result over a meaningful period using the same traffic sources and product set."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Bottom Line"
+    },
+    {
+      "kind": "paragraph",
+      "text": "You don't have a traffic problem. You have a trust problem. And trust is built in the first 3 seconds a shopper looks at your product image."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Fix your product photos free at edit-photo.com—no design skills required."
+    }
+  ],
+  "cta": {
+    "title": "Ready to test a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

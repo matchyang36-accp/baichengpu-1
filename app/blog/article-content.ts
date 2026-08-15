@@ -1,21 +1,11 @@
 import type { Locale } from "../../i18n/config";
-import type { ArticleId } from "./article-ids";
+import type { LegacyArticleId } from "./article-ids";
+import type { ArticleBody } from "./article-types";
 
 export type { ArticleId } from "./article-ids";
+export type { ArticleBlock, ArticleBody, ListItem } from "./article-types";
 
-type ListItem = { label?: string; text: string };
-export type ArticleBlock =
-  | { kind: "heading"; level?: 2 | 3; text: string }
-  | { kind: "paragraph"; text: string }
-  | { kind: "list"; items: ListItem[] }
-  | { kind: "source"; text: string; label: string; href: string };
-
-type LocalizedArticleBody = {
-  blocks: ArticleBlock[];
-  cta: { title: string; description: string; button: string };
-};
-
-export const ARTICLE_CONTENT: Record<ArticleId, Record<Locale, LocalizedArticleBody>> = {
+export const ARTICLE_CONTENT: Record<LegacyArticleId, Record<Locale, ArticleBody>> = {
   "product-photo-tips": {
     en: {
       blocks: [

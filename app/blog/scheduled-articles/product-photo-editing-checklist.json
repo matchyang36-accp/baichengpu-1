@@ -1,0 +1,196 @@
+{
+  "id": "product-photo-editing-checklist",
+  "tag": "E-commerce Guide",
+  "title": "The Product Photo Editing Checklist Every E-commerce Seller Should Steal",
+  "description": "A step-by-step editing checklist for e-commerce product photos. Save this and use it for every new listing.",
+  "targetKeyword": "product photo editing checklist",
+  "publishedAt": "2026-08-20T09:00:00.000Z",
+  "date": "2026-08-20",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "Consistent photos = consistent sales. But most sellers edit each photo differently, in a different mood, on a different day. The result: a storefront that looks like a chaotic yard sale."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's the checklist top sellers use for every single product photo. Bookmark this."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "✅ Pre-Editing Checklist"
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Original file saved separately\nNever edit destructively. Keep raw originals in a dedicated folder."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ File resolution verified (2000px+ recommended)\nAnything smaller and you'll regret it when marketplaces demand zoom features."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Photo is sharp and in focus\nBlurry can't be fixed. Reshoot before wasting time editing."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Product clearly visible, not clipped\nIf parts of the product are cut off, reshoot."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "✅ Background Editing Checklist"
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Background removed cleanly\nUse edit-photo.com for one-click AI removal. Check edges for cleanup."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Consistent background across catalog\nWhite for Amazon, brand color or transparent for other platforms."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ No shadows from original background\nShadows imply an environment. For marketplace mains, remove them."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Product centered with proper padding\n10-15% margin around all sides."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "✅ Watermark and Branding Checklist"
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Every image is licensed and free of unauthorized supplier marks\nRequest clean supplier originals or shoot the product yourself; do not erase ownership marks without permission."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Unwanted timestamps are resolved at the source\nUse an original without a burned-in date, or reshoot the item when accurate reconstruction is not possible."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Your own branding added subtly (optional)\nSmall, tasteful, not overwhelming. Corner logo max 5% of image area."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "✅ Color and Light Checklist"
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ White balance consistent across catalog\nNo mixing warm and cool tones between products."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Product colors accurate\nThe blue in the photo should match the blue in real life. Returns for \"color not as shown\" are conversion killers."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ No blown-out highlights\nDetails in white and reflective areas should still be visible."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Adequate contrast\nProduct should pop from background without looking artificial."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "✅ Composition Checklist"
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Consistent aspect ratio across catalog\nPick 1:1 (square), 4:5, or 3:4—stick with it."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Product at consistent scale\nA ring and a chair shouldn't both fill 100% of their frames. Buyers get scale confusion."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Multiple angles captured\nFront, side, back, detail, in-use context."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "✅ Platform-Specific Requirements"
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Amazon: check the current main-image requirements\nUse a pure white background where required and verify the current rules for your category before publishing."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Etsy: use clean and lifestyle views where they help the buyer\nUse available photo slots to answer real questions about scale, detail, packaging, and context."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Shopify: Lifestyle context photos\nEmotion sells more than isolation on Shopify."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Instagram/TikTok: Square + vertical versions\nNever post horizontal on mobile-first platforms."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "✅ Final Quality Check"
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Zoom to 100% and check edges\nFuzzy hair, jewelry chains, mesh—these are where AI sometimes leaves artifacts."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Preview on mobile\n80%+ of shoppers browse on phones. Check how it looks small."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Compare against 2-3 competitor listings\nDoes yours look premium next to theirs? If no, revise."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "✅ Publishing Checklist"
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Filenames use SKU convention\nSKU12345_main.jpg, SKU12345_02.jpg, etc."
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Alt text written for accessibility and SEO\nDescribe the product literally. \"Blue ceramic coffee mug with white handle, 12oz.\""
+    },
+    {
+      "kind": "paragraph",
+      "text": "□ Compressed for the destination without visible damage\nUse the platform's current size guidance and compare image quality before choosing a fixed file-size target."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The One-Hour Weekly Habit"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Every Sunday, pick 10-20 photos from your catalog. Run them through this checklist. In 3 months, your entire store will look like it was shot by a professional team."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Start your checklist workflow free at edit-photo.com."
+    },
+    {
+      "kind": "source",
+      "text": "For image rights questions, start with the license or supplier agreement and seek qualified legal advice when needed.",
+      "label": "U.S. Copyright Office: copyright basics",
+      "href": "https://www.copyright.gov/what-is-copyright/"
+    }
+  ],
+  "cta": {
+    "title": "Ready to test a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { getTranslator } from "../../i18n/core";
 import { getLocaleFromHeaders } from "../../i18n/translator";
 import { AccountMenu } from "../AccountMenu";
@@ -7,12 +8,8 @@ import { BrandLogo } from "../BrandLogo";
 import { LanguageSwitcher } from "../LanguageSwitcher";
 import { getAccountUser } from "../account-auth";
 import { absoluteUrl, localizedAlternates, localizedPath } from "../seo";
-import type { ArticleId } from "./article-ids";
-import { ARTICLE_CONTENT, type ArticleBlock } from "./article-content";
-
-function articleKey(articleId: ArticleId): string {
-  return `blog.articles.${articleId}`;
-}
+import { getArticleView } from "./article-registry";
+import type { ArticleBlock } from "./article-types";
 
 function renderBlock(block: ArticleBlock, index: number) {
   const key = `${block.kind}-${index}`;
@@ -48,49 +45,56 @@ function renderBlock(block: ArticleBlock, index: number) {
   );
 }
 
-export async function generateArticleMetadata(articleId: ArticleId): Promise<Metadata> {
+export async function generateArticleMetadata(articleId: string): Promise<Metadata> {
   const locale = await getLocaleFromHeaders();
   const t = getTranslator(locale);
-  const key = articleKey(articleId);
+  const article = getArticleView(articleId, locale, t);
+  if (!article) return { robots: { index: false, follow: false } };
   const path = `/blog/${articleId}`;
-  const title = t(`${key}.title`);
-  const description = t(`${key}.excerpt`);
+  const alternates = article.isEnglishOnly
+    ? {
+        canonical: localizedPath("en", path),
+        languages: {
+          en: localizedPath("en", path),
+          "x-default": localizedPath("en", path),
+        },
+      }
+    : localizedAlternates(locale, path);
 
   return {
-    title,
-    description,
-    alternates: localizedAlternates(locale, path),
+    title: article.title,
+    description: article.description,
+    alternates,
     openGraph: {
       type: "article",
-      title,
-      description,
+      title: article.title,
+      description: article.description,
       url: localizedPath(locale, path),
       siteName: "edit-photo",
       locale: locale === "zh" ? "zh_CN" : "en_US",
+      publishedTime: article.publishedAt,
+      modifiedTime: article.publishedAt,
     },
   };
 }
 
-export async function ArticlePage({ articleId }: { articleId: ArticleId }) {
+export async function ArticlePage({ articleId }: { articleId: string }) {
   const [user, locale] = await Promise.all([getAccountUser(), getLocaleFromHeaders()]);
   const t = getTranslator(locale);
-  const key = articleKey(articleId);
   const path = `/blog/${articleId}`;
-  const article = ARTICLE_CONTENT[articleId][locale];
-  const title = t(`${key}.title`);
-  const description = t(`${key}.excerpt`);
-  const date = t(`${key}.date`);
+  const article = getArticleView(articleId, locale, t);
+  if (!article) notFound();
   const articleUrl = absoluteUrl(localizedPath(locale, path));
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: title,
-    description,
-    datePublished: date,
-    dateModified: "2026-08-11",
+    headline: article.title,
+    description: article.description,
+    datePublished: article.publishedAt,
+    dateModified: article.publishedAt,
     inLanguage: locale === "zh" ? "zh-CN" : "en",
     mainEntityOfPage: articleUrl,
-    author: { "@type": "Organization", name: "edit-photo" },
+    author: { "@type": "Organization", name: article.reviewedBy },
     publisher: {
       "@type": "Organization",
       name: "edit-photo",
@@ -122,9 +126,10 @@ export async function ArticlePage({ articleId }: { articleId: ArticleId }) {
 
       <article>
         <section className="article-hero">
-          <span className="eyebrow">{t(`${key}.tag`)}</span>
-          <h1>{title}</h1>
-          <time dateTime={date}>{date}</time>
+          <span className="eyebrow">{article.tag}</span>
+          <h1>{article.title}</h1>
+          <time dateTime={article.publishedAt}>{article.date}</time>
+          <p className="article-reviewer">Reviewed by {article.reviewedBy}</p>
         </section>
 
         <div className="article-body">{article.blocks.map(renderBlock)}</div>

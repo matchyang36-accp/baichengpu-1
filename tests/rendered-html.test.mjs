@@ -1,6 +1,58 @@
 import assert from "node:assert/strict";
+import { readdir, readFile } from "node:fs/promises";
 import test from "node:test";
 import Stripe from "stripe";
+
+const scheduledArticlesDirectory = new URL("../app/blog/scheduled-articles/", import.meta.url);
+const scheduledArticleManifest = (
+  await Promise.all(
+    (await readdir(scheduledArticlesDirectory))
+      .filter((name) => name.endsWith(".json"))
+      .map(async (name) => JSON.parse(await readFile(new URL(name, scheduledArticlesDirectory), "utf8"))),
+  )
+).toSorted((left, right) => Date.parse(left.publishedAt) - Date.parse(right.publishedAt));
+
+test("keeps the five-day editorial schedule complete and deterministic", () => {
+  assert.equal(scheduledArticleManifest.length, 10);
+  assert.equal(new Set(scheduledArticleManifest.map(({ id }) => id)).size, 10);
+  const publicationTimes = scheduledArticleManifest.map(({ publishedAt }) => Date.parse(publishedAt));
+  assert.ok(publicationTimes.every(Number.isFinite));
+  assert.deepEqual(
+    scheduledArticleManifest.reduce((counts, { date }) => {
+      counts[date] = (counts[date] ?? 0) + 1;
+      return counts;
+    }, {}),
+    {
+      "2026-08-16": 2,
+      "2026-08-17": 2,
+      "2026-08-18": 2,
+      "2026-08-19": 2,
+      "2026-08-20": 2,
+    },
+  );
+  assert.deepEqual(publicationTimes, publicationTimes.toSorted((a, b) => a - b));
+});
+
+test("does not expose an editorial article before its publication time", async (context) => {
+  const firstArticle = scheduledArticleManifest[0];
+  if (Date.now() >= Date.parse(firstArticle.publishedAt)) {
+    context.skip("The first editorial article is already published.");
+    return;
+  }
+
+  const [articleResponse, blogResponse, sitemapResponse] = await Promise.all([
+    render(`/en/blog/${firstArticle.id}`),
+    render("/en/blog"),
+    render("/sitemap.xml"),
+  ]);
+  assert.equal(articleResponse.status, 404);
+  const [blogHtml, sitemapXml] = await Promise.all([
+    blogResponse.text(),
+    sitemapResponse.text(),
+  ]);
+  assert.doesNotMatch(blogHtml, new RegExp(firstArticle.id));
+  assert.doesNotMatch(sitemapXml, new RegExp(firstArticle.id));
+});
 
 async function render(
   pathname = "/",

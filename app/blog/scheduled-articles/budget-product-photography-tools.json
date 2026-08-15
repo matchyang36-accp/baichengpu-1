@@ -1,0 +1,206 @@
+{
+  "id": "budget-product-photography-tools",
+  "tag": "E-commerce Guide",
+  "title": "Product Photography on a Budget: 10 Practical Tools for Sellers",
+  "description": "Build a useful home product-photo workflow with a phone, simple lighting, free tools, and careful quality checks.",
+  "targetKeyword": "budget product photography tools",
+  "publishedAt": "2026-08-20T01:00:00.000Z",
+  "date": "2026-08-20",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "A professional product shoot can be expensive for a new seller. Before investing, test whether a simple home setup can meet the needs of your first listings."
+    },
+    {
+      "kind": "paragraph",
+      "text": "A low-cost setup will not replace every studio job, but it can produce useful catalog images for many simple products. Here is a practical toolkit."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "1. Your Smartphone (You Already Own It)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Modern iPhones and flagship Androids shoot in 12+ megapixels with computational photography that rivals dedicated cameras for product work. Stop thinking you need a DSLR."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "2. Window Light (Free)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use a window with soft, indirect light. The ideal direction and time depend on your room, weather, and product, so avoid direct sun and test the shadows."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "3. A White Sheet or Foam Board ($5-10)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Your background. Drape a white sheet over a table, prop a foam board against a wall. Done. You just built a \"studio.\""
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "4. edit-photo.com (Free)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "The background remover at edit-photo.com handles the one thing that separates amateur shots from professional ones: clean, consistent backgrounds. Free tier is genuinely usable, not crippled."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "5. A Second Sheet as a Reflector ($3)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Bounce light back onto the shadow side of your product. Reduces harsh contrast. Makes cheap phone shots look expensive."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "6. A Gray Card or Neutral Reference"
+    },
+    {
+      "kind": "paragraph",
+      "text": "A neutral reference helps you compare white balance and product color across a catalog. For supplier assets, request clean licensed originals rather than erasing ownership marks."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "7. A Cardboard Box (Free)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Cut out one side and cover with translucent paper (parchment or vellum). Instant lightbox for small products—jewelry, cosmetics, electronics."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "8. GIMP (Free) - Only If Needed"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For rare occasions when AI can't handle the job, GIMP is a free Photoshop alternative. Steeper learning curve, but no monthly fee. Most sellers won't need it once they use edit-photo.com."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "9. Canva Free Tier"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Great for adding text overlays, creating social media variations, and building banners. Combine with backgrounds you've cleaned via edit-photo.com."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "10. Your Kitchen Table"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Yes, really. Push it near a window. Add a white surface. You have a $10 photo studio that produces $500 results."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Full Workflow"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's how sellers with zero studio budget actually shoot professional catalog photos:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Set up: Kitchen table + window + white sheet"
+        },
+        {
+          "text": "Shoot: Phone camera, no flash, natural light, multiple angles"
+        },
+        {
+          "text": "Edit backgrounds: Batch upload to edit-photo.com"
+        },
+        {
+          "text": "Standardize: Apply consistent background color across catalog"
+        },
+        {
+          "text": "Enhance: Small tweaks in Canva if needed"
+        },
+        {
+          "text": "Upload: Straight to your storefront"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Cost and time depend on the products you already own and the size of the catalog. Start with five representative items before buying more equipment."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "What About Product Categories That Are Hard?"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Jewelry: Use a lightbox (cardboard method above). The fuzzy edges AI handles beautifully."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Clothing: Flat lay on white sheet. AI removes background clean."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Food: Natural light is especially important. Never use overhead artificial light for food."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Electronics: Watch reflections. Diffuse your light source with a bedsheet if needed."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Cosmetics: Small products = get close, but use portrait mode on phones for depth."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Real Bottleneck"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Most sellers think their bottleneck is equipment. It's not."
+    },
+    {
+      "kind": "paragraph",
+      "text": "The bottleneck is editing efficiency. Even with perfect shots, if it takes you 30 minutes to clean each one, you'll never scale."
+    },
+    {
+      "kind": "paragraph",
+      "text": "That's why free AI tools like edit-photo.com matter more than any camera upgrade for e-commerce sellers."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start This Weekend"
+    },
+    {
+      "kind": "paragraph",
+      "text": "You have a phone. You have a window. You have edit-photo.com. That's the whole studio."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Start shooting and editing free at edit-photo.com."
+    }
+  ],
+  "cta": {
+    "title": "Ready to test a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

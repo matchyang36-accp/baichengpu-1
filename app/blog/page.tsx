@@ -7,7 +7,7 @@ import { BrandLogo } from "../BrandLogo";
 import { LanguageSwitcher } from "../LanguageSwitcher";
 import { getAccountUser } from "../account-auth";
 import { localizedAlternates } from "../seo";
-import { ARTICLE_IDS } from "./article-ids";
+import { getArticleSummary, getPublishedArticleIds } from "./article-registry";
 
 function localize(locale: Locale, path: string): string {
   return `/${locale}${path === "/" ? "" : path}`;
@@ -31,6 +31,9 @@ export default async function BlogPage() {
     getLocaleFromHeaders(),
   ]);
   const t = getTranslator(locale);
+  const articles = getPublishedArticleIds(locale)
+    .map((articleId) => getArticleSummary(articleId, locale, t))
+    .filter((article) => article !== null);
 
   return (
     <main className="blog-page">
@@ -56,18 +59,17 @@ export default async function BlogPage() {
       </section>
 
       <section className="blog-grid" aria-label={t("common.nav.blog")}>
-        {ARTICLE_IDS.map((articleId) => {
-          const key = `blog.articles.${articleId}`;
+        {articles.map((article) => {
           return (
             <a
               className="blog-card"
-              href={localize(locale, `/blog/${articleId}`)}
-              key={articleId}
+              href={localize(locale, `/blog/${article.id}`)}
+              key={article.id}
             >
-              <span className="eyebrow">{t(`${key}.tag`)}</span>
-              <h2>{t(`${key}.title`)}</h2>
-              <p>{t(`${key}.excerpt`)}</p>
-              <time dateTime={t(`${key}.date`)}>{t(`${key}.date`)}</time>
+              <span className="eyebrow">{article.tag}</span>
+              <h2>{article.title}</h2>
+              <p>{article.description}</p>
+              <time dateTime={article.date}>{article.date}</time>
             </a>
           );
         })}
