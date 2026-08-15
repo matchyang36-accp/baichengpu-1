@@ -8,12 +8,8 @@ import { localizedAlternates, SITE_ORIGIN } from "./seo";
 import { OrganizationSchema } from "./lib/structured-data";
 import "./globals.css";
 
-/**
- * Google AdSense 发布商 ID
- * 申请 AdSense 后，在 AdSense 后台 → 账号 → 账号信息中找到你的发布商 ID（格式：ca-pub-XXXXXXXXXXXXXXXX）
- * 将下面的占位符替换为你的真实 ID
- */
-const ADSENSE_CLIENT_ID = "ca-pub-XXXXXXXXXXXXXXXX";
+/** Google AdSense public publisher identifier. */
+const ADSENSE_CLIENT_ID = "ca-pub-7218285443802148";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocaleFromHeaders();
@@ -50,15 +46,12 @@ export default async function RootLayout({
   return (
     <html lang={locale === "zh" ? "zh-CN" : "en"}>
       <head>
-        {/* Google AdSense — 申请通过后替换 ADSENSE_CLIENT_ID 为你的真实发布商 ID */}
-        {ADSENSE_CLIENT_ID !== "ca-pub-XXXXXXXXXXXXXXXX" && (
-          <Script
-            async
-            strategy="afterInteractive"
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
-            crossOrigin="anonymous"
-          />
-        )}
+        <Script
+          async
+          strategy="afterInteractive"
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
+          crossOrigin="anonymous"
+        />
       </head>
       <body>
         <OrganizationSchema locale={locale} />
