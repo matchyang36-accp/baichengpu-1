@@ -1,0 +1,292 @@
+{
+  "id": "small-product-photography",
+  "tag": "E-commerce Photo Guide",
+  "title": "How to Photograph Small Products (Under 3 Inches) So They Don't Look Tiny and Cheap",
+  "description": "Small products get lost in photos. Here's how to make earrings, pins, keychains, and small items look worth buying.",
+  "targetKeyword": "small product photography",
+  "publishedAt": "2026-09-06T01:00:00.000Z",
+  "date": "2026-09-06",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "Small products have a scale problem. On a phone screen, an earring photographed at proper distance looks... microscopic. Buyers can't see the detail. They scroll past."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's how to make small products look premium and desirable."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Small Product Problem"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Small items (under 3 inches):"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Look lost in standard product frames"
+        },
+        {
+          "text": "Lack visible detail at browsing thumbnail size"
+        },
+        {
+          "text": "Have unclear scale to buyers"
+        },
+        {
+          "text": "Compete against products that fill their frames"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "You need to compensate deliberately."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Frame-Filling Principle"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Amazon requires products to fill 85%+ of the main image frame. This is especially critical for small products."
+    },
+    {
+      "kind": "paragraph",
+      "text": "If your earring occupies 20% of the frame, you're violating Amazon's rule AND making the product look cheap."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Fix at edit-photo.com:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Remove background"
+        },
+        {
+          "text": "Crop tight around the product"
+        },
+        {
+          "text": "Re-export with product filling the frame"
+        },
+        {
+          "text": "Ensure minimum 2000x2000 resolution"
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Macro Requirement"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Small products need macro photography. Use:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Your phone's macro mode (most 2022+ flagships have it)"
+        },
+        {
+          "text": "Or a clip-on macro lens ($15 on Amazon)"
+        },
+        {
+          "text": "Or shoot far and crop tight"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Result: fingertip-sized details are visible at browsing scale."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Scale Reference Photos"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Because \"how big is it really?\" is the #1 buyer question for small items, include:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Product in a hand (adult hand for scale reference)"
+        },
+        {
+          "text": "Product on a fingertip or coin"
+        },
+        {
+          "text": "Product with a ruler"
+        },
+        {
+          "text": "Product on a common object (book, phone)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "At least two scale reference photos per listing."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Detail Shot Priority"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Small products live and die by visible craftsmanship. Include 3-4 macro detail shots:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Front detail"
+        },
+        {
+          "text": "Back detail"
+        },
+        {
+          "text": "Side profile"
+        },
+        {
+          "text": "Any texture or engraving"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "All background-cleaned at edit-photo.com."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Grouping Trick"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For small products sold in sets (earring pairs, pin collections, sticker packs), photograph:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Individual items separately"
+        },
+        {
+          "text": "All items together in an arrangement"
+        },
+        {
+          "text": "Items packaged as buyers receive them"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Arrangements are visually satisfying and communicate value."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "For Jewelry Specifically"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Individual piece macro"
+        },
+        {
+          "text": "On a model (ear, neck, wrist)"
+        },
+        {
+          "text": "Multiple pieces styled together"
+        },
+        {
+          "text": "Scale next to hand"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use transparent PNGs to composite into curated jewelry-display scenes."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Etsy Small-Product Angle"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Etsy is the small-product marketplace. Winning shops:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Fill all 10 photo slots"
+        },
+        {
+          "text": "Use consistent close-up style"
+        },
+        {
+          "text": "Include scale reference in most photos"
+        },
+        {
+          "text": "Curate a cohesive shop grid"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "All possible with disciplined editing through edit-photo.com."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Composition Rule"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For small products, negative space matters. A tiny product with lots of empty space around it looks intentional. A tiny product cropped tight looks premium."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Never leave a small product floating in the middle of a frame without either:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Cropping tight around it, or"
+        },
+        {
+          "text": "Adding contextual elements (fabric, wood, hand)"
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Making Small Products Look Premium"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Small doesn't mean cheap. Your photos are what communicate that. Start free at edit-photo.com."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

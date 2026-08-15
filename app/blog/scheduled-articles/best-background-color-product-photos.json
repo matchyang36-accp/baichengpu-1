@@ -1,0 +1,310 @@
+{
+  "id": "best-background-color-product-photos",
+  "tag": "E-commerce Photo Guide",
+  "title": "How to Test Product Photo Background Colors Beyond Pure White",
+  "description": "Compare white, neutral, and branded product-photo backgrounds with a controlled test instead of assuming one color always performs best.",
+  "targetKeyword": "best background color product photos",
+  "publishedAt": "2026-09-09T01:00:00.000Z",
+  "date": "2026-09-09",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "\"Just use white backgrounds\" is standard e-commerce advice. It's not wrong—but it's incomplete."
+    },
+    {
+      "kind": "paragraph",
+      "text": "For non-Amazon platforms (Shopify, Etsy, social media), white is often the worst choice. Here's what actually converts."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "When White Wins"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Pure white RGB 255 is required for:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Amazon main images"
+        },
+        {
+          "text": "Walmart Marketplace"
+        },
+        {
+          "text": "Google Shopping"
+        },
+        {
+          "text": "Most marketplace additional images"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Non-negotiable. Use white for these."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "When White Loses"
+    },
+    {
+      "kind": "paragraph",
+      "text": "On Shopify, Etsy, Instagram, and TikTok, white:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Feels sterile and clinical"
+        },
+        {
+          "text": "Doesn't communicate brand identity"
+        },
+        {
+          "text": "Blends into most platform interfaces"
+        },
+        {
+          "text": "Fails to trigger emotional response"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's what works better."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Color 1: Soft Off-White / Cream"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Feels premium and warm"
+        },
+        {
+          "text": "Works for beauty, apparel, home goods"
+        },
+        {
+          "text": "Consistent with luxury brand aesthetics"
+        },
+        {
+          "text": "Photographs beautifully with warm-toned products"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use edit-photo to create a transparent PNG, then place that export on the required background in a general design editor. Keep the transparent master so the change remains reversible."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Color 2: Soft Sage or Muted Green"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Feels natural, wellness-oriented, botanical"
+        },
+        {
+          "text": "Perfect for skincare, supplements, wellness products"
+        },
+        {
+          "text": "Communicates \"clean\" and \"natural\""
+        },
+        {
+          "text": "Photographs well with earth-tone products"
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Color 3: Deep Navy or Charcoal"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Premium, sophisticated, high-contrast"
+        },
+        {
+          "text": "Great for jewelry, watches, luxury accessories"
+        },
+        {
+          "text": "Makes gold, silver, and light-colored products pop"
+        },
+        {
+          "text": "Communicates \"expensive\""
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Color 4: Warm Terracotta or Blush"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Feels warm, feminine, boho"
+        },
+        {
+          "text": "Great for handmade, artisan, home decor"
+        },
+        {
+          "text": "Photographs beautifully with wood and metal"
+        },
+        {
+          "text": "Instagram-friendly"
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Color 5: Signature Brand Color"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Unique to you"
+        },
+        {
+          "text": "Instantly recognizable"
+        },
+        {
+          "text": "Builds brand equity"
+        },
+        {
+          "text": "Requires bold commitment (must be right)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Pick one that reflects your brand and never deviate. Every product photo, every ad, every social post uses this color."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Practical Application"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For every product, generate variations:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "White version (marketplace)"
+        },
+        {
+          "text": "Brand-color version (Shopify hero)"
+        },
+        {
+          "text": "Lifestyle version (social/ads)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "All from one transparent PNG source at edit-photo.com."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Consistency Rule"
+    },
+    {
+      "kind": "paragraph",
+      "text": "You can use different backgrounds for different platforms—but within a single platform, always use the same background style."
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Amazon: All white"
+        },
+        {
+          "text": "Shopify: All brand color"
+        },
+        {
+          "text": "Instagram: All lifestyle or brand color"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Cross-platform variation is fine. Within-platform variation is chaos."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Testing Approach"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Not sure what background converts best for your niche? A/B test."
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Version A: White background"
+        },
+        {
+          "text": "Version B: Soft cream background"
+        },
+        {
+          "text": "Version C: Brand color background"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Run each for 2-4 weeks. Measure conversion, CTR, and time-on-listing."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Sometimes results surprise you. Beauty products often convert 15-25% better on soft cream than pure white. Fitness products often convert better on dark backgrounds."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Data Insight"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Sellers who test backgrounds routinely find their conversion sweet spot is often not pure white. But they'd never know if they hadn't tested."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Master files at edit-photo.com let you test easily. Same product, three background variations, three different listings."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Testing Backgrounds"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Your conversion rate might be leaving performance untested just from wrong background choice. Test alternatives free at edit-photo.com."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

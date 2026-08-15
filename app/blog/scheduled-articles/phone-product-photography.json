@@ -1,0 +1,294 @@
+{
+  "id": "phone-product-photography",
+  "tag": "E-commerce Photo Guide",
+  "title": "How to Photograph Products Without a Camera (Just Your Phone) Like a Pro",
+  "description": "No DSLR? No problem. Modern phone cameras + AI editing produce catalog-quality product photos. Here's the workflow.",
+  "targetKeyword": "phone product photography",
+  "publishedAt": "2026-09-11T01:00:00.000Z",
+  "date": "2026-09-11",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "The \"you need a real camera\" era is officially over. Modern phones (iPhone 12+, Samsung S22+, Pixel 6+) shoot product photos indistinguishable from DSLRs at typical browsing sizes."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's the phone-only workflow that competes with $2,000 setups."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Why Phones Actually Work Now"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Modern phones have:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "12-50 megapixel sensors"
+        },
+        {
+          "text": "Computational photography (multiple exposures blended)"
+        },
+        {
+          "text": "Portrait mode (subject-background separation)"
+        },
+        {
+          "text": "Macro mode for small products"
+        },
+        {
+          "text": "Better low-light than 2020-era DSLRs"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "At 1200x1200 (Amazon size) or 1000x1500 (Pinterest size), phones are indistinguishable from professional cameras."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Phone Setup"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Clean lens (fingerprints kill quality)"
+        },
+        {
+          "text": "Grid overlay enabled (for straight verticals)"
+        },
+        {
+          "text": "Manual exposure lock (tap product, hold to lock)"
+        },
+        {
+          "text": "Highest resolution mode enabled"
+        },
+        {
+          "text": "HEIC or RAW format if available"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Five settings. Ten seconds to enable. Massive quality gain."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Shooting Technique"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Distance: 1-3 feet from product (avoid extreme close-up which distorts)"
+        },
+        {
+          "text": "Height: Slightly above product, angled slightly down"
+        },
+        {
+          "text": "Light: Behind you or 45° off-axis (never behind product unless intentional)"
+        },
+        {
+          "text": "Stability: Use both hands or a $10 phone tripod"
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The AI Editing Bridge"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Phone photos + AI editing = catalog quality."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Workflow:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Shoot with phone"
+        },
+        {
+          "text": "Import to computer (or edit directly on phone)"
+        },
+        {
+          "text": "Upload to edit-photo.com"
+        },
+        {
+          "text": "Background removal"
+        },
+        {
+          "text": "Apply standard settings"
+        },
+        {
+          "text": "Export at platform-specific dimensions"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Ten minutes per product. Zero equipment cost."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Portrait Mode Warning"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Portrait mode blurs backgrounds—which sounds great. But:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Amazon prohibits blurred backgrounds on main images"
+        },
+        {
+          "text": "Some products need full sharpness end-to-end"
+        },
+        {
+          "text": "Portrait mode edges are sometimes wonky"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Better: Shoot in standard mode with a clean background, then remove background properly at edit-photo.com."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Macro Mode Trick"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For jewelry, cosmetics, small electronics—macro mode is a game changer. Details visible on phone macro rival $500+ macro lenses on DSLRs."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Shoot macro details separately as additional images."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Lighting Reality"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Best phone photography light: North-facing window between 10 AM and 2 PM."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Alternatives:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Overcast outdoor light (perfectly diffused, free)"
+        },
+        {
+          "text": "LED panel light with diffuser"
+        },
+        {
+          "text": "Softbox with warm/cool bulbs"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Never use direct flash. Ever. It's the amateur signal that instantly gives away phone photos."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Common Phone Photo Mistakes"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Zooming in digitally. Kills resolution. Move closer instead."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Tilted verticals. Straight walls and edges must be straight. Use grid overlay."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Overexposed whites. Blown-out backgrounds lose detail. Underexpose slightly, recover in editing."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Multiple photos in different lighting. Consistency requires shooting in one session."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Full Phone-Only Catalog"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For a 50-product catalog:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "One weekend of shooting (a few hours)"
+        },
+        {
+          "text": "One weekend of editing at edit-photo.com"
+        },
+        {
+          "text": "Zero equipment cost beyond a $10 tripod"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Result: A catalog that competes with sellers who spent $5,000 on gear."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Rich Man's Objection"
+    },
+    {
+      "kind": "paragraph",
+      "text": "\"But a DSLR is objectively better...\""
+    },
+    {
+      "kind": "paragraph",
+      "text": "Sure, at 100% zoom on a 27\" monitor. At 300x300 pixels on a phone screen (where 80% of your buyers actually see your photos), a phone photo edited well is identical to a DSLR photo edited well."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Buy a camera when you're scaling to $100K+/month. Until then, phone + edit-photo.com wins on ROI."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Shooting with What You Have"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Perfection kills action. Your phone is enough. Start free at edit-photo.com."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

@@ -1,0 +1,249 @@
+{
+  "id": "product-photo-compression",
+  "tag": "E-commerce Photo Guide",
+  "title": "Product Photo Compression: Faster Pages Without Obvious Quality Loss",
+  "description": "Compress product photos for faster pages while protecting visible quality, transparency, and marketplace requirements.",
+  "targetKeyword": "product photo compression",
+  "publishedAt": "2026-09-02T09:00:00.000Z",
+  "date": "2026-09-02",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "If your product page takes more than a short processing step to load, you've already lost half your buyers. Google knows this—and ranks fast sites higher."
+    },
+    {
+      "kind": "paragraph",
+      "text": "The #1 culprit? Bloated product images. Here's how to fix it."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Why Compression Matters"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Every second of load time costs:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "7% of conversions (Amazon's own data)"
+        },
+        {
+          "text": "SEO ranking positions (Core Web Vitals)"
+        },
+        {
+          "text": "Ad quality score (Google Ads)"
+        },
+        {
+          "text": "Bounce rate (visitors leave before seeing product)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Your beautifully edited photos are worthless if they take 4 seconds to load."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Right Compression Target"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Rule of thumb: Product images should be under 200KB each on your storefront. Under 500KB max."
+    },
+    {
+      "kind": "paragraph",
+      "text": "If your files are 2-5MB, you're bleeding conversions."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Compression Workflow"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 1: Edit at high resolution (edit-photo.com works at native resolution)."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 2: Export at appropriate final dimensions:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Product thumbnails: 400x400px"
+        },
+        {
+          "text": "Product page main: 1200x1200px"
+        },
+        {
+          "text": "Zoom-in high-res: 2000x2000px"
+        },
+        {
+          "text": "Homepage hero: 1920x1080px"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 3: Compress with quality 80-85% (JPEG) or use WebP."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 4: Test load speed on mobile."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Format Selection Guide"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "JPEG: Best for photos with lots of colors, no transparency"
+        },
+        {
+          "text": "PNG: Best when transparency matters, but larger files"
+        },
+        {
+          "text": "WebP: Best overall (25-35% smaller than JPEG at same quality)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Most modern platforms support WebP. Shopify auto-converts on upload."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Transparent PNG Trap"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Transparent PNGs from edit-photo.com are perfect for compositing—but they're heavy files."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Rule: Keep transparent PNGs as your master files. Export final versions as JPEG or WebP with backgrounds baked in."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Mobile-First Reality"
+    },
+    {
+      "kind": "paragraph",
+      "text": "80%+ of e-commerce traffic is mobile. Your photos must load fast on 4G/5G, not just your WiFi."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Test on your phone with WiFi off. If images take more than 2 seconds to appear, they're too heavy."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Bulk Compression Approach"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For catalogs of a larger catalog:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Export all versions from edit-photo.com"
+        },
+        {
+          "text": "Run through a bulk compressor (TinyPNG, Squoosh)"
+        },
+        {
+          "text": "Upload to platform"
+        },
+        {
+          "text": "Verify load speeds"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Two hours of work. Massive Core Web Vitals improvement."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Alt Text Bonus"
+    },
+    {
+      "kind": "paragraph",
+      "text": "While you're optimizing images, add proper alt text to every one. Google reads alt text for:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Image search rankings"
+        },
+        {
+          "text": "Accessibility"
+        },
+        {
+          "text": "Overall page relevance"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Match alt text to your target keyword naturally. Don't stuff."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Compound Effect"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Fast, compressed, well-edited product photos + descriptive filenames + strong alt text = a compound SEO win most sellers ignore."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Compare two identical products:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Seller A: 4MB unoptimized photos, generic filenames, no alt text"
+        },
+        {
+          "text": "Seller B: 200KB WebP photos, descriptive filenames, keyword-rich alt text"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Seller B outranks Seller A. Every time."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Optimizing"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Fast sites make more money. Full stop. Start editing efficiently at edit-photo.com."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

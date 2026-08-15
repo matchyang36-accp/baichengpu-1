@@ -1,0 +1,263 @@
+{
+  "id": "solo-founder-photo-editing-skills",
+  "tag": "E-commerce Photo Guide",
+  "title": "The Product Photo Editing Skills Every Solo Founder Should Learn (In Order)",
+  "description": "Bootstrapping alone? Here's the exact order to learn product photo editing skills for maximum revenue impact.",
+  "targetKeyword": "solo founder photo editing skills",
+  "publishedAt": "2026-09-08T01:00:00.000Z",
+  "date": "2026-09-08",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "If you're building an e-commerce brand alone, your time is your only resource. Every skill you learn should compound. Every hour spent editing should return sales."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's the skill order that maximizes ROI."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Skill 1: Background Removal (Week 1)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Learn this first. It's 80% of the value of all photo editing combined."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Processing time varies by device, image size, model cache, and edge complexity. Work in reviewed batches of up to 20 instead of promising a fixed completion time."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Impact: Marketplace compliance, consistent catalog, professional appearance."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Skill 2: Consistent Background Application (Week 1)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Once you can remove backgrounds, standardize. Pick one background color and apply it to every product."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Time investment: Zero incremental (uses same tool)."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Impact: Cohesive brand aesthetic, higher perceived value."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Use Rights-Safe Source Images"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Especially if you're a reseller or dropshipper. Kill supplier watermarks before uploading anything."
+    },
+    {
+      "kind": "paragraph",
+      "text": "If a source image contains a watermark, obtain an unwatermarked file from the rights holder or create your own photo. edit-photo does not remove watermarks, and removing ownership marks without permission can create legal and marketplace risks."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Impact: No more amateur \"reseller\" perception, higher trust."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Skill 4: Proper Cropping and Composition (Week 2)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Learn:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Product-to-frame ratio (85% for Amazon)"
+        },
+        {
+          "text": "Consistent margin (10-15%)"
+        },
+        {
+          "text": "Centered composition"
+        },
+        {
+          "text": "Aspect ratio standards per platform"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Impact: Marketplace compliance, professional consistency."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Skill 5: Multi-Version Exports (Week 3)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Learn to export the same product image in multiple formats:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Square 1:1 for Instagram/Amazon"
+        },
+        {
+          "text": "Vertical 4:5 for Instagram feed"
+        },
+        {
+          "text": "Vertical 9:16 for Stories/Reels/TikTok"
+        },
+        {
+          "text": "Landscape 16:9 for banners"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Time savings: Massive. One shoot serves every platform."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Skill 6: Compositing Onto Lifestyle Backgrounds (Week 4)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Take transparent PNGs and place them onto contextual backgrounds:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Product on a table"
+        },
+        {
+          "text": "Product in a hand"
+        },
+        {
+          "text": "Product in a scene"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Impact: Ad creative production, Shopify hero images, marketing versatility."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Skill 7: Shadow Addition (Month 2)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Add realistic shadows to grounded products. Small detail, massive polish upgrade."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Impact: Premium perceived value, professional catalog feel."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Skill 8: Color Correction (Month 2)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Basic white balance, exposure, and color accuracy. Reduces returns significantly."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Impact: 20-30% return rate reduction over time."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Skill 9: Batch Processing (Month 3)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Learn to edit up to 20 photos per batch instead of one-by-one."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Tool: edit-photo.com batch features."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Impact: 10x faster catalog updates."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Skill 10: Style Guide Development (Month 3)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Document your visual standards. Enforce across all future work."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Impact: Scalability. Once documented, you can outsource confidently."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "What You DON'T Need to Learn"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Full Photoshop (unless you're doing luxury/fashion editorial)"
+        },
+        {
+          "text": "Advanced retouching (AI handles enough)"
+        },
+        {
+          "text": "Complex compositing (rare for e-commerce)"
+        },
+        {
+          "text": "Illustration or design (Canva plus editing is enough)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Sellers who try to learn Photoshop first waste 40+ hours before their first sale. Learn the AI-tool version. Move faster."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The 90-Day Transformation"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Follow this order for 90 days and your product photography goes from amateur to professional-brand quality. All while you're running the actual business, sourcing products, and driving traffic."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Skill 1 Today"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Processing time varies by device, image size, model cache, and edge complexity. Work in reviewed batches of up to 20 instead of promising a fixed completion time."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

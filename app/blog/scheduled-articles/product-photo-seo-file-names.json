@@ -1,0 +1,239 @@
+{
+  "id": "product-photo-seo-file-names",
+  "tag": "E-commerce Photo Guide",
+  "title": "Why Your Product Photo File Names Are Killing Your SEO (Fix It in 5 Minutes)",
+  "description": "Product photo filenames affect Google rankings more than most sellers realize. Here's the naming convention that boosts SEO.",
+  "targetKeyword": "product photo seo file names",
+  "publishedAt": "2026-08-31T01:00:00.000Z",
+  "date": "2026-08-31",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "Your product photos have a hidden SEO signal you're probably ignoring: filenames."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Every time you upload \"IMG_2847.jpg\" to your store, Google gets zero information about the image. Rename it \"womens-black-leather-boots-size-8.jpg\" and you've suddenly gained an SEO win."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's the full protocol."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Why Filenames Matter"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Google's image algorithm reads:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Filename"
+        },
+        {
+          "text": "Alt text"
+        },
+        {
+          "text": "Surrounding page text"
+        },
+        {
+          "text": "Image content (via AI)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "You control three of four. Most sellers ignore filenames entirely."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Naming Convention"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Bad: IMG_2847.jpg, DSC_1234.png, photo (2).jpg"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Good: [product-name]-[key-descriptor]-[SKU or variant].jpg"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Examples:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "ceramic-coffee-mug-white-12oz.jpg"
+        },
+        {
+          "text": "leather-crossbody-bag-tan-SKU12345.jpg"
+        },
+        {
+          "text": "yoga-mat-purple-6mm-thick.jpg"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Keep filenames under 60 characters, use hyphens (not underscores), all lowercase."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Workflow"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 1: Shoot your product photos."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 2: Upload to edit-photo.com for background removal and editing."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 3: Before downloading, rename files using the convention above."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 4: Upload to your store with proper alt text matching the filename."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Alt Text Companion"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Alt text is the other half of image SEO. For every product photo:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Describe the product literally"
+        },
+        {
+          "text": "Include the main keyword you want to rank for"
+        },
+        {
+          "text": "Add one specific descriptor (color, size, material)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Example alt text: \"White ceramic coffee mug with black handle, 12oz capacity, dishwasher safe\""
+    },
+    {
+      "kind": "paragraph",
+      "text": "Google's AI reads this and ranks accordingly."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Batch Renaming Trick"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For a larger catalog, don't rename manually. Use:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "A spreadsheet with SKUs and desired filenames"
+        },
+        {
+          "text": "A batch-rename tool"
+        },
+        {
+          "text": "Consistent naming logic"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Process up to 20 images per batch in edit-photo, then use your operating system or catalog workflow to apply descriptive file names."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Common Mistakes"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Keyword stuffing: \"best-cheap-womens-black-leather-boots-fashion-2024-buy-now.jpg\" gets penalized. Keep it natural."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Using special characters: Spaces, %, &, and other characters break URLs. Use hyphens only."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Random numbers: IMG_2847 tells Google nothing. Descriptive words = SEO gold."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Not matching alt text: Filename and alt text should reinforce the same keywords, not conflict."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Compound Effect"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Rename 100 product photos properly. Add proper alt text. Ensure clean, high-quality images via edit-photo.com. Watch Google Image Search send you free traffic within 30-60 days."
+    },
+    {
+      "kind": "paragraph",
+      "text": "This traffic converts well because these visitors were searching visually—they're closer to buying than pure text-search visitors."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Full Image SEO Trifecta"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Filenames: Descriptive, keyword-rich, hyphenated"
+        },
+        {
+          "text": "Alt text: Natural description with target keyword"
+        },
+        {
+          "text": "Image quality: Clean, professional, edit-photo.com-optimized"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Nail all three and you unlock a traffic channel most sellers ignore."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Fixing Filenames Today"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Small fix, big compounding return. Combine with clean editing at edit-photo.com for maximum SEO impact."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

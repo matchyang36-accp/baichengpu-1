@@ -1,0 +1,196 @@
+{
+  "id": "google-shopping-product-images",
+  "tag": "E-commerce Photo Guide",
+  "title": "Google Shopping Product Images: A Practical Compliance and Clarity Guide",
+  "description": "Prepare clear, policy-aware Google Shopping product images without relying on unverified ranking guarantees.",
+  "targetKeyword": "google shopping product images",
+  "publishedAt": "2026-08-26T09:00:00.000Z",
+  "date": "2026-08-26",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "Google Shopping is one of the last remaining channels where organic optimization still works. And image quality is one of Google's biggest ranking factors—yet most sellers upload whatever they have and hope."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's what Google actually wants to see."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Google Shopping Image Requirements"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Google Merchant Center's official rules:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Minimum 250x250 pixels (recommended 800x800+)"
+        },
+        {
+          "text": "Product must be clearly visible"
+        },
+        {
+          "text": "White or light plain background preferred"
+        },
+        {
+          "text": "No promotional text, watermarks, or logos overlaid on product"
+        },
+        {
+          "text": "No borders or frames"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Sellers get suspended monthly for violating these. And you can't even blame them—the rules are strict for a reason."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "What Product Photos Can Influence"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Beyond compliance, Google Shopping ranks images higher when they:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Have consistent professional style across your feed"
+        },
+        {
+          "text": "Show products clearly at first glance"
+        },
+        {
+          "text": "Match search intent visually"
+        },
+        {
+          "text": "Load quickly (compressed properly)"
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Compliance Workflow"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 1: Audit all product images against Google's rules."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 2: For every non-compliant image:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Upload to edit-photo.com"
+        },
+        {
+          "text": "Remove the original (possibly cluttered) background"
+        },
+        {
+          "text": "Apply pure white"
+        },
+        {
+          "text": "Export at 1200x1200 minimum"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 3: Re-upload to your feed via Merchant Center."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 4: Watch impressions climb over 7-14 days."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Consistency Bonus"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Google's algorithms notice when your entire feed looks cohesive. Sellers with 100 products all shot in random styles rank lower than sellers with 100 products all professionally standardized."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use edit-photo to remove the background and export a transparent PNG. Create white or branded layout versions with the site's supported main-image workflow or a separate design editor; capture and color correction still need to be handled before or after background removal."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Use Rights-Safe Source Images"
+    },
+    {
+      "kind": "paragraph",
+      "text": "If your product images have any watermarks—supplier logos, timestamps, brand overlays on the product itself—Google Shopping will suppress or reject them."
+    },
+    {
+      "kind": "paragraph",
+      "text": "If a source image contains a watermark, obtain an unwatermarked file from the rights holder or create your own photo. edit-photo does not remove watermarks, and removing ownership marks without permission can create legal and marketplace risks."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Beyond the Main Image"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Google Shopping now supports additional images per product. Fill these with:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Multiple angles"
+        },
+        {
+          "text": "Detail shots"
+        },
+        {
+          "text": "Lifestyle context (yes, allowed in additional images)"
+        },
+        {
+          "text": "Scale references"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "More images = more relevance signals = higher rank."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Competitive Reality"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Your competitors on page 1 of Google Shopping aren't there by accident. They've optimized their images. If you haven't, you can't compete—regardless of how great your product is."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Ranking Higher"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Google Shopping traffic is buyer-intent traffic. It converts better than almost any other channel. But you can't win it without image compliance. Start free at edit-photo.com."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

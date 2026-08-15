@@ -1,0 +1,200 @@
+{
+  "id": "ghost-mannequin-photo-effect",
+  "tag": "E-commerce Photo Guide",
+  "title": "How to Plan a Ghost Mannequin Photo Workflow Without Photoshop",
+  "description": "Plan a practical ghost mannequin workflow, understand what background removal can and cannot do, and prepare clothing images for careful compositing.",
+  "targetKeyword": "ghost mannequin photo effect",
+  "publishedAt": "2026-08-22T09:00:00.000Z",
+  "date": "2026-08-22",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "Ever wonder why high-end clothing brands' product photos look like the shirt is being worn by an invisible person? That's the ghost mannequin effect. And it makes garments look more structured and premium than flat lays."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's how to fake it without hiring a $200/hour retoucher."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Why Ghost Mannequin Beats Flat Lay"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Flat lay clothing photos are dead. They're what dropshippers do. Premium brands—Everlane, Uniqlo, Zara—all use ghost mannequin because it:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Shows drape and structure"
+        },
+        {
+          "text": "Implies fit without a model"
+        },
+        {
+          "text": "Looks premium and editorial"
+        },
+        {
+          "text": "Works across sizes"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Treat performance claims as hypotheses rather than promises. Test the change with your own catalog, traffic mix, and enough data to make a useful comparison."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Traditional Way (Expensive)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Traditional ghost mannequin requires:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "A real mannequin ($200-500)"
+        },
+        {
+          "text": "Multiple shots (front, back, inside neck, cuffs)"
+        },
+        {
+          "text": "Photoshop compositing (30-60 minutes per garment)"
+        },
+        {
+          "text": "A retoucher's skill"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Total: hours of work per SKU."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Fast Way"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Modern approach:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Shoot your clothing on a cheap dress form or hanger"
+        },
+        {
+          "text": "Upload to edit-photo.com"
+        },
+        {
+          "text": "Remove background completely"
+        },
+        {
+          "text": "Apply white or brand-color background"
+        },
+        {
+          "text": "Done—looks like a floating, worn garment"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "For most sellers, the \"hanger with background removed\" result is nearly indistinguishable from expensive ghost mannequin work at browsing distance."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Pro Tips for Clothing Photos"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use a clear or thin hanger. Wire hangers photograph well because their thin lines are easy for AI to remove cleanly."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Steam or iron everything. Wrinkles distract buyers and hurt the premium feel. No editing tool fixes wrinkles properly."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Shoot straight on, eye level. Angled shots make garments look weird. Symmetric front-facing = professional."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Include detail shots. Fabric texture, stitching, buttons, tags—3-5 macro shots per listing."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Handling Complex Fabrics"
+    },
+    {
+      "kind": "paragraph",
+      "text": "The local model attempts to preserve fine edges, but chains, lace, mesh, and reflective details are difficult cases. Inspect the result at high zoom and use manual edge refinement when needed."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Solid opaque fabric is trivial. Even fringe and tassels work."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Full Listing Setup"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For every garment:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Ghost mannequin front (main)"
+        },
+        {
+          "text": "Ghost mannequin back"
+        },
+        {
+          "text": "Detail: fabric close-up"
+        },
+        {
+          "text": "Detail: stitching/hardware"
+        },
+        {
+          "text": "Flat lay of just the tag/label"
+        },
+        {
+          "text": "On a model (if possible)"
+        },
+        {
+          "text": "Scale/fit reference"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Six photos, all with clean backgrounds via edit-photo.com, and your clothing listing rivals major brands."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Elevating Your Clothing Shop"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Try edit-photo.com free and stop losing sales to brands with worse products but better visuals."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

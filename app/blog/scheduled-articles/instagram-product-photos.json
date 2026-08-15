@@ -1,0 +1,205 @@
+{
+  "id": "instagram-product-photos",
+  "tag": "E-commerce Photo Guide",
+  "title": "Instagram Product Photos: A Practical Five-Second Attention Check",
+  "description": "Use a simple attention check to improve Instagram product photos without relying on unsupported engagement promises.",
+  "targetKeyword": "instagram product photos",
+  "publishedAt": "2026-08-25T09:00:00.000Z",
+  "date": "2026-08-25",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "Your Instagram feed has 5 seconds to earn a follow, save, or click. Actually less—closer to 2 seconds. And most product photos on Instagram lose that battle instantly."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's what separates thumb-stopping product photos from the ignored scroll."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The 5-Second Rule"
+    },
+    {
+      "kind": "paragraph",
+      "text": "If a viewer can't identify what your product is and why it matters in 5 seconds, they've scrolled past. Instagram doesn't punish you—the algorithm just deprioritizes future posts to your audience."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Every product photo should pass three tests:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Clear subject (what is this?)"
+        },
+        {
+          "text": "Clear appeal (why do I want it?)"
+        },
+        {
+          "text": "Clear brand (who makes it?)"
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Fix #1: Kill Background Clutter"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Cluttered backgrounds break the \"clear subject\" test instantly. Buyers' eyes bounce between the product and the clutter."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use edit-photo to remove the background and export a transparent PNG. Create white or branded layout versions with the site's supported main-image workflow or a separate design editor; capture and color correction still need to be handled before or after background removal."
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Solid brand color"
+        },
+        {
+          "text": "Soft gradient"
+        },
+        {
+          "text": "Minimalist texture"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Suddenly your product is the star, not the mess behind it."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Fix #2: Consistent Feed Aesthetic"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Open your Instagram profile grid. Does it look like a curated brand or a random photo album?"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Every product post should share:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Same background palette"
+        },
+        {
+          "text": "Same lighting mood"
+        },
+        {
+          "text": "Same framing style"
+        },
+        {
+          "text": "Same crop ratio"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Batch-edit your entire back catalog through edit-photo.com for consistency. One afternoon, transformative results."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Fix #3: Multi-Version Assets"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Every product needs three Instagram-ready versions:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Square 1:1 for grid"
+        },
+        {
+          "text": "Vertical 4:5 for feed maximum height"
+        },
+        {
+          "text": "Vertical 9:16 for Reels and Stories"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Export a transparent PNG from edit-photo, then place it into the final scene or layout with a general design editor. Keep the original and transparent master so the composition remains reversible."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Fix #4: Remove Distracting Elements"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Random people, background text, competitor logos accidentally in your shot—remove all of them."
+    },
+    {
+      "kind": "paragraph",
+      "text": "The current edit-photo tool isolates a foreground subject; it is not a general object-removal or inpainting tool. For unwanted people or objects inside the scene, reshoot, crop, or use a licensed editor designed for that task."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Instagram Content Cadence"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For each product, generate:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Grid feed post (square, brand-color background)"
+        },
+        {
+          "text": "Story shot (9:16, lifestyle context)"
+        },
+        {
+          "text": "Carousel details (multiple angles, same aesthetic)"
+        },
+        {
+          "text": "Reel opening frame (thumb-stop worthy)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "All from one master transparent PNG. Sellers who systematize this post 3x more content with 1/3 the effort."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Aesthetic Trap"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Don't over-aestheticize to the point of hiding your product. Instagram buyers should still understand what they're buying at a glance. Balance beautiful with clear."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Winning Instagram"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Your product deserves to be seen. Your current photos might be hiding it. Start free at edit-photo.com."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

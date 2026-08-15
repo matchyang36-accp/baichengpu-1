@@ -1,0 +1,179 @@
+{
+  "id": "food-product-photography",
+  "tag": "E-commerce Photo Guide",
+  "title": "Food Sellers: How to Photograph Products That Actually Look Delicious Online",
+  "description": "Selling packaged food online? Here's how to make products look appetizing enough to buy without a food stylist.",
+  "targetKeyword": "food product photography",
+  "publishedAt": "2026-08-28T01:00:00.000Z",
+  "date": "2026-08-28",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "Food photography is emotional. If a snack, sauce, or beverage doesn't look immediately appetizing, buyers scroll. And most packaged food sellers upload dry, dim, unappetizing photos that kill conversion."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's the workflow that fixes it."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Two Photo Types Food Sellers Need"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Type 1: Package shot — the actual product, clean, professional, for marketplace listings."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Type 2: In-use shot — the food/beverage in a bowl, on a plate, being poured, being eaten. This is where hunger is triggered."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Both types need clean editing. Neither needs a fancy studio."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Package Shot Workflow"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Shoot on any surface (kitchen counter is fine)"
+        },
+        {
+          "text": "Upload to edit-photo.com"
+        },
+        {
+          "text": "Remove background"
+        },
+        {
+          "text": "Apply pure white (Amazon) or brand color (Shopify)"
+        },
+        {
+          "text": "Done"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Standardize package shots across your entire catalog. Buyers subconsciously read \"consistent\" as \"professional brand.\""
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "In-Use Shot Workflow"
+    },
+    {
+      "kind": "paragraph",
+      "text": "This is harder—food styling matters. But editing still cleans it up:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "The current edit-photo tool isolates a foreground subject; it is not a general object-removal or inpainting tool. For unwanted people or objects inside the scene, reshoot, crop, or use a licensed editor designed for that task."
+        },
+        {
+          "text": "Enhance the plate/bowl edges"
+        },
+        {
+          "text": "Composite onto a cleaner table setting if needed"
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Ingredient Callout Shot"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Modern food buyers care about ingredients. Create photos showing:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Product package + raw ingredients around it"
+        },
+        {
+          "text": "Nutrition badges or callouts"
+        },
+        {
+          "text": "Certification logos (organic, non-GMO, gluten-free)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "All easier when your product is a transparent PNG that can be composited freely."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Handling Reflective Packaging"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Foil bags, glass jars, glossy plastic—reflective food packaging is tough. Shoot with diffused light (bedsheet over your lamp works)."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Then remove backgrounds at edit-photo.com. Reflections against clean backgrounds disappear when you swap to white. Reflections that remain on the product itself often enhance the premium look."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Use Rights-Safe Source Images"
+    },
+    {
+      "kind": "paragraph",
+      "text": "If a source image contains a watermark, obtain an unwatermarked file from the rights holder or create your own photo. edit-photo does not remove watermarks, and removing ownership marks without permission can create legal and marketplace risks."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Emotional Sell"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Food is impulse. Your photos need to answer:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "\"Does this look tasty?\""
+        },
+        {
+          "text": "\"Can I imagine eating this?\""
+        },
+        {
+          "text": "\"Do I trust this brand?\""
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Clean, professional photos answer all three. Cluttered kitchen-table shots answer none."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Making Food Look Craveable"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Whether you sell hot sauce, cookies, coffee, or supplements—buyers eat with their eyes first. Start free at edit-photo.com."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

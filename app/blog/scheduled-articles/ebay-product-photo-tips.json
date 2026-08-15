@@ -1,0 +1,163 @@
+{
+  "id": "ebay-product-photo-tips",
+  "tag": "E-commerce Photo Guide",
+  "title": "eBay Product Photo Tips for Cleaner, More Consistent Listings",
+  "description": "Improve eBay listing clarity with clean backgrounds, honest condition photos, consistent framing, and a repeatable photo checklist.",
+  "targetKeyword": "ebay product photo tips",
+  "publishedAt": "2026-08-21T09:00:00.000Z",
+  "date": "2026-08-21",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "eBay is old-school. Half the sellers are still uploading dim, cluttered, angle-off phone shots. Which means you don't need to be great—you just need to look better than average. That bar is low."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's how to leap over it."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Why eBay Photos Matter More Than You Think"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Marketplace ranking systems change and are not fully public. Clear, accurate photos can improve shopper understanding, but they do not guarantee placement or sales; check the platform's current image rules before publishing."
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Photo count (12 slots—fill them all)"
+        },
+        {
+          "text": "Photo quality signal (resolution, brightness, background)"
+        },
+        {
+          "text": "Watch count and CTR from search results"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Photos drive all three. Text descriptions? Almost nobody reads them."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Clean-Background Advantage"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Take any eBay category and sort by \"Best Match.\" The top listings share one trait: clean, isolated product photos. Cluttered kitchen-counter shots sit on page 5."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Marketplace ranking systems change and are not fully public. Clear, accurate photos can improve shopper understanding, but they do not guarantee placement or sales; check the platform's current image rules before publishing."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "For Used and Refurbished Sellers"
+    },
+    {
+      "kind": "paragraph",
+      "text": "You're selling condition. Buyers need to see honest wear. But the background still needs to be clean—wear on the product, not clutter around it."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Remove the background, keep the product exactly as-is (scratches, marks, patina). Buyers trust it more when the environment doesn't distract."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Consistency = Credibility"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Sellers with 50+ listings that all share the same background style get flagged by buyers as \"professional\" even if they're one-person operations. It's a shortcut trust signal."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Processing time varies by device, image size, model cache, and edge complexity. Work in reviewed batches of up to 20 instead of promising a fixed completion time."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Use Rights-Safe Source Images"
+    },
+    {
+      "kind": "paragraph",
+      "text": "If a source image contains a watermark, obtain an unwatermarked file from the rights holder or create your own photo. edit-photo does not remove watermarks, and removing ownership marks without permission can create legal and marketplace risks."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The 12-Slot Strategy"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Fill every photo slot with:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Main clean shot"
+        },
+        {
+          "text": "Alternative angle"
+        },
+        {
+          "text": "Detail/close-up"
+        },
+        {
+          "text": "Scale reference"
+        },
+        {
+          "text": "Packaging"
+        },
+        {
+          "text": "Condition marks (if used)"
+        },
+        {
+          "text": "Serial/model number (electronics)"
+        },
+        {
+          "text": "In-use context"
+        },
+        {
+          "text": "Accessories included"
+        },
+        {
+          "text": "Size comparison"
+        },
+        {
+          "text": "Alternative color/variation"
+        },
+        {
+          "text": "Brand/logo detail"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Sellers who fill all 12 slots see notably higher watch counts. It's the cheapest ranking factor eBay offers."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Ranking Higher"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Marketplace ranking systems change and are not fully public. Clear, accurate photos can improve shopper understanding, but they do not guarantee placement or sales; check the platform's current image rules before publishing."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

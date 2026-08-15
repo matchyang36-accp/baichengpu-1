@@ -1,0 +1,141 @@
+{
+  "id": "amazon-image-suppression-fix",
+  "tag": "E-commerce Photo Guide",
+  "title": "Amazon Listing Suppressed for Image Issues? Here's the 10-Minute Fix",
+  "description": "Amazon suppressed your listing over image compliance? Here's exactly how to fix it and get relisted fast.",
+  "targetKeyword": "amazon image suppression fix",
+  "publishedAt": "2026-08-27T09:00:00.000Z",
+  "date": "2026-08-27",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "Nothing panics an Amazon seller like waking up to \"Your listing has been suppressed\" over image issues. Sales stopped. Rank collapsing hourly. Bureaucratic re-submission process ahead."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's how to fix it fast."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Most Common Amazon Image Suppressions"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Reason 1: Background not pure white (RGB 255)\nReason 2: Text, logos, or watermarks on the image\nReason 3: Multiple products or bundles in main image\nReason 4: Person other than a hand model\nReason 5: Cropped or partial product view"
+    },
+    {
+      "kind": "paragraph",
+      "text": "95% of suppressions fall into these five categories."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Rapid Fix Protocol"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use edit-photo to remove the background and export a transparent PNG. Create white or branded layout versions with the site's supported main-image workflow or a separate design editor; capture and color correction still need to be handled before or after background removal."
+    },
+    {
+      "kind": "paragraph",
+      "text": "If a source image contains a watermark, obtain an unwatermarked file from the rights holder or create your own photo. edit-photo does not remove watermarks, and removing ownership marks without permission can create legal and marketplace risks."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Reason 3 (Multiple products):\nReshoot with only the main product. Or use edit-photo.com to isolate one product and place on white."
+    },
+    {
+      "kind": "paragraph",
+      "text": "The current edit-photo tool isolates a foreground subject; it is not a general object-removal or inpainting tool. For unwanted people or objects inside the scene, reshoot, crop, or use a licensed editor designed for that task."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Reason 5 (Cropping):\nRe-crop leaving 10-15% margin around product. Use edit-photo.com to center and pad."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Full 10-Minute Fix"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Identify suppression reason from Amazon's message (2 min)"
+        },
+        {
+          "text": "Fix the image at edit-photo.com (3-4 min)"
+        },
+        {
+          "text": "Verify against Amazon's guidelines (2 min)"
+        },
+        {
+          "text": "Re-upload via Seller Central (2 min)"
+        },
+        {
+          "text": "Submit reinstatement request (1 min)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Review time and marketplace outcomes vary. Check the exported image carefully and follow the platform's current review or resubmission process."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Preventing Future Suppressions"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Amazon's image compliance AI has gotten stricter every year. What passed in 2023 doesn't pass in 2026. Regularly audit your top listings."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Build a habit:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Quarterly audit all main images against Amazon's current rules"
+        },
+        {
+          "text": "Use edit-photo.com to preemptively clean up borderline cases"
+        },
+        {
+          "text": "Never upload supplier photos directly—always clean them first"
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Long-Term Play"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Sellers who never get suppressed share one habit: they treat image compliance as a permanent priority, not an emergency."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Set a monthly reminder. Audit 20 listings each month. Fix any borderline cases before Amazon does."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Get Your Listing Back Fast"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Every hour a listing is suppressed, you're losing rank. Fix the image issue free at edit-photo.com and re-submit today."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

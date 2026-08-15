@@ -1,0 +1,230 @@
+{
+  "id": "fitness-product-photography",
+  "tag": "E-commerce Photo Guide",
+  "title": "Fitness Sellers: How to Photograph Supplements, Equipment, and Apparel That Actually Convert",
+  "description": "Fitness e-commerce is brutally competitive. Here's the photo workflow that separates real brands from Alibaba resellers.",
+  "targetKeyword": "fitness product photography",
+  "publishedAt": "2026-08-30T01:00:00.000Z",
+  "date": "2026-08-30",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "Fitness is one of the most saturated categories in e-commerce. Same protein powders, same resistance bands, same yoga mats—sold by 1,000 different sellers. What separates the ones making money from the ones drowning?"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Photos."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Fitness Buyer Mindset"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Fitness buyers are:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Aspirational (they're buying transformation, not product)"
+        },
+        {
+          "text": "Skeptical (been burned by hype brands)"
+        },
+        {
+          "text": "Visual (results-driven imagery converts)"
+        },
+        {
+          "text": "Community-conscious (they want to belong to a brand tribe)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Your photos need to tap all four."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Product Category Playbooks"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Supplements:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Clean packaging shot on white or brand color"
+        },
+        {
+          "text": "Powder/pills shown separately (proof of contents)"
+        },
+        {
+          "text": "Ingredient callouts near the product"
+        },
+        {
+          "text": "Lifestyle: mixing, drinking, in-hand"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Equipment:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Isolated product on clean background"
+        },
+        {
+          "text": "In-use shot with a person"
+        },
+        {
+          "text": "Detail shots showing build quality"
+        },
+        {
+          "text": "Size/scale reference"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Apparel:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Ghost mannequin front and back"
+        },
+        {
+          "text": "Fabric detail macro"
+        },
+        {
+          "text": "On-model shot (any angle)"
+        },
+        {
+          "text": "Flat lay for detail"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use edit-photo to remove the background and export a transparent PNG. Create white or branded layout versions with the site's supported main-image workflow or a separate design editor; capture and color correction still need to be handled before or after background removal."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Use Rights-Safe Source Images"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Most fitness brands are private label—same product from Alibaba, different logos. Manufacturer photos come watermarked."
+    },
+    {
+      "kind": "paragraph",
+      "text": "If a source image contains a watermark, obtain an unwatermarked file from the rights holder or create your own photo. edit-photo does not remove watermarks, and removing ownership marks without permission can create legal and marketplace risks."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Ad Creative Requirement"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Fitness brands live and die by Meta ads. Your ad creative needs constant variation to fight ad fatigue."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Master workflow:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Shoot each product once"
+        },
+        {
+          "text": "Create transparent PNG at edit-photo.com"
+        },
+        {
+          "text": "Composite onto 10+ backgrounds/scenes"
+        },
+        {
+          "text": "Rotate ad creatives weekly"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "One shoot → months of ad content."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Before/After Trap"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Before/after photos convert well but violate ad platforms' rules. Be careful. Meta and TikTok both restrict weight-loss and body transformation claims."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Safer: \"In-use\" photos of people using your equipment or apparel, without transformation implications."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Brand Consistency Requirement"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Open your fitness brand's Instagram grid. Does it look like Gymshark or a random dropshipper?"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Every photo should share:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Same background palette"
+        },
+        {
+          "text": "Same energy (intense vs calm vs premium)"
+        },
+        {
+          "text": "Same crop and typography"
+        },
+        {
+          "text": "Same brand color accents"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Rebuild your grid using consistent editing via edit-photo.com."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Looking Like a Real Fitness Brand"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Buyers pay premium for brands they trust. Trust comes from visual consistency. Start free at edit-photo.com."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

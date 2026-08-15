@@ -12,31 +12,48 @@ const scheduledArticleManifest = (
   )
 ).toSorted((left, right) => Date.parse(left.publishedAt) - Date.parse(right.publishedAt));
 
-test("keeps the five-day editorial schedule complete and deterministic", () => {
-  assert.equal(scheduledArticleManifest.length, 10);
-  assert.equal(new Set(scheduledArticleManifest.map(({ id }) => id)).size, 10);
+test("keeps the complete editorial schedule deterministic", () => {
+  assert.equal(scheduledArticleManifest.length, 60);
+  assert.equal(new Set(scheduledArticleManifest.map(({ id }) => id)).size, 60);
   const publicationTimes = scheduledArticleManifest.map(({ publishedAt }) => Date.parse(publishedAt));
   assert.ok(publicationTimes.every(Number.isFinite));
-  assert.deepEqual(
-    scheduledArticleManifest.reduce((counts, { date }) => {
-      counts[date] = (counts[date] ?? 0) + 1;
-      return counts;
-    }, {}),
-    {
-      "2026-08-16": 2,
-      "2026-08-17": 2,
-      "2026-08-18": 2,
-      "2026-08-19": 2,
-      "2026-08-20": 2,
-    },
-  );
+  const dailyCounts = scheduledArticleManifest.reduce((counts, { date }) => {
+    counts[date] = (counts[date] ?? 0) + 1;
+    return counts;
+  }, {});
+  assert.equal(Object.keys(dailyCounts).length, 30);
+  assert.ok(Object.values(dailyCounts).every((count) => count === 2));
+  assert.equal(scheduledArticleManifest[0].publishedAt, "2026-08-16T01:00:00.000Z");
+  assert.equal(scheduledArticleManifest[9].publishedAt, "2026-08-20T09:00:00.000Z");
+  assert.equal(scheduledArticleManifest[10].publishedAt, "2026-08-21T01:00:00.000Z");
+  assert.equal(scheduledArticleManifest.at(-1).publishedAt, "2026-09-14T09:00:00.000Z");
   assert.deepEqual(publicationTimes, publicationTimes.toSorted((a, b) => a - b));
 });
 
+test("schedules the second English series twice daily for 25 days", () => {
+  const secondSeries = scheduledArticleManifest.slice(10);
+  assert.equal(secondSeries.length, 50);
+  const expectedDates = Array.from({ length: 25 }, (_, index) => {
+    const value = new Date(Date.UTC(2026, 7, 21 + index));
+    return value.toISOString().slice(0, 10);
+  });
+  assert.deepEqual([...new Set(secondSeries.map(({ date }) => date))], expectedDates);
+  for (const expectedDate of expectedDates) {
+    const dailyArticles = secondSeries.filter(({ date }) => date === expectedDate);
+    assert.equal(dailyArticles.length, 2);
+    assert.deepEqual(
+      dailyArticles.map(({ publishedAt }) => publishedAt.slice(11, 16)),
+      ["01:00", "09:00"],
+    );
+  }
+});
+
 test("does not expose an editorial article before its publication time", async (context) => {
-  const firstArticle = scheduledArticleManifest[0];
-  if (Date.now() >= Date.parse(firstArticle.publishedAt)) {
-    context.skip("The first editorial article is already published.");
+  const firstArticle = scheduledArticleManifest.find(
+    ({ publishedAt }) => Date.now() < Date.parse(publishedAt),
+  );
+  if (!firstArticle) {
+    context.skip("All scheduled editorial articles are already published.");
     return;
   }
 

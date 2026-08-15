@@ -1,0 +1,171 @@
+{
+  "id": "cosmetics-product-photography",
+  "tag": "E-commerce Photo Guide",
+  "title": "Cosmetics Sellers: Why Your Product Photos Look Cheap (And the 5-Minute Fix)",
+  "description": "Beauty product photos need to look luxurious. Here's how indie cosmetics sellers can match L'Oréal-level polish for free.",
+  "targetKeyword": "cosmetics product photography",
+  "publishedAt": "2026-08-23T01:00:00.000Z",
+  "date": "2026-08-23",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "Beauty is the most visual category in e-commerce. Buyers judge lipsticks, serums, and skincare almost entirely on packaging photography. And your competitors are Chanel, Fenty, Rare Beauty—brands with unlimited budgets."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's how solo indie beauty sellers still compete and win."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "What Makes Beauty Photos \"Look Cheap\""
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Home backgrounds (kitchen counter, bathroom sink)"
+        },
+        {
+          "text": "Uneven lighting"
+        },
+        {
+          "text": "Reflections on glossy packaging"
+        },
+        {
+          "text": "Inconsistent color across products"
+        },
+        {
+          "text": "Watermarks from suppliers (private label sellers, this is you)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Fix these five and your products immediately jump categories in perceived value."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Solo Beauty Seller's Workflow"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 1: Shoot on any surface. White fabric, marble contact paper, or even printer paper. Doesn't matter."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Processing time varies by device, image size, model cache, and edge complexity. Work in reviewed batches of up to 20 instead of promising a fixed completion time."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 3: Apply consistent branded background. Soft pink, warm nude, matte black—pick one and use it forever."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 4: Batch process the whole catalog. Consistency across your product line is what makes a brand feel real."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Handling Glossy and Reflective Packaging"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Lip glosses, glass bottles, foil labels—these are notorious. Reflections capture your entire room."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Two options:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Shoot with polarizing filter (advanced)"
+        },
+        {
+          "text": "Or diffuse your light source heavily (bedsheet over a lamp), then edit"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "After removing the background at edit-photo.com, reflections that hit the background disappear automatically. Reflections on the product itself remain—those look premium and intentional."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Use Rights-Safe Source Images"
+    },
+    {
+      "kind": "paragraph",
+      "text": "If a source image contains a watermark, obtain an unwatermarked file from the rights holder or create your own photo. edit-photo does not remove watermarks, and removing ownership marks without permission can create legal and marketplace risks."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Building a Beauty Brand Photo System"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For every SKU:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Product on brand color (main)"
+        },
+        {
+          "text": "Product open/swatched (usage)"
+        },
+        {
+          "text": "Product with ingredient callouts"
+        },
+        {
+          "text": "Product in hand (scale)"
+        },
+        {
+          "text": "Product with lifestyle prop (aesthetic)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Same background style across all five. Same lighting mood. Same crop."
+    },
+    {
+      "kind": "paragraph",
+      "text": "That consistency is what separates \"indie brand people trust\" from \"another Alibaba reseller.\""
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Instagram Ad Angle"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Beauty buys 90% of its traffic from Instagram/TikTok ads. A transparent PNG of your product from edit-photo.com can be dropped into 20 different ad creatives, seasonal backgrounds, lifestyle scenes, and text-heavy carousels."
+    },
+    {
+      "kind": "paragraph",
+      "text": "One shoot. Infinite creative variations."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Looking Like a Real Brand"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Beauty buyers pay for perceived quality. Your product may already be amazing—your photos need to reflect that. Start free at edit-photo.com."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

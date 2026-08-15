@@ -1,0 +1,180 @@
+{
+  "id": "furniture-product-photography",
+  "tag": "E-commerce Photo Guide",
+  "title": "Furniture Sellers: How to Photograph Big Items Without a Warehouse Studio",
+  "description": "Selling furniture online means big items and big challenges. Here's the workflow small furniture brands use to compete.",
+  "targetKeyword": "furniture product photography",
+  "publishedAt": "2026-08-24T01:00:00.000Z",
+  "date": "2026-08-24",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "Furniture is the biggest per-order category in e-commerce. It's also the hardest to photograph. Chairs, sofas, tables—you can't just pop them in a lightbox. And customers won't spend $800 on a sofa they can't envision in their home."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's how small furniture brands compete with Wayfair and IKEA."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Space Problem"
+    },
+    {
+      "kind": "paragraph",
+      "text": "You need 10+ feet of clean space, even lighting, and a plain wall to shoot furniture properly. Most sellers don't have this."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Workaround: Shoot in the cleanest space you have (a garage, a warehouse corner, even a driveway on a cloudy day). Any background works because you're going to remove it."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use edit-photo to remove the background and export a transparent PNG. Create white or branded layout versions with the site's supported main-image workflow or a separate design editor; capture and color correction still need to be handled before or after background removal."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Lifestyle Requirement"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Furniture buyers need to imagine the piece in a room. Pure white shots are for marketplace listings—but your website and ads need lifestyle context."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Solution: One shoot, two versions."
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Transparent PNG from edit-photo.com"
+        },
+        {
+          "text": "Composite the PNG onto stock room scenes (or your own lifestyle shots)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "You just created five staged room photos from one plain garage shoot."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Scale Problem"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Buyers can't tell if a chair is 30\" or 40\" tall without reference. Include:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Dimensions in the photo (overlaid text)"
+        },
+        {
+          "text": "One shot with a person for scale"
+        },
+        {
+          "text": "One shot with a common object (coffee cup, book)"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Never let a buyer guess. Guessing = cart abandonment."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Assembly Problem"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Flat-pack furniture needs assembly shots. Show the pieces. Show the process. Show the final assembled product."
+    },
+    {
+      "kind": "paragraph",
+      "text": "For each stage, upload to edit-photo.com, clean backgrounds, standardize. Buyers appreciate transparency."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Handling Fabric and Wood Textures"
+    },
+    {
+      "kind": "paragraph",
+      "text": "AI background removers used to butcher fabric edges. Modern tools like edit-photo.com preserve texture, thread, and grain."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Still, always zoom to 100% on final images to check for edge artifacts. Fabric fringe is the one area that occasionally needs manual touch-up."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Complete Furniture Listing"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For each SKU:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Front view (clean white)"
+        },
+        {
+          "text": "Angle view (clean white)"
+        },
+        {
+          "text": "Back view (rare but important for open designs)"
+        },
+        {
+          "text": "Detail: fabric or wood close-up"
+        },
+        {
+          "text": "Detail: hardware/joinery"
+        },
+        {
+          "text": "Lifestyle scene 1 (living room)"
+        },
+        {
+          "text": "Lifestyle scene 2 (different aesthetic)"
+        },
+        {
+          "text": "Scale reference"
+        },
+        {
+          "text": "Dimensions diagram"
+        },
+        {
+          "text": "Assembled vs unassembled comparison"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Ten photos. Two hours of work with edit-photo.com in your pipeline. Compare to two full days without it."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Competing with the Big Boys"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Small furniture brands can absolutely beat Wayfair on quality and design. But not without matching them on visuals. Level up free at edit-photo.com."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}

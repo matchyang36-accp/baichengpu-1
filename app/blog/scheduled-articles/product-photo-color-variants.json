@@ -1,0 +1,254 @@
+{
+  "id": "product-photo-color-variants",
+  "tag": "E-commerce Photo Guide",
+  "title": "How to Photograph Products in Multiple Colors Without Reshooting Each Variant",
+  "description": "Shooting every color variant is exhausting. Here's the workflow that produces color variations from one shoot.",
+  "targetKeyword": "product photo color variants",
+  "publishedAt": "2026-09-13T09:00:00.000Z",
+  "date": "2026-09-13",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "You have a product in 8 colors. Traditional advice says shoot all 8. Reality: that's 8x the setup, editing, and file management. Most sellers give up and use \"swatch\" images."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Here's a smarter approach."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Traditional Approach"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Shoot each color variant separately:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Same lighting setup"
+        },
+        {
+          "text": "Same camera position"
+        },
+        {
+          "text": "Same crop"
+        },
+        {
+          "text": "Different product color"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Time cost: 8 products × 15 minutes each = 2 hours minimum."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Smart Approach"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Shoot one \"hero\" product in a neutral color (white, black, or gray). Then use edit-photo.com to:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Remove background"
+        },
+        {
+          "text": "Composite onto colored backgrounds"
+        },
+        {
+          "text": "Generate variant preview images"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "For actual color-changed product photos, you'll still need to shoot each color for accurate representation. But the presentation work becomes trivial."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "When Color-Swap Editing Is Acceptable"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For simple products with solid colors (t-shirts, phone cases, mugs), editing the hero product's color can create passable variant images."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Not for:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Products where color affects the material appearance"
+        },
+        {
+          "text": "Patterns and prints"
+        },
+        {
+          "text": "Metallic finishes"
+        },
+        {
+          "text": "Anything customers might return over \"color not as pictured\""
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Hybrid Strategy"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 1: Shoot each variant color in a quick session (5 min each with a consistent setup)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 2: Edit all through edit-photo.com with identical backgrounds and settings"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Step 3: Batch export"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Same time as one traditional shoot, but with accurate color representation."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Variant Swatch Photo"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Beyond individual variant photos, create a \"swatch\" image showing all colors at once:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Grid of product in each color"
+        },
+        {
+          "text": "Consistent background"
+        },
+        {
+          "text": "Uniform sizing"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Buyers use this to compare options at a glance. High-conversion element."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Listing Photo Set"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For each variant listing:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Main image of that specific color"
+        },
+        {
+          "text": "Multiple angles of that color"
+        },
+        {
+          "text": "Swatch showing all available colors"
+        },
+        {
+          "text": "Lifestyle context (color-appropriate)"
+        },
+        {
+          "text": "Detail shots"
+        },
+        {
+          "text": "Scale reference"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "edit-photo.com makes this manageable through batch consistency."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Amazon Variant Setup"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Amazon parent-child variants show individual color photos when buyers select. If your color-specific photos are inconsistent (different backgrounds, different lighting), buyers subconsciously distrust the listing."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Standardize through edit-photo.com. Every variant photographed and edited identically."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Shopify Variant Trick"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Shopify supports variant-specific images. Set them up:"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Each color has its own main image"
+        },
+        {
+          "text": "Shared secondary images (lifestyle, detail)"
+        },
+        {
+          "text": "Cohesive presentation across variants"
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "The Time-Math Reality"
+    },
+    {
+      "kind": "paragraph",
+      "text": "8 color variants shot separately: 2+ hours\n8 color variants shot with hybrid workflow + editing: 45 minutes"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Compounding across 20 multi-variant SKUs = weeks saved per year."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start Streamlining Variants"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Multi-color products don't have to be a photo nightmare. Start free at edit-photo.com."
+    }
+  ],
+  "cta": {
+    "title": "Ready to improve a product photo?",
+    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
+    "button": "Try background removal"
+  }
+}
