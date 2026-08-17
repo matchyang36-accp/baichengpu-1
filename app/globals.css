@@ -541,6 +541,22 @@
   margin-top: 2px;
 }
 
+.http-analytics-section {
+  display: grid;
+  gap: 24px;
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(129, 92, 246, 0.18);
+}
+
+.http-analytics-heading {
+  align-items: end;
+}
+
+.http-analytics-grid {
+  margin-top: 0;
+}
+
 .analytics-visitors-table code {
   padding: 4px 7px;
   border-radius: 7px;

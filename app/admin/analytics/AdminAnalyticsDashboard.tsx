@@ -17,6 +17,20 @@ type AnalyticsPayload = {
   topPages: Array<{ path: string; views: number; visitors: number }>;
   sources: Array<{ source: string; visitors: number }>;
   devices: Array<{ deviceType: string; visitors: number }>;
+  http: {
+    summary: {
+      requests: number;
+      successfulRequests: number;
+      clientErrors: number;
+      serverErrors: number;
+      apiRequests: number;
+      averageDurationMs: number;
+    };
+    trend: Array<{ day: string; requests: number; averageDurationMs: number }>;
+    methods: Array<{ method: string; requests: number }>;
+    statuses: Array<{ statusCode: number; requests: number }>;
+    topPaths: Array<{ path: string; requests: number; averageDurationMs: number }>;
+  };
   recentVisitors: Array<{
     visitorId: string;
     userId: string | null;
@@ -43,6 +57,20 @@ const emptyPayload: AnalyticsPayload = {
   topPages: [],
   sources: [],
   devices: [],
+  http: {
+    summary: {
+      requests: 0,
+      successfulRequests: 0,
+      clientErrors: 0,
+      serverErrors: 0,
+      apiRequests: 0,
+      averageDurationMs: 0,
+    },
+    trend: [],
+    methods: [],
+    statuses: [],
+    topPaths: [],
+  },
   recentVisitors: [],
 };
 
@@ -82,6 +110,13 @@ export function AdminAnalyticsDashboard() {
   );
   const averageViews = data.summary.visitors
     ? (data.summary.pageViews / data.summary.visitors).toFixed(1)
+    : "0.0";
+  const httpTrendMax = useMemo(
+    () => Math.max(1, ...data.http.trend.map((item) => item.requests)),
+    [data.http.trend],
+  );
+  const successRate = data.http.summary.requests
+    ? ((data.http.summary.successfulRequests / data.http.summary.requests) * 100).toFixed(1)
     : "0.0";
 
   return (
@@ -159,6 +194,62 @@ export function AdminAnalyticsDashboard() {
         />
       </div>
 
+      <section className="http-analytics-section" aria-label="HTTP 请求统计">
+        <div className="admin-section-title http-analytics-heading">
+          <div><span>服务健康</span><h2>HTTP 请求统计</h2></div>
+          <strong>不记录 IP、Cookie 与查询参数</strong>
+        </div>
+
+        <div className="admin-stats analytics-stats" aria-busy={isLoading}>
+          <Metric label="HTTP 请求" value={data.http.summary.requests} hint={`API 请求 ${data.http.summary.apiRequests}`} />
+          <Metric label="请求成功率" value={`${successRate}%`} hint="HTTP 2xx–3xx" />
+          <Metric label="客户端错误" value={data.http.summary.clientErrors} hint="HTTP 4xx" />
+          <Metric label="服务端错误" value={data.http.summary.serverErrors} hint={`平均 ${data.http.summary.averageDurationMs} ms`} />
+        </div>
+
+        <div className="analytics-grid http-analytics-grid">
+          <section className="admin-trend-card analytics-trend-card">
+            <div className="admin-section-title">
+              <div><span>请求变化</span><h2>每日 HTTP 请求</h2></div>
+              <strong>{data.http.summary.requests} 次请求</strong>
+            </div>
+            <div className="analytics-trend" aria-label="每日 HTTP 请求趋势">
+              {data.http.trend.length ? data.http.trend.map((item) => (
+                <div className="analytics-trend-item" key={item.day} title={`${item.day}：${item.requests} 次请求，平均 ${item.averageDurationMs} ms`}>
+                  <span style={{ height: `${Math.max(8, (item.requests / httpTrendMax) * 100)}%` }} />
+                  <small>{item.day.slice(5)}</small>
+                </div>
+              )) : <p className="admin-empty-trend">部署后新的 HTTP 请求会出现在这里。</p>}
+            </div>
+          </section>
+
+          <RankCard
+            title="热门请求路径"
+            rows={data.http.topPaths.map((item) => ({
+              label: httpPathLabel(item.path),
+              value: item.requests,
+              detail: `次 · 平均 ${item.averageDurationMs} ms`,
+            }))}
+          />
+          <RankCard
+            title="请求方法"
+            rows={data.http.methods.map((item) => ({
+              label: item.method,
+              value: item.requests,
+              detail: "次请求",
+            }))}
+          />
+          <RankCard
+            title="HTTP 状态码"
+            rows={data.http.statuses.map((item) => ({
+              label: `HTTP ${item.statusCode}`,
+              value: item.requests,
+              detail: statusLabel(item.statusCode),
+            }))}
+          />
+        </div>
+      </section>
+
       <section className="admin-users-card analytics-visitors-card">
         <div className="admin-section-title">
           <div><span>最近活动</span><h2>最近访客</h2></div>
@@ -193,7 +284,7 @@ export function AdminAnalyticsDashboard() {
   );
 }
 
-function Metric({ label, value, hint }: { label: string; value: number; hint: string }) {
+function Metric({ label, value, hint }: { label: string; value: number | string; hint: string }) {
   return <article className="admin-stat-card"><span>{label}</span><strong>{value}</strong><small>{hint}</small></article>;
 }
 
@@ -244,6 +335,20 @@ function pageLabel(path: string) {
     "/blog": "内容中心",
   };
   return labels[path] ?? path;
+}
+
+function httpPathLabel(path: string) {
+  if (path === "/static/*") return "静态资源";
+  if (path.startsWith("/api/")) return `接口 ${path}`;
+  return pageLabel(path);
+}
+
+function statusLabel(statusCode: number) {
+  if (statusCode >= 500) return "服务端错误";
+  if (statusCode >= 400) return "客户端错误";
+  if (statusCode >= 300) return "重定向";
+  if (statusCode >= 200) return "成功";
+  return "信息响应";
 }
 
 function formatDate(value: string) {

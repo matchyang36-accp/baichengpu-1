@@ -378,6 +378,7 @@ test("protects the user administration page with an admin email allowlist", asyn
   assert.equal(analyticsResponse.status, 200);
   const analyticsHtml = await analyticsResponse.text();
   assert.match(analyticsHtml, /访问分析/);
+  assert.match(analyticsHtml, /HTTP 请求统计/);
   assert.match(analyticsHtml, /最近访客/);
 
   const billingResponse = await render(
@@ -1092,6 +1093,58 @@ test("checkout explicitly enables Managed Payments", async () => {
   assert.equal(checkoutParams?.get("managed_payments[enabled]"), "true");
   assert.equal(checkoutParams?.get("line_items[0][price]"), "price_pro_test");
   assert.ok(executed.some(({ sql }) => /INSERT INTO orders/.test(sql)));
+});
+
+test("aggregates Cloudflare HTTP requests without storing query strings or IP addresses", async () => {
+  const worker = await loadWorker("http-request-analytics");
+  const executed = [];
+  const pending = [];
+  const db = {
+    prepare(sql) {
+      const statement = {
+        values: [],
+        bind(...values) {
+          statement.values = values;
+          return statement;
+        },
+        async first() {
+          return null;
+        },
+        async run() {
+          executed.push({ sql, values: statement.values });
+          return { success: true };
+        },
+      };
+      return statement;
+    },
+  };
+
+  const response = await worker.fetch(
+    new Request("https://edit-photo.com/api/account?token=must-not-be-stored", {
+      headers: {
+        accept: "application/json",
+        "cf-ray": "request-test",
+        "cf-connecting-ip": "203.0.113.42",
+      },
+    }),
+    {
+      ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+      DB: db,
+    },
+    {
+      waitUntil(promise) { pending.push(promise); },
+      passThroughOnException() {},
+    },
+  );
+
+  assert.equal(response.status, 401);
+  await Promise.all(pending);
+  assert.equal(executed.length, 1);
+  assert.match(executed[0].sql, /INSERT INTO http_request_daily/);
+  assert.deepEqual(executed[0].values.slice(1, 4), ["/api/account", "GET", 401]);
+  const storedValues = JSON.stringify(executed[0].values);
+  assert.doesNotMatch(storedValues, /must-not-be-stored/);
+  assert.doesNotMatch(storedValues, /203\.0\.113\.42/);
 });
 
 test("billing portal is authenticated and bound to the current user's Stripe customer", async () => {

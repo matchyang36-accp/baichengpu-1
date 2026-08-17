@@ -65,6 +65,10 @@ jobs:
         if: steps.config.outputs.ready == 'true'
         run: pnpm run build
 
+      - name: Apply production D1 migrations
+        if: steps.config.outputs.ready == 'true'
+        run: pnpm exec wrangler d1 migrations apply DB --remote --config wrangler.jsonc
+
       - name: Deploy production Worker
         if: steps.config.outputs.ready == 'true'
         run: pnpm exec wrangler deploy --config dist/server/wrangler.json

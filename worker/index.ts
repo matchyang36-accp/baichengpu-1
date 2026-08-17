@@ -6,6 +6,10 @@ import {
   safeAdminReturnPath,
 } from "../shared/admin-navigation";
 import { handlePaymentRequest } from "./payments";
+import {
+  loadHttpAnalytics,
+  scheduleHttpRequestStat,
+} from "./http-analytics";
 
 interface Env {
   ASSETS: Fetcher;
@@ -988,6 +992,7 @@ async function handleAdminUsersRequest(
       sources,
       devices,
       recentVisitors,
+      httpAnalytics,
     ] = await Promise.all([
       db
         .prepare(
@@ -1109,6 +1114,7 @@ async function handleAdminUsersRequest(
           deviceType: string;
           pageViewCount: number;
         }>(),
+      loadHttpAnalytics(db, sinceIso),
     ]);
 
     return json(
@@ -1128,6 +1134,7 @@ async function handleAdminUsersRequest(
         sources: sources.results ?? [],
         devices: devices.results ?? [],
         recentVisitors: recentVisitors.results ?? [],
+        http: httpAnalytics,
       },
       200,
     );
@@ -1330,8 +1337,11 @@ function csvCell(value: unknown): string {
 // dangerouslyAllowSVG: true in next.config.js and uncomment below:
 // const imageConfig: ImageConfig = { dangerouslyAllowSVG: true };
 
-const worker = {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+async function handleRequest(
+  request: Request,
+  env: Env,
+  ctx: ExecutionContext,
+): Promise<Response> {
     const url = new URL(request.url);
 
     if (
@@ -1710,6 +1720,19 @@ const worker = {
       statusText: response.statusText,
       headers,
     });
+}
+
+const worker = {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const startedAt = Date.now();
+    try {
+      const response = await handleRequest(request, env, ctx);
+      scheduleHttpRequestStat(request, env.DB, ctx, response.status, startedAt);
+      return response;
+    } catch (reason) {
+      scheduleHttpRequestStat(request, env.DB, ctx, 500, startedAt);
+      throw reason;
+    }
   },
 };
 

@@ -128,6 +128,29 @@ export const visitorEvents = sqliteTable(
   ],
 );
 
+export const httpRequestDaily = sqliteTable(
+  "http_request_daily",
+  {
+    day: text("day").notNull(),
+    path: text("path").notNull(),
+    method: text("method").notNull(),
+    statusCode: integer("status_code").notNull(),
+    requestCount: integer("request_count").notNull().default(0),
+    totalDurationMs: integer("total_duration_ms").notNull().default(0),
+    maxDurationMs: integer("max_duration_ms").notNull().default(0),
+  },
+  (table) => [
+    uniqueIndex("http_request_daily_unique_idx").on(
+      table.day,
+      table.path,
+      table.method,
+      table.statusCode,
+    ),
+    index("http_request_daily_day_idx").on(table.day),
+    index("http_request_daily_path_day_idx").on(table.path, table.day),
+  ],
+);
+
 export const creditUsage = sqliteTable(
   "credit_usage",
   {
