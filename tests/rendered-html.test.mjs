@@ -155,7 +155,9 @@ test("renders locale-prefixed English and Chinese homepages", async () => {
   assert.match(chineseHtml, /<html lang="zh-CN">/);
   assert.match(chineseHtml, /免费 AI 抠图工具/);
   assert.match(chineseHtml, /\/images\/demo\/tomato-cutout-demo\.webp/);
+  assert.match(englishHtml, /href="\/en\/blog"/);
   assert.match(chineseHtml, /href="\/zh\/batch"/);
+  assert.match(chineseHtml, /href="\/zh\/blog"/);
 });
 
 test("serves stable SEO discovery and locale metadata", async () => {

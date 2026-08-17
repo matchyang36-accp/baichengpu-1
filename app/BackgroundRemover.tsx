@@ -982,6 +982,7 @@ export function BackgroundRemover({
           <a href="#how-it-works">{t("tool.nav.howItWorks")}</a>
           <a href={`${localePrefix}/batch`}>{t("tool.nav.batch")}</a>
           <a href={`${localePrefix}/pricing`}>{t("tool.nav.pro")}</a>
+          <a href={`${localePrefix}/blog`}>{t("common.nav.blog")}</a>
           <a href={`${localePrefix}/contact`}>{t("tool.nav.contact")}</a>
           <span className="nav-pill">{t("tool.nav.pill")}</span>
         </nav>
