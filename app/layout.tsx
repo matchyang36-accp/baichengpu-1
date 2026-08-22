@@ -6,10 +6,8 @@ import { getTranslator } from "../i18n/core";
 import { AnalyticsTracker } from "./AnalyticsTracker";
 import { localizedAlternates, SITE_ORIGIN } from "./seo";
 import { OrganizationSchema } from "./lib/structured-data";
+import { ADSENSE_CLIENT_ID } from "./adsense-config";
 import "./globals.css";
-
-/** Google AdSense public publisher identifier. */
-const ADSENSE_CLIENT_ID = "ca-pub-7218285443802148";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocaleFromHeaders();

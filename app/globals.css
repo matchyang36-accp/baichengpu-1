@@ -4341,6 +4341,23 @@ footer {
   text-underline-offset: 3px;
 }
 
+.article-ad-slot {
+  width: 100%;
+  min-height: 120px;
+  margin: 32px 0;
+  overflow: hidden;
+  text-align: center;
+}
+
+.article-ad-slot > span {
+  display: block;
+  margin-bottom: 8px;
+  color: #8a93a5;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .article-cta {
   width: min(760px, calc(100% - 40px));
   margin: 48px auto 0;

@@ -208,6 +208,8 @@ test("renders localized article bodies with discoverable SEO metadata", async ()
   assert.match(englishHtml, /A safer cross-platform master workflow/);
   assert.match(englishHtml, /Amazon Seller Central product-image guidance/);
   assert.match(englishHtml, /"@type":"Article"/);
+  assert.match(englishHtml, /data-ad-client="ca-pub-7218285443802148"/);
+  assert.match(englishHtml, /data-ad-slot="7891492487"/);
   assert.match(
     englishHtml,
     /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/ecommerce-image-specs"/,

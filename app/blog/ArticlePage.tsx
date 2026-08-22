@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Fragment } from "react";
 import { getTranslator } from "../../i18n/core";
 import { getLocaleFromHeaders } from "../../i18n/translator";
 import { AccountMenu } from "../AccountMenu";
+import { AdSenseUnit } from "../AdSenseUnit";
 import { BrandLogo } from "../BrandLogo";
 import { LanguageSwitcher } from "../LanguageSwitcher";
 import { getAccountUser } from "../account-auth";
@@ -84,6 +86,7 @@ export async function ArticlePage({ articleId }: { articleId: string }) {
   const path = `/blog/${articleId}`;
   const article = getArticleView(articleId, locale, t);
   if (!article) notFound();
+  const adAfterBlockIndex = Math.min(3, article.blocks.length - 1);
   const articleUrl = absoluteUrl(localizedPath(locale, path));
   const jsonLd = {
     "@context": "https://schema.org",
@@ -132,7 +135,16 @@ export async function ArticlePage({ articleId }: { articleId: string }) {
           <p className="article-reviewer">Reviewed by {article.reviewedBy}</p>
         </section>
 
-        <div className="article-body">{article.blocks.map(renderBlock)}</div>
+        <div className="article-body">
+          {article.blocks.map((block, index) => (
+            <Fragment key={`${block.kind}-${index}`}>
+              {renderBlock(block, index)}
+              {index === adAfterBlockIndex ? (
+                <AdSenseUnit label={locale === "zh" ? "广告" : "Advertisement"} />
+              ) : null}
+            </Fragment>
+          ))}
+        </div>
 
         <section className="article-cta">
           <h3>{article.cta.title}</h3>
