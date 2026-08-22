@@ -209,7 +209,9 @@ test("renders localized article bodies with discoverable SEO metadata", async ()
   assert.match(englishHtml, /Amazon Seller Central product-image guidance/);
   assert.match(englishHtml, /"@type":"Article"/);
   assert.match(englishHtml, /data-ad-client="ca-pub-7218285443802148"/);
-  assert.match(englishHtml, /data-ad-slot="7891492487"/);
+  assert.match(englishHtml, /data-ad-slot="5021891765"/);
+  assert.match(englishHtml, /data-ad-layout="in-article"/);
+  assert.match(englishHtml, /data-ad-format="fluid"/);
   assert.match(
     englishHtml,
     /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/ecommerce-image-specs"/,
