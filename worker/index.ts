@@ -1712,8 +1712,18 @@ async function handleRequest(
     const appRequest = new Request(request, { headers: appHeaders });
     const response = await handler.fetch(appRequest, env, ctx);
     const headers = new Headers(response.headers);
-    headers.set("Cross-Origin-Opener-Policy", "same-origin");
-    headers.set("Cross-Origin-Embedder-Policy", "require-corp");
+    const needsCrossOriginIsolation =
+      url.pathname === "/" ||
+      /^\/(?:(?:en|zh)(?:\/batch)?|batch)\/?$/.test(url.pathname);
+    headers.set(
+      "Cross-Origin-Opener-Policy",
+      needsCrossOriginIsolation ? "same-origin" : "same-origin-allow-popups",
+    );
+    if (needsCrossOriginIsolation) {
+      headers.set("Cross-Origin-Embedder-Policy", "require-corp");
+    } else {
+      headers.delete("Cross-Origin-Embedder-Policy");
+    }
     headers.set("Cross-Origin-Resource-Policy", "same-origin");
     return new Response(response.body, {
       status: response.status,

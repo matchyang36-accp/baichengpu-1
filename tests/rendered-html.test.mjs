@@ -112,6 +112,8 @@ test("server-renders the product homepage", async () => {
   const response = await render("/");
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
+  assert.equal(response.headers.get("cross-origin-opener-policy"), "same-origin");
+  assert.equal(response.headers.get("cross-origin-embedder-policy"), "require-corp");
 
   const html = await response.text();
   assert.match(html, /<html lang="en">/);
@@ -144,6 +146,14 @@ test("renders locale-prefixed English and Chinese homepages", async () => {
   ]);
   assert.equal(englishResponse.status, 200);
   assert.equal(chineseResponse.status, 200);
+  assert.equal(
+    englishResponse.headers.get("cross-origin-opener-policy"),
+    "same-origin",
+  );
+  assert.equal(
+    englishResponse.headers.get("cross-origin-embedder-policy"),
+    "require-corp",
+  );
 
   const [englishHtml, chineseHtml] = await Promise.all([
     englishResponse.text(),
@@ -199,6 +209,11 @@ test("renders localized article bodies with discoverable SEO metadata", async ()
 
   assert.equal(englishResponse.status, 200);
   assert.equal(chineseResponse.status, 200);
+  assert.equal(
+    englishResponse.headers.get("cross-origin-opener-policy"),
+    "same-origin-allow-popups",
+  );
+  assert.equal(englishResponse.headers.get("cross-origin-embedder-policy"), null);
 
   const [englishHtml, chineseHtml] = await Promise.all([
     englishResponse.text(),
