@@ -4,6 +4,7 @@ type HomeSeoContent = {
   intro: { eyebrow: string; title: string; body: string };
   scenarios: { title: string; items: Array<{ title: string; body: string }> };
   benefits: { title: string; items: Array<{ title: string; body: string }> };
+  featuredGuides: { eyebrow: string; title: string; body: string; allLabel: string };
   faq: { title: string; items: Array<[string, string]> };
   guide: { label: string; href: string };
 };
@@ -32,6 +33,12 @@ const HOME_SEO_CONTENT: Record<Locale, HomeSeoContent> = {
         { title: "Fix difficult edges", body: "Use cleanup modes and manual refinement when automatic output needs a final touch." },
         { title: "Batch when needed", body: "Capable desktop devices can process two queued images at once; lower-memory devices safely use one." },
       ],
+    },
+    featuredGuides: {
+      eyebrow: "Practical guides",
+      title: "Start with these product-photo guides",
+      body: "Use these step-by-step guides to prepare cleaner marketplace images and choose the right editing workflow.",
+      allLabel: "View all guides",
     },
     faq: {
       title: "Background removal FAQ",
@@ -67,6 +74,12 @@ const HOME_SEO_CONTENT: Record<Locale, HomeSeoContent> = {
         { title: "复杂边缘可补救", body: "自动结果不够干净时，可使用边缘净化和手动精修继续处理。" },
         { title: "按设备安全并发", body: "性能足够的电脑可同时处理两张，低内存或移动设备自动降为一张。" },
       ],
+    },
+    featuredGuides: {
+      eyebrow: "实用指南",
+      title: "从这些商品图指南开始",
+      body: "通过可执行的步骤，制作更干净的电商图片，并选择合适的处理流程。",
+      allLabel: "查看全部指南",
     },
     faq: {
       title: "AI 抠图常见问题",

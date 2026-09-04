@@ -167,8 +167,14 @@ test("renders locale-prefixed English and Chinese homepages", async () => {
   assert.match(chineseHtml, /免费 AI 抠图工具/);
   assert.match(chineseHtml, /\/images\/demo\/tomato-cutout-demo\.webp/);
   assert.match(englishHtml, /href="\/en\/blog"/);
+  assert.match(englishHtml, /href="\/en\/blog\/remove-background-product-photos"/);
+  assert.match(englishHtml, /href="\/en\/blog\/amazon-white-background-photo"/);
+  assert.match(englishHtml, /Start with these product-photo guides/);
   assert.match(chineseHtml, /href="\/zh\/batch"/);
   assert.match(chineseHtml, /href="\/zh\/blog"/);
+  assert.match(chineseHtml, /href="\/zh\/blog\/product-photo-tips"/);
+  assert.match(chineseHtml, /href="\/zh\/blog\/transparent-png-guide"/);
+  assert.match(chineseHtml, /从这些商品图指南开始/);
 });
 
 test("canonicalizes legacy hosts and trailing slashes before app work", async () => {
@@ -350,6 +356,10 @@ test("renders localized article bodies with discoverable SEO metadata", async ()
   );
   assert.match(chineseHtml, /发布前核对/);
   assert.match(chineseHtml, /淘宝规则中心/);
+  assert.match(englishHtml, /Related product-photo guides/);
+  assert.match(englishHtml, /href="\/en\/blog\/remove-background-product-photos"/);
+  assert.match(chineseHtml, /相关商品图指南/);
+  assert.match(chineseHtml, /href="\/zh\/blog\/transparent-png-guide"/);
 });
 
 test("renders signed-in account navigation and protected account page", async () => {

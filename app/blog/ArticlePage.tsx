@@ -11,7 +11,7 @@ import { BrandLogo } from "../BrandLogo";
 import { LanguageSwitcher } from "../LanguageSwitcher";
 import { getAccountUser } from "../account-auth";
 import { absoluteUrl, localizedAlternates, localizedPath } from "../seo";
-import { getArticleView } from "./article-registry";
+import { getArticleView, getRelatedArticleSummaries } from "./article-registry";
 import type { ArticleBlock } from "./article-types";
 
 function renderBlock(block: ArticleBlock, index: number) {
@@ -87,6 +87,7 @@ export async function ArticlePage({ articleId }: { articleId: string }) {
   const path = `/blog/${articleId}`;
   const article = getArticleView(articleId, locale, t);
   if (!article) notFound();
+  const relatedArticles = getRelatedArticleSummaries(articleId, locale, t);
   const adAfterBlockIndex = Math.min(3, article.blocks.length - 1);
   const articleUrl = absoluteUrl(localizedPath(locale, path));
   const jsonLd = {
@@ -155,6 +156,35 @@ export async function ArticlePage({ articleId }: { articleId: string }) {
             {article.cta.button}
           </Link>
         </section>
+
+        {relatedArticles.length > 0 ? (
+          <section className="article-related" aria-labelledby="related-guides-title">
+            <div className="article-related-heading">
+              <div>
+                <span className="eyebrow">{locale === "zh" ? "继续阅读" : "Keep reading"}</span>
+                <h2 id="related-guides-title">
+                  {locale === "zh" ? "相关商品图指南" : "Related product-photo guides"}
+                </h2>
+              </div>
+              <Link href={localizedPath(locale, "/blog")}>
+                {locale === "zh" ? "查看全部指南" : "View all guides"}
+              </Link>
+            </div>
+            <div className="article-related-grid">
+              {relatedArticles.map((relatedArticle) => (
+                <Link
+                  className="article-related-card"
+                  href={localizedPath(locale, `/blog/${relatedArticle.id}`)}
+                  key={relatedArticle.id}
+                >
+                  <span className="eyebrow">{relatedArticle.tag}</span>
+                  <h3>{relatedArticle.title}</h3>
+                  <p>{relatedArticle.description}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
       </article>
 
       <footer>

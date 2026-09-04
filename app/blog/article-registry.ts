@@ -95,3 +95,27 @@ export function getArticleSummary(articleId: string, locale: Locale, t: Translat
       }
     : null;
 }
+
+export function getRelatedArticleSummaries(
+  articleId: string,
+  locale: Locale,
+  t: Translator,
+  now = new Date(),
+  limit = 3,
+) {
+  const publishedArticleIds = getPublishedArticleIds(locale, now);
+  const currentIndex = publishedArticleIds.indexOf(articleId);
+  if (currentIndex < 0 || limit <= 0) return [];
+
+  const relatedIds: string[] = [];
+  for (let offset = 1; relatedIds.length < limit && offset < publishedArticleIds.length; offset += 1) {
+    const nextId = publishedArticleIds[currentIndex + offset];
+    const previousId = publishedArticleIds[currentIndex - offset];
+    if (nextId) relatedIds.push(nextId);
+    if (previousId && relatedIds.length < limit) relatedIds.push(previousId);
+  }
+
+  return relatedIds
+    .map((relatedId) => getArticleSummary(relatedId, locale, t))
+    .filter((article) => article !== null);
+}

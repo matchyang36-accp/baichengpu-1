@@ -3166,6 +3166,83 @@ a:focus-visible {
   font-size: 18px;
 }
 
+.home-featured-guides-heading,
+.article-related-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.home-featured-guides-heading > div,
+.article-related-heading > div {
+  max-width: 760px;
+}
+
+.home-featured-guides-heading h2,
+.article-related-heading h2 {
+  margin: 12px 0 10px;
+  font-size: clamp(28px, 3.6vw, 42px);
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+}
+
+.home-featured-guides-heading p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.home-featured-guides-heading > a,
+.article-related-heading > a {
+  flex: 0 0 auto;
+  color: var(--orange-dark);
+  font-weight: 850;
+}
+
+.home-guide-grid,
+.article-related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.home-guide-card,
+.article-related-card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: 0 10px 28px rgba(42, 54, 78, 0.05);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.home-guide-card:hover,
+.article-related-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 34px rgba(42, 54, 78, 0.1);
+}
+
+.home-guide-card h3,
+.article-related-card h3 {
+  margin: 14px 0 8px;
+  font-size: 19px;
+  line-height: 1.35;
+}
+
+.home-guide-card p,
+.article-related-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
 .home-seo-faq-heading {
   display: flex;
   align-items: end;
@@ -4407,6 +4484,11 @@ footer {
   line-height: 1.7;
 }
 
+.article-related {
+  width: min(1080px, calc(100% - 40px));
+  margin: 64px auto 0;
+}
+
 @media (max-width: 640px) {
   .blog-grid {
     grid-template-columns: 1fr;
@@ -4416,5 +4498,17 @@ footer {
   .article-body ul,
   .article-body ol {
     font-size: 15px;
+  }
+
+  .home-guide-grid,
+  .article-related-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-featured-guides-heading,
+  .article-related-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
   }
 }
