@@ -127,6 +127,40 @@ function publicHtmlResponse(
   });
 }
 
+async function normalizeLocalizedHomeSeo(
+  response: Response,
+  url: URL,
+): Promise<Response> {
+  if (
+    !/^\/(?:en|zh)$/.test(url.pathname) ||
+    response.status !== 200 ||
+    !response.headers.get("content-type")?.includes("text/html")
+  ) {
+    return response;
+  }
+
+  let html = await response.text();
+  const metadataOrigins = new Set([url.origin, `https://${CANONICAL_HOST}`]);
+  for (const origin of metadataOrigins) {
+    for (const locale of ["en", "zh"] as const) {
+      const withSlash = `${origin}/${locale}/`;
+      const withoutSlash = `${origin}/${locale}`;
+      html = html
+        .replaceAll(`href="${withSlash}"`, `href="${withoutSlash}"`)
+        .replaceAll(`"url":"${withSlash}"`, `"url":"${withoutSlash}"`);
+    }
+  }
+
+  const headers = new Headers(response.headers);
+  headers.delete("content-length");
+  headers.delete("etag");
+  return new Response(html, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 function cacheErrorMessage(reason: unknown): string {
   return reason instanceof Error
     ? reason.message.slice(0, 300)
@@ -1838,7 +1872,8 @@ async function handleRequest(
       /^\/zh(?:\/|$)/.test(url.pathname) ? "zh" : "en",
     );
     const appRequest = new Request(request, { headers: appHeaders });
-    const response = await handler.fetch(appRequest, env, ctx);
+    let response = await handler.fetch(appRequest, env, ctx);
+    response = await normalizeLocalizedHomeSeo(response, url);
     const headers = new Headers(response.headers);
     const needsCrossOriginIsolation =
       url.pathname === "/" ||

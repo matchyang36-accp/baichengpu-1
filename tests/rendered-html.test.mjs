@@ -163,8 +163,13 @@ test("renders locale-prefixed English and Chinese homepages", async () => {
   assert.match(englishHtml, /<html lang="en">/);
   assert.match(englishHtml, /AI Background Remover for/);
   assert.match(englishHtml, /Real cutout preview/);
+  assert.match(englishHtml, /rel="canonical" href="https:\/\/edit-photo\.com\/en"/);
+  assert.match(englishHtml, /hrefLang="zh-CN" href="https:\/\/edit-photo\.com\/zh"/);
+  assert.doesNotMatch(englishHtml, /rel="canonical" href="https:\/\/edit-photo\.com\/en\/"/);
   assert.match(chineseHtml, /<html lang="zh-CN">/);
   assert.match(chineseHtml, /免费 AI 抠图工具/);
+  assert.match(chineseHtml, /rel="canonical" href="https:\/\/edit-photo\.com\/zh"/);
+  assert.doesNotMatch(chineseHtml, /rel="canonical" href="https:\/\/edit-photo\.com\/zh\/"/);
   assert.match(chineseHtml, /\/images\/demo\/tomato-cutout-demo\.webp/);
   assert.match(englishHtml, /href="\/en\/blog"/);
   assert.match(englishHtml, /href="\/en\/blog\/remove-background-product-photos"/);
