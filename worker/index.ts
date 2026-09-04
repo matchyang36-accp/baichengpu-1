@@ -67,6 +67,14 @@ const LEGACY_PUBLIC_HOSTS = new Set([
   "www.edit-photo.com",
   "app.edit-photo.com",
 ]);
+const PUBLIC_HTML_EDGE_TTL_SECONDS = 5 * 60;
+const PUBLIC_CONTENT_SEGMENTS = new Set([
+  "blog",
+  "pricing",
+  "contact",
+  "privacy",
+  "disclaimer",
+]);
 const INTERNAL_USER_HEADERS = {
   id: "x-baichengpu-user-id",
   email: "x-baichengpu-user-email",
@@ -74,6 +82,56 @@ const INTERNAL_USER_HEADERS = {
   admin: "x-baichengpu-admin",
   plan: "x-baichengpu-user-plan",
 } as const;
+
+function isPublicContentPath(pathname: string): boolean {
+  if (pathname === "/" || /^\/(?:en|zh)$/.test(pathname)) return true;
+
+  const segments = pathname.split("/").filter(Boolean);
+  if (segments[0] === "en" || segments[0] === "zh") segments.shift();
+  if (segments.length === 0 || !PUBLIC_CONTENT_SEGMENTS.has(segments[0])) {
+    return false;
+  }
+
+  return segments[0] === "blog" ? segments.length <= 2 : segments.length === 1;
+}
+
+function publicHtmlCacheKey(request: Request, url: URL): Request | null {
+  if (
+    request.method !== "GET" ||
+    url.search !== "" ||
+    !isPublicContentPath(url.pathname) ||
+    !request.headers.get("accept")?.includes("text/html") ||
+    request.headers.has("authorization") ||
+    request.headers.has("rsc") ||
+    request.headers.has("next-router-state-tree") ||
+    parseCookies(request).has(SESSION_COOKIE) ||
+    typeof globalThis.caches === "undefined"
+  ) {
+    return null;
+  }
+
+  return new Request(url.toString(), { method: "GET" });
+}
+
+function publicHtmlResponse(
+  response: Response,
+  cacheStatus: "HIT" | "MISS",
+): Response {
+  const headers = new Headers(response.headers);
+  headers.set("cache-control", "public, max-age=0, must-revalidate");
+  headers.set("x-bcp-cache", cacheStatus);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+function cacheErrorMessage(reason: unknown): string {
+  return reason instanceof Error
+    ? reason.message.slice(0, 300)
+    : String(reason).slice(0, 300);
+}
 
 function canonicalRedirect(request: Request, url: URL): Response | null {
   if (request.method !== "GET" && request.method !== "HEAD") return null;
@@ -1396,6 +1454,20 @@ async function handleRequest(
     const redirectResponse = canonicalRedirect(request, url);
     if (redirectResponse) return redirectResponse;
 
+    const cacheKey = publicHtmlCacheKey(request, url);
+    if (cacheKey) {
+      try {
+        const cachedResponse = await globalThis.caches.default.match(cacheKey);
+        if (cachedResponse) return publicHtmlResponse(cachedResponse, "HIT");
+      } catch (reason) {
+        console.error(JSON.stringify({
+          event: "public_html_cache_match_failed",
+          path: url.pathname,
+          error: cacheErrorMessage(reason),
+        }));
+      }
+    }
+
     if (
       request.method === "POST" &&
       url.pathname === "/api/auth/password-reset/request"
@@ -1781,11 +1853,43 @@ async function handleRequest(
       headers.delete("Cross-Origin-Embedder-Policy");
     }
     headers.set("Cross-Origin-Resource-Policy", "same-origin");
-    return new Response(response.body, {
+    const finalResponse = new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
       headers,
     });
+
+    if (
+      cacheKey &&
+      !authenticatedUser &&
+      finalResponse.status === 200 &&
+      finalResponse.headers.get("content-type")?.includes("text/html") &&
+      !finalResponse.headers.has("set-cookie")
+    ) {
+      const cacheHeaders = new Headers(finalResponse.headers);
+      cacheHeaders.set(
+        "cache-control",
+        `public, max-age=${PUBLIC_HTML_EDGE_TTL_SECONDS}`,
+      );
+      cacheHeaders.delete("set-cookie");
+      const cacheResponse = new Response(finalResponse.body, {
+        status: finalResponse.status,
+        statusText: finalResponse.statusText,
+        headers: cacheHeaders,
+      });
+      ctx.waitUntil(
+        globalThis.caches.default.put(cacheKey, cacheResponse.clone()).catch((reason) => {
+          console.error(JSON.stringify({
+            event: "public_html_cache_put_failed",
+            path: url.pathname,
+            error: cacheErrorMessage(reason),
+          }));
+        }),
+      );
+      return publicHtmlResponse(cacheResponse, "MISS");
+    }
+
+    return finalResponse;
 }
 
 const worker = {

@@ -5,6 +5,7 @@ import { Fragment } from "react";
 import { getTranslator } from "../../i18n/core";
 import { getLocaleFromHeaders } from "../../i18n/translator";
 import { AccountMenu } from "../AccountMenu";
+import { AdSenseScript } from "../AdSenseScript";
 import { AdSenseUnit } from "../AdSenseUnit";
 import { BrandLogo } from "../BrandLogo";
 import { LanguageSwitcher } from "../LanguageSwitcher";
@@ -112,6 +113,7 @@ export async function ArticlePage({ articleId }: { articleId: string }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
+      <AdSenseScript />
       <header className="topbar">
         <Link className="brand" href={localizedPath(locale)} aria-label="edit-photo">
           <BrandLogo />

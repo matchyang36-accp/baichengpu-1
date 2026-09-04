@@ -136,6 +136,7 @@ test("server-renders the product homepage", async () => {
   assert.match(html, /Amazon listings/);
   assert.match(html, /Background removal FAQ/);
   assert.match(html, /\/admin\/login\?return_to=%2Fadmin/);
+  assert.doesNotMatch(html, /pagead2\.googlesyndication\.com/);
   assert.doesNotMatch(html, /codex-preview|Building your site/);
 });
 
@@ -190,6 +191,94 @@ test("canonicalizes legacy hosts and trailing slashes before app work", async ()
     const response = await worker.fetch(new Request(source), env, ctx);
     assert.equal(response.status, 308);
     assert.equal(response.headers.get("location"), expected);
+  }
+});
+
+test("edge-caches only anonymous public HTML documents", async () => {
+  const previousCaches = globalThis.caches;
+  const storedResponses = new Map();
+  const assetRequests = [];
+  Object.defineProperty(globalThis, "caches", {
+    configurable: true,
+    writable: true,
+    value: {
+      default: {
+        async match(request) {
+          return storedResponses.get(request.url)?.clone();
+        },
+        async put(request, response) {
+          storedResponses.set(request.url, response.clone());
+        },
+      },
+    },
+  });
+
+  try {
+    const worker = await loadWorker("public-html-cache");
+    const waitUntilPromises = [];
+    const env = {
+      ASSETS: {
+        fetch: async (request) => {
+          assetRequests.push(request.url);
+          return new Response("Not found", { status: 404 });
+        },
+      },
+      DB: {},
+    };
+    const ctx = {
+      waitUntil(promise) {
+        waitUntilPromises.push(promise);
+      },
+      passThroughOnException() {},
+    };
+    const request = () =>
+      new Request("http://localhost/en/blog", {
+        headers: { accept: "text/html" },
+      });
+
+    const firstResponse = await worker.fetch(request(), env, ctx);
+    assert.equal(firstResponse.status, 200);
+    assert.equal(firstResponse.headers.get("x-bcp-cache"), "MISS");
+    assert.equal(
+      firstResponse.headers.get("cache-control"),
+      "public, max-age=0, must-revalidate",
+    );
+    await Promise.all(waitUntilPromises.splice(0));
+
+    const secondResponse = await worker.fetch(request(), env, ctx);
+    assert.equal(secondResponse.status, 200);
+    assert.equal(secondResponse.headers.get("x-bcp-cache"), "HIT");
+    assert.equal(assetRequests.length, 0);
+
+    const privateResponse = await worker.fetch(
+      new Request("http://localhost/en/blog", {
+        headers: {
+          accept: "text/html",
+          cookie: "bcp_session=test-session-token",
+        },
+      }),
+      {
+        ...env,
+        DB: {
+          prepare(sql) {
+            assert.match(sql, /FROM sessions/);
+            return {
+              bind() {
+                return { async first() { return null; } };
+              },
+            };
+          },
+        },
+      },
+      ctx,
+    );
+    assert.equal(privateResponse.headers.get("x-bcp-cache"), null);
+  } finally {
+    if (previousCaches === undefined) {
+      delete globalThis.caches;
+    } else {
+      globalThis.caches = previousCaches;
+    }
   }
 });
 
@@ -250,6 +339,7 @@ test("renders localized article bodies with discoverable SEO metadata", async ()
   assert.match(englishHtml, /data-ad-slot="5021891765"/);
   assert.match(englishHtml, /data-ad-layout="in-article"/);
   assert.match(englishHtml, /data-ad-format="fluid"/);
+  assert.match(englishHtml, /pagead2\.googlesyndication\.com/);
   assert.match(
     englishHtml,
     /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/ecommerce-image-specs"/,

@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { TranslationProvider } from "../i18n/client";
 import { getLocaleFromHeaders } from "../i18n/translator";
 import { getTranslator } from "../i18n/core";
 import { AnalyticsTracker } from "./AnalyticsTracker";
 import { localizedAlternates, SITE_ORIGIN } from "./seo";
 import { OrganizationSchema } from "./lib/structured-data";
-import { ADSENSE_CLIENT_ID } from "./adsense-config";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -43,14 +41,6 @@ export default async function RootLayout({
 
   return (
     <html lang={locale === "zh" ? "zh-CN" : "en"}>
-      <head>
-        <Script
-          async
-          strategy="afterInteractive"
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
-          crossOrigin="anonymous"
-        />
-      </head>
       <body>
         <OrganizationSchema locale={locale} />
         <AnalyticsTracker />
