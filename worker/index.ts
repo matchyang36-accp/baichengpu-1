@@ -62,6 +62,11 @@ const PASSWORD_RESET_CODE_MAX_AGE_MS = 10 * 60 * 1000;
 const PASSWORD_RESET_MAX_ATTEMPTS = 5;
 const PASSWORD_RESET_MAX_EMAILS_PER_HOUR = 3;
 const LOCALE_HEADER = "x-baichengpu-locale";
+const CANONICAL_HOST = "edit-photo.com";
+const LEGACY_PUBLIC_HOSTS = new Set([
+  "www.edit-photo.com",
+  "app.edit-photo.com",
+]);
 const INTERNAL_USER_HEADERS = {
   id: "x-baichengpu-user-id",
   email: "x-baichengpu-user-email",
@@ -69,6 +74,34 @@ const INTERNAL_USER_HEADERS = {
   admin: "x-baichengpu-admin",
   plan: "x-baichengpu-user-plan",
 } as const;
+
+function canonicalRedirect(request: Request, url: URL): Response | null {
+  if (request.method !== "GET" && request.method !== "HEAD") return null;
+
+  const destination = new URL(url);
+  let shouldRedirect = false;
+
+  if (LEGACY_PUBLIC_HOSTS.has(url.hostname)) {
+    destination.protocol = "https:";
+    destination.hostname = CANONICAL_HOST;
+    destination.port = "";
+    shouldRedirect = true;
+  }
+
+  if (destination.pathname.length > 1 && destination.pathname.endsWith("/")) {
+    destination.pathname = destination.pathname.replace(/\/+$/, "");
+    shouldRedirect = true;
+  }
+
+  if (!shouldRedirect) return null;
+  return new Response(null, {
+    status: 308,
+    headers: {
+      "cache-control": "public, max-age=3600",
+      location: destination.toString(),
+    },
+  });
+}
 
 function json(value: unknown, status: number, headers?: HeadersInit) {
   return Response.json(value, {
@@ -734,6 +767,7 @@ const ANALYTICS_EVENT_TYPES = new Set([
   "page_view",
   "cutout_started",
   "cutout_completed",
+  "cutout_failed",
   "download",
   "batch_started",
   "batch_completed",
@@ -767,7 +801,8 @@ function normalizeAnalyticsPath(value: unknown): string {
   if (typeof value !== "string") return "/";
   const path = value.trim().slice(0, 500);
   if (!path.startsWith("/") || path.startsWith("//")) return "/";
-  return path.split("?")[0].split("#")[0] || "/";
+  const pathname = path.split("?")[0].split("#")[0] || "/";
+  return pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
 }
 
 function analyticsSource(referrer: string, request: Request): string {
@@ -999,6 +1034,11 @@ async function handleAdminUsersRequest(
           `SELECT
             COUNT(DISTINCT visitor_id) AS visitors,
             SUM(CASE WHEN event_type = 'page_view' THEN 1 ELSE 0 END) AS pageViews,
+            SUM(CASE WHEN event_type = 'cutout_started' THEN 1 ELSE 0 END) AS cutoutStarts,
+            COUNT(DISTINCT CASE WHEN event_type = 'cutout_started' THEN visitor_id END) AS cutoutStartedVisitors,
+            SUM(CASE WHEN event_type = 'cutout_completed' THEN 1 ELSE 0 END) AS cutoutCompletions,
+            COUNT(DISTINCT CASE WHEN event_type = 'cutout_completed' THEN visitor_id END) AS cutoutCompletedVisitors,
+            SUM(CASE WHEN event_type = 'cutout_failed' THEN 1 ELSE 0 END) AS cutoutFailures,
             SUM(CASE WHEN event_type = 'download' THEN 1 ELSE 0 END) AS downloads,
             COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) AS knownUsers
           FROM visitor_events
@@ -1008,6 +1048,11 @@ async function handleAdminUsersRequest(
         .first<{
           visitors: number;
           pageViews: number;
+          cutoutStarts: number;
+          cutoutStartedVisitors: number;
+          cutoutCompletions: number;
+          cutoutCompletedVisitors: number;
+          cutoutFailures: number;
           downloads: number;
           knownUsers: number;
         }>(),
@@ -1125,6 +1170,11 @@ async function handleAdminUsersRequest(
           visitors: summary?.visitors ?? 0,
           newVisitors: newVisitors?.count ?? 0,
           pageViews: summary?.pageViews ?? 0,
+          cutoutStarts: summary?.cutoutStarts ?? 0,
+          cutoutStartedVisitors: summary?.cutoutStartedVisitors ?? 0,
+          cutoutCompletions: summary?.cutoutCompletions ?? 0,
+          cutoutCompletedVisitors: summary?.cutoutCompletedVisitors ?? 0,
+          cutoutFailures: summary?.cutoutFailures ?? 0,
           downloads: summary?.downloads ?? 0,
           knownUsers: summary?.knownUsers ?? 0,
         },
@@ -1343,6 +1393,8 @@ async function handleRequest(
   ctx: ExecutionContext,
 ): Promise<Response> {
     const url = new URL(request.url);
+    const redirectResponse = canonicalRedirect(request, url);
+    if (redirectResponse) return redirectResponse;
 
     if (
       request.method === "POST" &&
@@ -1476,13 +1528,8 @@ async function handleRequest(
 
     if (url.pathname === "/api/client-error" && request.method === "POST") {
       try {
-        const body = (await request.json()) as {
-          code?: unknown;
-          message?: unknown;
-          phase?: unknown;
-          stack?: unknown;
-          version?: unknown;
-        };
+        const body = await readSmallJson(request);
+        if (!body) throw new Error("INVALID_PAYLOAD");
         const code =
           typeof body.code === "string" ? body.code.slice(0, 64) : "UNKNOWN";
         const message =
@@ -1499,11 +1546,20 @@ async function handleRequest(
           typeof body.stack === "string"
             ? body.stack.replace(/[\r\n]+/g, " ").slice(0, 1200)
             : "No stack";
-        console.error(
-          `[client-model-error] ${version} ${code} phase=${phase}: ${message} stack=${stack}`,
-        );
-      } catch {
-        console.error("[client-model-error] INVALID_PAYLOAD");
+        console.error(JSON.stringify({
+          event: "client_model_error",
+          version,
+          code,
+          phase,
+          message,
+          stack,
+        }));
+      } catch (reason) {
+        console.error(JSON.stringify({
+          event: "client_model_error",
+          code: "INVALID_PAYLOAD",
+          reason: reason instanceof Error ? reason.message : String(reason),
+        }));
       }
       return new Response(null, { status: 204 });
     }

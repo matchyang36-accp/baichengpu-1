@@ -43,7 +43,7 @@ const ManualMaskEditor = lazy(() =>
 const MAX_FILE_SIZE = 12 * 1024 * 1024;
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MODEL_ASSET_PATH = "/bg-removal/";
-const DIAGNOSTIC_VERSION = "V10";
+const DIAGNOSTIC_VERSION = "V11";
 const MODEL_INIT_TIMEOUT_MS = 120_000;
 const PRODUCT_CANVAS_SIZE = 1000;
 
@@ -804,6 +804,7 @@ export function BackgroundRemover({
           diagnosticPhase,
           stack,
         );
+        trackAnalyticsEvent("cutout_failed");
         setRequiresReload(timedOut);
         setError(
           timedOut
@@ -849,11 +850,11 @@ export function BackgroundRemover({
 
   const download = () => {
     if (!resultUrl) return;
+    trackAnalyticsEvent("download");
     const anchor = document.createElement("a");
     anchor.href = resultUrl;
     anchor.download = fileName;
     anchor.click();
-    trackAnalyticsEvent("download");
   };
 
   const applyManualEdit = (blob: Blob) => {
@@ -929,8 +930,8 @@ export function BackgroundRemover({
         : fileName.replace(/\.png$/i, "");
       anchor.href = url;
       anchor.download = `${baseName}-${platform}${t("tool.download.whiteSuffix")}`;
-      anchor.click();
       trackAnalyticsEvent("download");
+      anchor.click();
       window.setTimeout(() => URL.revokeObjectURL(url), 5_000);
     } finally {
       setExportingProduct(false);

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "../i18n/client";
 
@@ -22,18 +23,18 @@ export function AccountMenu({ viewer }: { viewer: AccountViewer | null }) {
     const returnTo = encodeURIComponent(`${prefix}/account`);
     return (
       <div className="account-menu" aria-label={t("account.title")}>
-        <a
+        <Link
           className="account-register-link"
           href={`${prefix}/auth?mode=register&return_to=${returnTo}`}
         >
           {t("auth.register.submit")}
-        </a>
-        <a
+        </Link>
+        <Link
           className="account-login-button"
           href={`${prefix}/auth?mode=login&return_to=${returnTo}`}
         >
           {t("auth.login.submit")}
-        </a>
+        </Link>
       </div>
     );
   }
@@ -44,11 +45,11 @@ export function AccountMenu({ viewer }: { viewer: AccountViewer | null }) {
   return (
     <div className="account-menu is-signed-in" aria-label={t("account.title")}>
       {viewer.isAdmin ? (
-        <a className="account-admin-link" href="/admin">
+        <Link className="account-admin-link" href="/admin">
           {t("admin.login.title")}
-        </a>
+        </Link>
       ) : null}
-      <a className="account-profile-link" href={`${prefix}/account`}>
+      <Link className="account-profile-link" href={`${prefix}/account`}>
         <span className="account-avatar" aria-hidden="true">
           {initial}
         </span>
@@ -56,7 +57,7 @@ export function AccountMenu({ viewer }: { viewer: AccountViewer | null }) {
           <strong>{viewer.displayName}</strong>
           <small>{t("account.eyebrow")}</small>
         </span>
-      </a>
+      </Link>
     </div>
   );
 }

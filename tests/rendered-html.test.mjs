@@ -170,6 +170,29 @@ test("renders locale-prefixed English and Chinese homepages", async () => {
   assert.match(chineseHtml, /href="\/zh\/blog"/);
 });
 
+test("canonicalizes legacy hosts and trailing slashes before app work", async () => {
+  const worker = await loadWorker("canonical-redirects");
+  const env = {
+    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    DB: {},
+  };
+  const ctx = { waitUntil() {}, passThroughOnException() {} };
+  const cases = [
+    [
+      "https://www.edit-photo.com/en/blog/?utm_source=test",
+      "https://edit-photo.com/en/blog?utm_source=test",
+    ],
+    ["https://app.edit-photo.com/zh", "https://edit-photo.com/zh"],
+    ["https://edit-photo.com/en/", "https://edit-photo.com/en"],
+  ];
+
+  for (const [source, expected] of cases) {
+    const response = await worker.fetch(new Request(source), env, ctx);
+    assert.equal(response.status, 308);
+    assert.equal(response.headers.get("location"), expected);
+  }
+});
+
 test("serves stable SEO discovery and locale metadata", async () => {
   const [robotsResponse, sitemapResponse, pricingResponse] = await Promise.all([
     render("/robots.txt"),
@@ -399,6 +422,7 @@ test("protects the user administration page with an admin email allowlist", asyn
   assert.equal(analyticsResponse.status, 200);
   const analyticsHtml = await analyticsResponse.text();
   assert.match(analyticsHtml, /访问分析/);
+  assert.match(analyticsHtml, /抠图转化漏斗/);
   assert.match(analyticsHtml, /HTTP 请求统计/);
   assert.match(analyticsHtml, /最近访客/);
 

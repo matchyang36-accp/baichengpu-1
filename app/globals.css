@@ -3734,10 +3734,37 @@ footer {
   .topbar {
     width: 100%;
     min-height: 70px;
-    padding: 0 14px;
+    padding: 10px 14px 0;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
   .topbar > .nav {
+    width: calc(100% + 28px);
+    margin: 2px -14px 0;
+    padding: 0 14px;
+    order: 4;
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    border-top: 1px solid var(--line);
+    scrollbar-width: none;
+    overscroll-behavior-inline: contain;
+  }
+
+  .topbar > .nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .topbar > .nav a {
+    min-height: 44px;
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  .topbar > .nav .nav-pill {
     display: none;
   }
 

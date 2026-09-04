@@ -9,6 +9,11 @@ type AnalyticsPayload = {
     visitors: number;
     newVisitors: number;
     pageViews: number;
+    cutoutStarts: number;
+    cutoutStartedVisitors: number;
+    cutoutCompletions: number;
+    cutoutCompletedVisitors: number;
+    cutoutFailures: number;
     downloads: number;
     knownUsers: number;
   };
@@ -51,7 +56,18 @@ type AnalyticsPayload = {
 const emptyPayload: AnalyticsPayload = {
   ok: true,
   days: 30,
-  summary: { visitors: 0, newVisitors: 0, pageViews: 0, downloads: 0, knownUsers: 0 },
+  summary: {
+    visitors: 0,
+    newVisitors: 0,
+    pageViews: 0,
+    cutoutStarts: 0,
+    cutoutStartedVisitors: 0,
+    cutoutCompletions: 0,
+    cutoutCompletedVisitors: 0,
+    cutoutFailures: 0,
+    downloads: 0,
+    knownUsers: 0,
+  },
   trend: [],
   countries: [],
   topPages: [],
@@ -143,6 +159,35 @@ export function AdminAnalyticsDashboard() {
         <Metric label="已登录用户" value={data.summary.knownUsers} hint="可关联注册账号" />
         <Metric label="下载次数" value={data.summary.downloads} hint="透明图与批量包" />
       </div>
+
+      <section className="funnel-analytics-section" aria-label="抠图转化漏斗">
+        <div className="admin-section-title">
+          <div><span>核心转化</span><h2>抠图转化漏斗</h2></div>
+          <strong>按真实交互事件统计</strong>
+        </div>
+        <div className="admin-stats analytics-stats" aria-busy={isLoading}>
+          <Metric
+            label="开始抠图"
+            value={data.summary.cutoutStartedVisitors}
+            hint={`${data.summary.cutoutStarts} 次尝试`}
+          />
+          <Metric
+            label="处理完成"
+            value={data.summary.cutoutCompletedVisitors}
+            hint={`${data.summary.cutoutCompletions} 次成功`}
+          />
+          <Metric
+            label="处理失败"
+            value={data.summary.cutoutFailures}
+            hint="可结合 Worker 错误码定位"
+          />
+          <Metric
+            label="下载点击"
+            value={data.summary.downloads}
+            hint="优先使用可靠后台投递"
+          />
+        </div>
+      </section>
 
       <div className="analytics-grid">
         <section className="admin-trend-card analytics-trend-card">

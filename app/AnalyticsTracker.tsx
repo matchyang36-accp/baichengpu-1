@@ -7,6 +7,7 @@ type AnalyticsEventType =
   | "page_view"
   | "cutout_started"
   | "cutout_completed"
+  | "cutout_failed"
   | "download"
   | "batch_started"
   | "batch_completed";
@@ -25,6 +26,16 @@ export function trackAnalyticsEvent(eventType: AnalyticsEventType, path = locati
     path,
     referrer: document.referrer,
   });
+
+  if (
+    typeof navigator.sendBeacon === "function" &&
+    navigator.sendBeacon(
+      "/api/analytics/event",
+      new Blob([body], { type: "application/json" }),
+    )
+  ) {
+    return;
+  }
 
   void fetch("/api/analytics/event", {
     method: "POST",
