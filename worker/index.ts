@@ -127,15 +127,17 @@ function publicHtmlResponse(
   });
 }
 
-async function normalizeLocalizedHomeSeo(
+async function normalizeGeneratedSeoUrls(
   response: Response,
   url: URL,
 ): Promise<Response> {
-  if (
-    !/^\/(?:en|zh)$/.test(url.pathname) ||
-    response.status !== 200 ||
-    !response.headers.get("content-type")?.includes("text/html")
-  ) {
+  const contentType = response.headers.get("content-type") ?? "";
+  const isLocalizedHomeHtml =
+    /^\/(?:en|zh)$/.test(url.pathname) && contentType.includes("text/html");
+  const isSitemap =
+    url.pathname === "/sitemap.xml" &&
+    (contentType.includes("xml") || contentType.includes("text/plain"));
+  if (response.status !== 200 || (!isLocalizedHomeHtml && !isSitemap)) {
     return response;
   }
 
@@ -147,7 +149,8 @@ async function normalizeLocalizedHomeSeo(
       const withoutSlash = `${origin}/${locale}`;
       html = html
         .replaceAll(`href="${withSlash}"`, `href="${withoutSlash}"`)
-        .replaceAll(`"url":"${withSlash}"`, `"url":"${withoutSlash}"`);
+        .replaceAll(`"url":"${withSlash}"`, `"url":"${withoutSlash}"`)
+        .replaceAll(`>${withSlash}</`, `>${withoutSlash}</`);
     }
   }
 
@@ -1873,7 +1876,7 @@ async function handleRequest(
     );
     const appRequest = new Request(request, { headers: appHeaders });
     let response = await handler.fetch(appRequest, env, ctx);
-    response = await normalizeLocalizedHomeSeo(response, url);
+    response = await normalizeGeneratedSeoUrls(response, url);
     const headers = new Headers(response.headers);
     const needsCrossOriginIsolation =
       url.pathname === "/" ||

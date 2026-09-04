@@ -314,6 +314,9 @@ test("serves stable SEO discovery and locale metadata", async () => {
   assert.match(robotsText, /Sitemap: https:\/\/edit-photo\.com\/sitemap\.xml/);
   assert.match(sitemapXml, /https:\/\/edit-photo\.com\/en\/pricing/);
   assert.match(sitemapXml, /https:\/\/edit-photo\.com\/zh\/pricing/);
+  assert.match(sitemapXml, /<loc>https:\/\/edit-photo\.com\/en<\/loc>/);
+  assert.match(sitemapXml, /<loc>https:\/\/edit-photo\.com\/zh<\/loc>/);
+  assert.doesNotMatch(sitemapXml, /<loc>https:\/\/edit-photo\.com\/(?:en|zh)\/<\/loc>/);
   assert.match(sitemapXml, /https:\/\/edit-photo\.com\/en\/disclaimer/);
   assert.match(sitemapXml, /https:\/\/edit-photo\.com\/en\/blog\/product-photo-tips/);
   assert.match(sitemapXml, /https:\/\/edit-photo\.com\/zh\/blog\/ecommerce-image-specs/);
