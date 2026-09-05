@@ -85,12 +85,13 @@ export async function ArticlePage({ articleId }: { articleId: string }) {
   const [user, locale] = await Promise.all([getAccountUser(), getLocaleFromHeaders()]);
   const t = getTranslator(locale);
   const path = `/blog/${articleId}`;
+  const homeUrl = absoluteUrl(localizedPath(locale)).replace(/\/$/, "");
   const article = getArticleView(articleId, locale, t);
   if (!article) notFound();
   const relatedArticles = getRelatedArticleSummaries(articleId, locale, t);
   const adAfterBlockIndex = Math.min(3, article.blocks.length - 1);
   const articleUrl = absoluteUrl(localizedPath(locale, path));
-  const jsonLd = {
+  const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: article.title,
@@ -107,12 +108,38 @@ export async function ArticlePage({ articleId }: { articleId: string }) {
       logo: { "@type": "ImageObject", url: absoluteUrl("/images/brand/logo.png") },
     },
   };
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: locale === "zh" ? "首页" : "Home",
+        item: homeUrl,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: t("common.nav.blog"),
+        item: absoluteUrl(localizedPath(locale, "/blog")),
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: article.title,
+        item: articleUrl,
+      },
+    ],
+  };
 
   return (
     <main className="article-page">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([articleJsonLd, breadcrumbJsonLd]).replace(/</g, "\\u003c"),
+        }}
       />
       <AdSenseScript />
       <header className="topbar">
@@ -131,6 +158,13 @@ export async function ArticlePage({ articleId }: { articleId: string }) {
       </header>
 
       <article>
+        <nav className="article-breadcrumb" aria-label={locale === "zh" ? "面包屑" : "Breadcrumb"}>
+          <Link href={localizedPath(locale)}>{locale === "zh" ? "首页" : "Home"}</Link>
+          <span aria-hidden="true">/</span>
+          <Link href={localizedPath(locale, "/blog")}>{t("common.nav.blog")}</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{article.title}</span>
+        </nav>
         <section className="article-hero">
           <span className="eyebrow">{article.tag}</span>
           <h1>{article.title}</h1>

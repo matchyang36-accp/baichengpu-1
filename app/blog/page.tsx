@@ -6,7 +6,7 @@ import { AccountMenu } from "../AccountMenu";
 import { BrandLogo } from "../BrandLogo";
 import { LanguageSwitcher } from "../LanguageSwitcher";
 import { getAccountUser } from "../account-auth";
-import { localizedAlternates } from "../seo";
+import { absoluteUrl, localizedAlternates } from "../seo";
 import { getArticleSummary, getPublishedArticleIds } from "./article-registry";
 
 function localize(locale: Locale, path: string): string {
@@ -33,10 +33,30 @@ export default async function BlogPage() {
   const t = getTranslator(locale);
   const articles = getPublishedArticleIds(locale)
     .map((articleId) => getArticleSummary(articleId, locale, t))
-    .filter((article) => article !== null);
+    .filter((article) => article !== null)
+    .toSorted((left, right) => Date.parse(right.publishedAt) - Date.parse(left.publishedAt));
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: t("blog.title"),
+    itemListOrder: "https://schema.org/ItemListOrderDescending",
+    numberOfItems: articles.length,
+    itemListElement: articles.map((article, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: absoluteUrl(localize(locale, `/blog/${article.id}`)),
+      name: article.title,
+    })),
+  };
 
   return (
     <main className="blog-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(itemListJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <header className="topbar">
         <a className="brand" href={localize(locale, "/")} aria-label="edit-photo">
           <BrandLogo />
@@ -69,7 +89,7 @@ export default async function BlogPage() {
               <span className="eyebrow">{article.tag}</span>
               <h2>{article.title}</h2>
               <p>{article.description}</p>
-              <time dateTime={article.date}>{article.date}</time>
+              <time dateTime={article.publishedAt}>{article.date}</time>
             </a>
           );
         })}

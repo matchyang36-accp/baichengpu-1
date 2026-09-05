@@ -71,6 +71,24 @@ test("does not expose an editorial article before its publication time", async (
   assert.doesNotMatch(sitemapXml, new RegExp(firstArticle.id));
 });
 
+test("orders published blog entries newest first with an indexable item list", async () => {
+  const publishedArticles = scheduledArticleManifest.filter(
+    ({ publishedAt }) => Date.parse(publishedAt) <= Date.now(),
+  );
+  assert.ok(publishedArticles.length >= 2);
+
+  const response = await render("/en/blog");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  const newestArticle = publishedArticles.at(-1);
+  const oldestArticle = publishedArticles[0];
+
+  assert.ok(html.indexOf(`/en/blog/${newestArticle.id}`) < html.indexOf(`/en/blog/${oldestArticle.id}`));
+  assert.match(html, /"@type":"ItemList"/);
+  assert.match(html, /"itemListOrder":"https:\/\/schema\.org\/ItemListOrderDescending"/);
+  assert.match(html, new RegExp(`dateTime="${newestArticle.publishedAt.replaceAll(".", "\\.")}"`));
+});
+
 async function render(
   pathname = "/",
   requestHeaders = {},
@@ -320,6 +338,14 @@ test("serves stable SEO discovery and locale metadata", async () => {
   assert.match(sitemapXml, /https:\/\/edit-photo\.com\/en\/disclaimer/);
   assert.match(sitemapXml, /https:\/\/edit-photo\.com\/en\/blog\/product-photo-tips/);
   assert.match(sitemapXml, /https:\/\/edit-photo\.com\/zh\/blog\/ecommerce-image-specs/);
+  const latestPublishedArticle = scheduledArticleManifest
+    .filter(({ publishedAt }) => Date.parse(publishedAt) <= Date.now())
+    .at(-1);
+  const englishBlogEntry = sitemapXml.slice(
+    sitemapXml.indexOf("<loc>https://edit-photo.com/en/blog</loc>"),
+    sitemapXml.indexOf("<loc>https://edit-photo.com/zh/blog</loc>"),
+  );
+  assert.match(englishBlogEntry, new RegExp(`<lastmod>${latestPublishedArticle.publishedAt}</lastmod>`));
   assert.doesNotMatch(sitemapXml, /\/auth|\/admin|\/account/);
   assert.match(pricingHtml, /rel="canonical" href="https:\/\/edit-photo\.com\/en\/pricing"/);
   assert.match(pricingHtml, /hrefLang="zh-CN" href="https:\/\/edit-photo\.com\/zh\/pricing"/);
@@ -349,6 +375,10 @@ test("renders localized article bodies with discoverable SEO metadata", async ()
   assert.match(englishHtml, /A safer cross-platform master workflow/);
   assert.match(englishHtml, /Amazon Seller Central product-image guidance/);
   assert.match(englishHtml, /"@type":"Article"/);
+  assert.match(englishHtml, /"@type":"BreadcrumbList"/);
+  assert.match(englishHtml, /aria-label="Breadcrumb"/);
+  assert.match(englishHtml, /"name":"Home","item":"https:\/\/edit-photo\.com\/en"/);
+  assert.match(englishHtml, /href="\/en\/blog">Guides/);
   assert.match(englishHtml, /data-ad-client="ca-pub-7218285443802148"/);
   assert.match(englishHtml, /data-ad-slot="5021891765"/);
   assert.match(englishHtml, /data-ad-layout="in-article"/);

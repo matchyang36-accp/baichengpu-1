@@ -17,10 +17,21 @@ const CONTENT_UPDATED_AT = new Date("2026-08-11T00:00:00.000Z");
 export const dynamic = "force-dynamic";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const publishedScheduledArticles = getPublishedScheduledArticles();
+  const latestEnglishArticleAt = publishedScheduledArticles.reduce(
+    (latest, article) => {
+      const publishedAt = new Date(article.publishedAt);
+      return publishedAt > latest ? publishedAt : latest;
+    },
+    CONTENT_UPDATED_AT,
+  );
   const localizedRoutes = STATIC_PUBLIC_ROUTES.flatMap((route) =>
     (["en", "zh"] as const).map((locale) => ({
       url: absoluteUrl(localizedPath(locale, route.path)),
-      lastModified: CONTENT_UPDATED_AT,
+      lastModified:
+        locale === "en" && route.path === "/blog"
+          ? latestEnglishArticleAt
+          : CONTENT_UPDATED_AT,
       changeFrequency: route.changeFrequency,
       priority: route.priority,
       alternates: {
@@ -47,7 +58,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       })),
   );
 
-  const scheduledArticleRoutes = getPublishedScheduledArticles().map((article) => ({
+  const scheduledArticleRoutes = publishedScheduledArticles.map((article) => ({
     url: absoluteUrl(localizedPath("en", `/blog/${article.id}`)),
     lastModified: new Date(article.publishedAt),
     changeFrequency: "monthly" as const,

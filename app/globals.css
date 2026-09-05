@@ -4367,6 +4367,31 @@ footer {
   padding-bottom: 80px;
 }
 
+.article-breadcrumb {
+  width: min(1080px, calc(100% - 40px));
+  margin: 0 auto;
+  padding-top: 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.article-breadcrumb a {
+  color: var(--orange-dark);
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.article-breadcrumb [aria-current="page"] {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .article-hero {
   width: min(760px, calc(100% - 40px));
   margin: 0 auto;
@@ -4498,6 +4523,10 @@ footer {
   .article-body ul,
   .article-body ol {
     font-size: 15px;
+  }
+
+  .article-breadcrumb {
+    padding-top: 20px;
   }
 
   .home-guide-grid,

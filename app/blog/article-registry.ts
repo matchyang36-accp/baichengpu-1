@@ -82,6 +82,7 @@ export function getArticleSummary(articleId: string, locale: Locale, t: Translat
       title: t(`${key}.title`),
       description: t(`${key}.excerpt`),
       date: t(`${key}.date`),
+      publishedAt: `${t(`${key}.date`)}T00:00:00.000Z`,
     };
   }
   const article = SCHEDULED_ARTICLE_BY_ID.get(articleId);
@@ -92,6 +93,7 @@ export function getArticleSummary(articleId: string, locale: Locale, t: Translat
         title: article.title,
         description: article.description,
         date: article.date,
+        publishedAt: article.publishedAt,
       }
     : null;
 }
