@@ -1,132 +1,272 @@
 {
   "id": "remove-background-product-photos",
-  "tag": "E-commerce Guide",
-  "title": "How to Remove Background from Product Photos: A Practical 2026 Guide",
-  "description": "Learn a practical browser-based workflow for removing product photo backgrounds and exporting transparent PNGs for e-commerce listings.",
+  "tag": "Product Photo Workflow",
+  "title": "How to Remove a Product Photo Background: 2026 Workflow",
+  "description": "Remove a product photo background in your browser, inspect difficult edges, and export a transparent PNG or marketplace-ready white image.",
   "targetKeyword": "remove background from product photo",
   "publishedAt": "2026-08-16T01:00:00.000Z",
   "date": "2026-08-16",
+  "updatedAt": "2026-09-08T00:00:00.000Z",
   "reviewedBy": "edit-photo editorial team",
   "blocks": [
     {
       "kind": "paragraph",
-      "text": "A product photo often creates the first impression of a listing. A distracting background can hide product details and make a catalog feel inconsistent."
+      "text": "To remove a background from a product photo, start with a sharp source image, run the cutout, inspect the mask at full size, and then choose the output for the job: a transparent PNG for reuse or a white-background image for a marketplace listing. Background removal is only one step; edge quality, crop, dimensions, and platform rules still need a final check."
     },
     {
       "kind": "paragraph",
-      "text": "A clean background cannot replace a good product, but it can make the product easier to understand and compare. The same item usually reads more clearly when clutter is removed and spacing is consistent."
-    },
-    {
-      "kind": "paragraph",
-      "text": "The good news? You don't need Photoshop, a designer, or 30 minutes per image anymore."
+      "text": "edit-photo performs the single-image cutout locally in the browser. The original photo and result stay on the device. JPG, PNG, and WebP inputs up to 12 MB are supported by the current tool, and the first run may take longer while the browser downloads the AI model."
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "Why Backgrounds Kill Conversions"
+      "text": "The complete workflow at a glance"
     },
     {
-      "kind": "paragraph",
-      "text": "Major marketplaces publish different image rules. Amazon main images generally require a pure white background, while independent stores and handmade marketplaces allow more creative context. Always check the current rules for the category and platform you use."
-    },
-    {
-      "kind": "paragraph",
-      "text": "If you're still shooting products on your desk and hoping for the best, you're leaving money on the table."
-    },
-    {
-      "kind": "heading",
-      "level": 2,
-      "text": "The Old Way vs. The New Way"
-    },
-    {
-      "kind": "paragraph",
-      "text": "Old way: Open Photoshop → Pen tool → Trace around every edge → 20 minutes per photo → Do this 100 more times."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Browser-AI workflow: upload to edit-photo.com → let the model detect the subject → inspect the edge → download a transparent PNG. Processing time varies by device, image size, and whether the model is already cached."
-    },
-    {
-      "kind": "heading",
-      "level": 2,
-      "text": "Step-by-Step (For Non-Designers)"
-    },
-    {
-      "kind": "list",
-      "items": [
+      "kind": "table",
+      "caption": "A practical workflow for turning one source photo into reusable product-image exports.",
+      "headers": ["Stage", "What to do", "What to check"],
+      "rows": [
         {
-          "text": "Go to edit-photo.com's background remover"
+          "cells": ["1. Prepare", "Use a sharp JPG, PNG, or WebP with visible space around the product", "No motion blur, heavy compression, or clipped product edges"]
         },
         {
-          "text": "Drag your product photo into the upload area"
+          "cells": ["2. Remove", "Run the local AI cutout in the browser", "Wait for the model to finish; keep the tab active on slower devices"]
         },
         {
-          "text": "Wait while the local AI analyzes the image, then inspect difficult edges such as hair, fur, lace, and reflective surfaces"
+          "cells": ["3. Inspect", "Zoom in and compare the result with the original", "Look for halos, holes, missing thin parts, and leftover background islands"]
         },
         {
-          "text": "Download the transparent PNG, or use the platform-main-image tool to create a supported white-background version"
+          "cells": ["4. Refine", "Use cleanup controls or choose a better source photo when necessary", "Preserve the real shape instead of over-smoothing difficult edges"]
         },
         {
-          "text": "Repeat for your entire catalog"
-        }
-      ]
-    },
-    {
-      "kind": "paragraph",
-      "text": "That's it. No accounts, no watermarks on your exports, no learning curve."
-    },
-    {
-      "kind": "heading",
-      "level": 2,
-      "text": "Pro Tips for E-commerce Sellers"
-    },
-    {
-      "kind": "list",
-      "items": [
-        {
-          "text": "Shoot in even lighting. Even AI struggles with harsh shadows. Diffused window light is your friend."
+          "cells": ["5. Export", "Download a transparent PNG or create a white marketplace version", "Verify crop, dimensions, background color, and platform compliance"]
         },
         {
-          "text": "Leave breathing room. Don't crop your product tight—AI needs edge context to detect boundaries cleanly."
-        },
-        {
-          "text": "Batch it. Process up to 20 photos per batch, then review the results before starting the next group."
-        },
-        {
-          "text": "Always keep the original. In case a marketplace requests a lifestyle shot later."
+          "cells": ["6. Archive", "Keep the source, transparent master, and final channel export", "Use clear SKU-based file names so the files cannot be confused"]
         }
       ]
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "The Real Cost of Bad Product Photos"
+      "text": "Real example: desk photo to reusable cutout"
     },
     {
-      "kind": "paragraph",
-      "text": "The right workflow depends on the product. Professional photography is valuable for complex campaigns, while a careful phone shoot plus background cleanup can be enough for many everyday catalog images."
+      "kind": "imagePair",
+      "images": [
+        {
+          "src": "/images/demo/tomato-cutout-demo.webp",
+          "alt": "Red tomato timer photographed on a wooden desk before product background removal",
+          "caption": "Before: the desk and laptop distract from the small red product"
+        },
+        {
+          "src": "/images/demo/tomato-cutout-result.webp",
+          "alt": "Red tomato timer isolated from the desk on a transparency checkerboard",
+          "caption": "After: a transparent master ready for a white or branded background"
+        }
+      ],
+      "caption": "This is a real edit-photo demo asset. The green stem and bottom edge remain visible, but the result should still be checked at 100% before it becomes a marketplace image."
     },
     {
-      "kind": "paragraph",
-      "text": "Equipment, lighting, composition, and editing all matter. Improving the weakest part of the workflow usually produces the fastest gain."
+      "kind": "internalLink",
+      "text": "A better source photo makes every cutout easier.",
+      "label": "Use these six product-photography preparation tips",
+      "href": "/blog/product-photo-tips"
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "Try It Free"
+      "text": "Step 1: choose a source the model can understand"
     },
     {
       "kind": "paragraph",
-      "text": "Try the workflow on a few product photos, compare the edges at full size, and decide whether it fits your catalog before processing a larger batch."
+      "text": "The model is trying to separate subject pixels from background pixels. Give it a clear silhouette: use even light, focus on the product, and leave a small border around the complete item. A plain background helps, but contrast matters more than using white paper that has the same color as the product."
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "label": "Good source",
+          "text": "Sharp edges, even exposure, visible gaps, and enough resolution for the final export."
+        },
+        {
+          "label": "Risky source",
+          "text": "Screenshot, messaging-app thumbnail, motion blur, a clipped handle, or a subject that blends into the background."
+        },
+        {
+          "label": "Difficult material",
+          "text": "Glass, fur, hair, lace, mesh, polished metal, and translucent packaging need closer review."
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Step 2: run the browser-local cutout"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "text": "Open edit-photo and drag the image into the upload area, or choose it from the device."
+        },
+        {
+          "text": "Allow the first-run model download to finish. Later visits can reuse cached model files when the browser keeps them."
+        },
+        {
+          "text": "Wait for the before-and-after result instead of refreshing during model initialization."
+        },
+        {
+          "text": "If processing fails, retry once, then test a smaller or clearer source to separate a model-loading problem from an image-specific problem."
+        }
+      ]
     },
     {
       "kind": "paragraph",
-      "text": "Keep the original files and use the processed exports as a reversible publishing layer."
+      "text": "Because processing happens on the device, speed depends on the browser, hardware, available memory, image dimensions, and whether the model is already cached. Avoid promising one fixed processing time for every image."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Step 3: inspect the mask before downloading"
+    },
+    {
+      "kind": "table",
+      "caption": "Move around the full outline at 100% zoom instead of checking only the center of the product.",
+      "headers": ["Symptom", "Likely cause", "Practical response"],
+      "rows": [
+        {
+          "cells": ["White or colored halo", "Background color is mixed into soft edge pixels", "Try edge cleanup and compare against both light and dark previews"]
+        },
+        {
+          "cells": ["Missing handle or strap", "Thin part has weak contrast or blur", "Use the manual mask controls or return to a sharper source"]
+        },
+        {
+          "cells": ["Background island remains", "A gap inside the product shape was classified as foreground", "Erase the isolated area and inspect similar openings"]
+        },
+        {
+          "cells": ["Transparent product disappears", "The product and background share similar colors and light", "Reshoot against a contrasting background with controlled reflections"]
+        },
+        {
+          "cells": ["Jagged edge", "Low resolution or aggressive compression", "Return to the original camera file instead of enlarging the damaged image"]
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Step 4: choose the correct output"
+    },
+    {
+      "kind": "table",
+      "caption": "The right export depends on where the image will be used.",
+      "headers": ["Output", "Best for", "Important limitation"],
+      "rows": [
+        {
+          "cells": ["Transparent PNG", "Design libraries, Shopify layouts, banners, ads, and future background variants", "Transparency is not automatically a compliant white marketplace MAIN image"]
+        },
+        {
+          "cells": ["White-background image", "Amazon and other marketplace listing exports where white is required", "White must be created and verified to the current channel rule"]
+        },
+        {
+          "cells": ["Lifestyle image", "Secondary listing images, social posts, and campaign creative", "Do not substitute it for a marketplace MAIN image that requires a plain background"]
+        }
+      ]
+    },
+    {
+      "kind": "internalLink",
+      "text": "Choosing between transparent and white output?",
+      "label": "See exactly how transparent PNG works",
+      "href": "/blog/transparent-png-guide"
+    },
+    {
+      "kind": "internalLink",
+      "text": "Preparing an Amazon MAIN image?",
+      "label": "Use the Amazon white-background checklist",
+      "href": "/blog/amazon-white-background-photo"
+    },
+    {
+      "kind": "internalLink",
+      "text": "Publishing the same SKU to several channels?",
+      "label": "Compare five marketplace image specifications",
+      "href": "/blog/ecommerce-image-specs"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Step 5: use a file system you can reverse"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "label": "Source",
+          "text": "sku123-source.jpg — untouched camera or phone original."
+        },
+        {
+          "label": "Master",
+          "text": "sku123-transparent.png — reviewed cutout with transparency."
+        },
+        {
+          "label": "Channel export",
+          "text": "sku123-amazon-main.jpg or sku123-shopify-hero.png — final file for one destination."
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Think of the transparent PNG as the reusable product layer and each marketplace file as a disposable export. If a rule or campaign changes, create a new export from the master instead of cutting out the product again."
+    },
+    {
+      "kind": "internalLink",
+      "text": "Have a catalog instead of one image?",
+      "label": "Open the local batch background remover",
+      "href": "/batch"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "When AI background removal is not enough"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use manual refinement or professional retouching when a product has safety-critical details, complex transparency, fine jewelry chains, heavy motion blur, or a campaign that will be printed at large size. AI is useful for speed, but the final quality decision should match the commercial risk of the image."
+    },
+    {
+      "kind": "faq",
+      "title": "Product background removal FAQ",
+      "items": [
+        {
+          "question": "Are product photos uploaded to edit-photo?",
+          "answer": "No. The current single-image and batch background-removal tools run locally in the browser, so the original photo and processed result stay on the device."
+        },
+        {
+          "question": "Which product image formats are supported?",
+          "answer": "The current upload tool accepts JPG, PNG, and WebP images up to 12 MB. Export the cutout as PNG when transparency is required."
+        },
+        {
+          "question": "Why is the first background removal slower?",
+          "answer": "The browser needs to download and initialize the local AI model. Later visits can reuse cached model files unless browser storage has been cleared."
+        },
+        {
+          "question": "Why did part of the product disappear?",
+          "answer": "Thin, transparent, reflective, blurred, or low-contrast parts are harder to separate. Inspect the mask, try cleanup controls, or reshoot against a contrasting background."
+        },
+        {
+          "question": "Should I download PNG or a white-background image?",
+          "answer": "Keep a transparent PNG as the reusable master. Create a separate white-background or lifestyle export for each channel after checking its current image rules."
+        },
+        {
+          "question": "Can I remove backgrounds from several product photos?",
+          "answer": "Yes. Use the batch page for a catalog workflow, then inspect each result before publishing because difficult edges can vary from image to image."
+        }
+      ]
     }
   ],
   "cta": {
-    "title": "Ready to test a product photo?",
-    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
-    "button": "Try background removal"
+    "title": "Test the workflow on one product photo",
+    "description": "Remove the background locally, inspect the edge, and download a reusable transparent PNG.",
+    "button": "Remove background free"
   }
 }

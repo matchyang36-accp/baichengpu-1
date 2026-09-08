@@ -346,6 +346,10 @@ test("serves stable SEO discovery and locale metadata", async () => {
     sitemapXml,
     /<loc>https:\/\/edit-photo\.com\/en\/blog\/amazon-white-background-photo<\/loc>[\s\S]{0,400}<lastmod>2026-09-08T00:00:00\.000Z<\/lastmod>/,
   );
+  assert.match(
+    sitemapXml,
+    /<loc>https:\/\/edit-photo\.com\/en\/blog\/remove-background-product-photos<\/loc>[\s\S]{0,400}<lastmod>2026-09-08T00:00:00\.000Z<\/lastmod>/,
+  );
   const latestPublishedArticle = scheduledArticleManifest
     .filter(({ publishedAt }) => Date.parse(publishedAt) <= Date.now())
     .at(-1);
@@ -430,6 +434,27 @@ test("renders the refreshed Amazon white-background guide with useful evidence",
   assert.match(
     html,
     /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/amazon-white-background-photo"/,
+  );
+});
+
+test("renders the refreshed product-background-removal workflow", async () => {
+  const response = await render("/en/blog/remove-background-product-photos");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+
+  assert.match(html, /The complete workflow at a glance/);
+  assert.match(html, /Real example: desk photo to reusable cutout/);
+  assert.match(html, /When AI background removal is not enough/);
+  assert.match(html, /tomato-cutout-demo\.webp/);
+  assert.match(html, /<table>/);
+  assert.match(html, /href="\/en\/batch"/);
+  assert.match(html, /href="\/en\/blog\/amazon-white-background-photo"/);
+  assert.match(html, /href="\/en\/blog\/ecommerce-image-specs"/);
+  assert.match(html, /"@type":"FAQPage"/);
+  assert.match(html, /"dateModified":"2026-09-08T00:00:00.000Z"/);
+  assert.match(
+    html,
+    /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/remove-background-product-photos"/,
   );
 });
 
