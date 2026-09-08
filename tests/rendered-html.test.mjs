@@ -338,6 +338,10 @@ test("serves stable SEO discovery and locale metadata", async () => {
   assert.match(sitemapXml, /https:\/\/edit-photo\.com\/en\/disclaimer/);
   assert.match(sitemapXml, /https:\/\/edit-photo\.com\/en\/blog\/product-photo-tips/);
   assert.match(sitemapXml, /https:\/\/edit-photo\.com\/zh\/blog\/ecommerce-image-specs/);
+  assert.match(
+    sitemapXml,
+    /<loc>https:\/\/edit-photo\.com\/zh\/blog\/ecommerce-image-specs<\/loc>[\s\S]{0,400}<lastmod>2026-09-08T00:00:00\.000Z<\/lastmod>/,
+  );
   const latestPublishedArticle = scheduledArticleManifest
     .filter(({ publishedAt }) => Date.parse(publishedAt) <= Date.now())
     .at(-1);
@@ -372,10 +376,15 @@ test("renders localized article bodies with discoverable SEO metadata", async ()
     chineseResponse.text(),
   ]);
 
-  assert.match(englishHtml, /A safer cross-platform master workflow/);
-  assert.match(englishHtml, /Amazon Seller Central product-image guidance/);
+  assert.match(englishHtml, /Product image requirements at a glance/);
+  assert.match(englishHtml, /Etsy image requirements and best practices/);
+  assert.match(englishHtml, /Google Merchant Center image-size requirements/);
+  assert.match(englishHtml, /<table>/);
+  assert.match(englishHtml, /tomato-cutout-result\.webp/);
   assert.match(englishHtml, /"@type":"Article"/);
   assert.match(englishHtml, /"@type":"BreadcrumbList"/);
+  assert.match(englishHtml, /"@type":"FAQPage"/);
+  assert.match(englishHtml, /"dateModified":"2026-09-08T00:00:00.000Z"/);
   assert.match(englishHtml, /aria-label="Breadcrumb"/);
   assert.match(englishHtml, /"name":"Home","item":"https:\/\/edit-photo\.com\/en"/);
   assert.match(englishHtml, /href="\/en\/blog">Guides/);
@@ -392,8 +401,8 @@ test("renders localized article bodies with discoverable SEO metadata", async ()
     englishHtml,
     /hrefLang="zh-CN" href="https:\/\/edit-photo\.com\/zh\/blog\/ecommerce-image-specs"/,
   );
-  assert.match(chineseHtml, /发布前核对/);
-  assert.match(chineseHtml, /淘宝规则中心/);
+  assert.match(chineseHtml, /五个平台商品图要求快速对照/);
+  assert.match(chineseHtml, /Etsy 图片要求与最佳实践/);
   assert.match(englishHtml, /Related product-photo guides/);
   assert.match(englishHtml, /href="\/en\/blog\/remove-background-product-photos"/);
   assert.match(chineseHtml, /相关商品图指南/);

@@ -24,6 +24,10 @@ export function isArticleId(value: string): boolean {
   return ARTICLE_IDS.includes(value);
 }
 
+export function getLegacyArticleUpdatedAt(articleId: LegacyArticleId, locale: Locale): string | null {
+  return ARTICLE_CONTENT[articleId][locale].updatedAt ?? null;
+}
+
 export function isScheduledArticlePublished(
   article: ScheduledArticle,
   now = new Date(),
@@ -53,16 +57,17 @@ export function getArticleView(
   if (isLegacyArticleId(articleId)) {
     const key = legacyKey(articleId);
     const date = t(`${key}.date`);
+    const body = ARTICLE_CONTENT[articleId][locale];
     return {
       id: articleId,
       tag: t(`${key}.tag`),
       title: t(`${key}.title`),
-      description: t(`${key}.excerpt`),
+      description: body.summary ?? t(`${key}.excerpt`),
       date,
       publishedAt: `${date}T00:00:00.000Z`,
       reviewedBy: "edit-photo editorial team",
       isEnglishOnly: false,
-      ...ARTICLE_CONTENT[articleId][locale],
+      ...body,
     };
   }
 
@@ -76,11 +81,12 @@ export function getArticleView(
 export function getArticleSummary(articleId: string, locale: Locale, t: Translator) {
   if (isLegacyArticleId(articleId)) {
     const key = legacyKey(articleId);
+    const body = ARTICLE_CONTENT[articleId][locale];
     return {
       id: articleId,
       tag: t(`${key}.tag`),
       title: t(`${key}.title`),
-      description: t(`${key}.excerpt`),
+      description: body.summary ?? t(`${key}.excerpt`),
       date: t(`${key}.date`),
       publishedAt: `${t(`${key}.date`)}T00:00:00.000Z`,
     };

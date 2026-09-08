@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Fragment } from "react";
@@ -12,9 +13,10 @@ import { LanguageSwitcher } from "../LanguageSwitcher";
 import { getAccountUser } from "../account-auth";
 import { absoluteUrl, localizedAlternates, localizedPath } from "../seo";
 import { getArticleView, getRelatedArticleSummaries } from "./article-registry";
+import type { Locale } from "../../i18n/config";
 import type { ArticleBlock } from "./article-types";
 
-function renderBlock(block: ArticleBlock, index: number) {
+function renderBlock(block: ArticleBlock, index: number, locale: Locale) {
   const key = `${block.kind}-${index}`;
 
   if (block.kind === "heading") {
@@ -35,6 +37,75 @@ function renderBlock(block: ArticleBlock, index: number) {
           </li>
         ))}
       </ul>
+    );
+  }
+
+  if (block.kind === "internalLink") {
+    return (
+      <p className="article-internal-link" key={key}>
+        {block.text}{" "}
+        <Link href={localizedPath(locale, block.href)}>{block.label}</Link>
+      </p>
+    );
+  }
+
+  if (block.kind === "table") {
+    return (
+      <div className="article-table-wrap" key={key} tabIndex={0}>
+        <table>
+          <caption>{block.caption}</caption>
+          <thead>
+            <tr>
+              {block.headers.map((header) => (
+                <th scope="col" key={header}>{header}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {block.rows.map((row, rowIndex) => (
+              <tr key={`${key}-row-${rowIndex}`}>
+                {row.cells.map((cell, cellIndex) =>
+                  cellIndex === 0 ? (
+                    <th scope="row" key={`${key}-cell-${rowIndex}-${cellIndex}`}>{cell}</th>
+                  ) : (
+                    <td key={`${key}-cell-${rowIndex}-${cellIndex}`}>{cell}</td>
+                  ),
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  if (block.kind === "imagePair") {
+    return (
+      <figure className="article-image-pair" key={key}>
+        <div>
+          {block.images.map((item) => (
+            <figure key={item.src}>
+              <Image src={item.src} alt={item.alt} width={720} height={480} sizes="(max-width: 640px) 100vw, 360px" />
+              <figcaption>{item.caption}</figcaption>
+            </figure>
+          ))}
+        </div>
+        <figcaption>{block.caption}</figcaption>
+      </figure>
+    );
+  }
+
+  if (block.kind === "faq") {
+    return (
+      <section className="article-faq" key={key} aria-labelledby={`${key}-title`}>
+        <h2 id={`${key}-title`}>{block.title}</h2>
+        {block.items.map((item) => (
+          <details key={item.question}>
+            <summary>{item.question}</summary>
+            <p>{item.answer}</p>
+          </details>
+        ))}
+      </section>
     );
   }
 
@@ -76,7 +147,7 @@ export async function generateArticleMetadata(articleId: string): Promise<Metada
       siteName: "edit-photo",
       locale: locale === "zh" ? "zh_CN" : "en_US",
       publishedTime: article.publishedAt,
-      modifiedTime: article.publishedAt,
+      modifiedTime: article.updatedAt ?? article.publishedAt,
     },
   };
 }
@@ -97,7 +168,7 @@ export async function ArticlePage({ articleId }: { articleId: string }) {
     headline: article.title,
     description: article.description,
     datePublished: article.publishedAt,
-    dateModified: article.publishedAt,
+    dateModified: article.updatedAt ?? article.publishedAt,
     inLanguage: locale === "zh" ? "zh-CN" : "en",
     mainEntityOfPage: articleUrl,
     author: { "@type": "Organization", name: article.reviewedBy },
@@ -108,6 +179,18 @@ export async function ArticlePage({ articleId }: { articleId: string }) {
       logo: { "@type": "ImageObject", url: absoluteUrl("/images/brand/logo.png") },
     },
   };
+  const faqBlock = article.blocks.find((block) => block.kind === "faq");
+  const faqJsonLd = faqBlock
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqBlock.items.map((item) => ({
+          "@type": "Question",
+          name: item.question,
+          acceptedAnswer: { "@type": "Answer", text: item.answer },
+        })),
+      }
+    : null;
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -138,7 +221,9 @@ export async function ArticlePage({ articleId }: { articleId: string }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([articleJsonLd, breadcrumbJsonLd]).replace(/</g, "\\u003c"),
+          __html: JSON.stringify(
+            faqJsonLd ? [articleJsonLd, breadcrumbJsonLd, faqJsonLd] : [articleJsonLd, breadcrumbJsonLd],
+          ).replace(/</g, "\\u003c"),
         }}
       />
       <AdSenseScript />
@@ -168,14 +253,23 @@ export async function ArticlePage({ articleId }: { articleId: string }) {
         <section className="article-hero">
           <span className="eyebrow">{article.tag}</span>
           <h1>{article.title}</h1>
-          <time dateTime={article.publishedAt}>{article.date}</time>
+          <p className="article-dates">
+            <time dateTime={article.publishedAt}>
+              {locale === "zh" ? "发布" : "Published"} {article.date}
+            </time>
+            {article.updatedAt ? (
+              <time dateTime={article.updatedAt}>
+                {locale === "zh" ? "更新" : "Updated"} {article.updatedAt.slice(0, 10)}
+              </time>
+            ) : null}
+          </p>
           <p className="article-reviewer">Reviewed by {article.reviewedBy}</p>
         </section>
 
         <div className="article-body">
           {article.blocks.map((block, index) => (
             <Fragment key={`${block.kind}-${index}`}>
-              {renderBlock(block, index)}
+              {renderBlock(block, index, locale)}
               {index === adAfterBlockIndex ? (
                 <AdSenseUnit label={locale === "zh" ? "广告" : "Advertisement"} />
               ) : null}

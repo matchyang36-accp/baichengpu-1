@@ -1,5 +1,8 @@
 import type { MetadataRoute } from "next";
-import { getPublishedScheduledArticles } from "./blog/article-registry";
+import {
+  getLegacyArticleUpdatedAt,
+  getPublishedScheduledArticles,
+} from "./blog/article-registry";
 import { LEGACY_ARTICLE_IDS } from "./blog/article-ids";
 import { absoluteUrl, localizedPath } from "./seo";
 
@@ -18,19 +21,28 @@ export const dynamic = "force-dynamic";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const publishedScheduledArticles = getPublishedScheduledArticles();
+  const latestLegacyArticleAt = (locale: "en" | "zh") =>
+    LEGACY_ARTICLE_IDS.reduce((latest, articleId) => {
+      const updatedAt = getLegacyArticleUpdatedAt(articleId, locale);
+      if (!updatedAt) return latest;
+      const updatedDate = new Date(updatedAt);
+      return updatedDate > latest ? updatedDate : latest;
+    }, CONTENT_UPDATED_AT);
   const latestEnglishArticleAt = publishedScheduledArticles.reduce(
     (latest, article) => {
       const publishedAt = new Date(article.publishedAt);
       return publishedAt > latest ? publishedAt : latest;
     },
-    CONTENT_UPDATED_AT,
+    latestLegacyArticleAt("en"),
   );
   const localizedRoutes = STATIC_PUBLIC_ROUTES.flatMap((route) =>
     (["en", "zh"] as const).map((locale) => ({
       url: absoluteUrl(localizedPath(locale, route.path)),
       lastModified:
-        locale === "en" && route.path === "/blog"
-          ? latestEnglishArticleAt
+        route.path === "/blog"
+          ? locale === "en"
+            ? latestEnglishArticleAt
+            : latestLegacyArticleAt("zh")
           : CONTENT_UPDATED_AT,
       changeFrequency: route.changeFrequency,
       priority: route.priority,
@@ -44,9 +56,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   );
 
   const legacyArticleRoutes = (["en", "zh"] as const).flatMap((locale) =>
-    LEGACY_ARTICLE_IDS.map((articleId) => ({
+    LEGACY_ARTICLE_IDS.map((articleId) => {
+      const updatedAt = getLegacyArticleUpdatedAt(articleId, locale);
+      return {
         url: absoluteUrl(localizedPath(locale, `/blog/${articleId}`)),
-        lastModified: CONTENT_UPDATED_AT,
+        lastModified: updatedAt ? new Date(updatedAt) : CONTENT_UPDATED_AT,
         changeFrequency: "monthly" as const,
         priority: 0.6,
         alternates: {
@@ -55,7 +69,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
             "zh-CN": absoluteUrl(localizedPath("zh", `/blog/${articleId}`)),
           },
         },
-      })),
+      };
+    }),
   );
 
   const scheduledArticleRoutes = publishedScheduledArticles.map((article) => ({
