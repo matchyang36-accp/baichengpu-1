@@ -342,6 +342,10 @@ test("serves stable SEO discovery and locale metadata", async () => {
     sitemapXml,
     /<loc>https:\/\/edit-photo\.com\/zh\/blog\/ecommerce-image-specs<\/loc>[\s\S]{0,400}<lastmod>2026-09-08T00:00:00\.000Z<\/lastmod>/,
   );
+  assert.match(
+    sitemapXml,
+    /<loc>https:\/\/edit-photo\.com\/en\/blog\/amazon-white-background-photo<\/loc>[\s\S]{0,400}<lastmod>2026-09-08T00:00:00\.000Z<\/lastmod>/,
+  );
   const latestPublishedArticle = scheduledArticleManifest
     .filter(({ publishedAt }) => Date.parse(publishedAt) <= Date.now())
     .at(-1);
@@ -407,6 +411,26 @@ test("renders localized article bodies with discoverable SEO metadata", async ()
   assert.match(englishHtml, /href="\/en\/blog\/remove-background-product-photos"/);
   assert.match(chineseHtml, /相关商品图指南/);
   assert.match(chineseHtml, /href="\/zh\/blog\/transparent-png-guide"/);
+});
+
+test("renders the refreshed Amazon white-background guide with useful evidence", async () => {
+  const response = await render("/en/blog/amazon-white-background-photo");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+
+  assert.match(html, /Amazon MAIN image checklist/);
+  assert.match(html, /Five-step workflow without a studio/);
+  assert.match(html, /Keep three files, not one/);
+  assert.match(html, /tomato-cutout-result\.webp/);
+  assert.match(html, /<table>/);
+  assert.match(html, /href="\/en\/blog\/ecommerce-image-specs"/);
+  assert.match(html, /href="\/en\/blog\/transparent-png-guide"/);
+  assert.match(html, /"@type":"FAQPage"/);
+  assert.match(html, /"dateModified":"2026-09-08T00:00:00.000Z"/);
+  assert.match(
+    html,
+    /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/amazon-white-background-photo"/,
+  );
 });
 
 test("renders signed-in account navigation and protected account page", async () => {

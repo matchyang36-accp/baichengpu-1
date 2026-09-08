@@ -1,192 +1,238 @@
 {
   "id": "amazon-white-background-photo",
-  "tag": "E-commerce Guide",
-  "title": "Amazon's White Background Rule: How to Pass Every Time (Without a Studio)",
-  "description": "Amazon requires pure white product photos. Here's how to meet the RGB 255 standard without a photography studio or Photoshop.",
+  "tag": "Amazon Image Guide",
+  "title": "Amazon White Background Photo Requirements: 2026 Checklist",
+  "description": "Prepare an Amazon MAIN image with a pure white RGB 255 background, correct product coverage, clean edges, and a reusable export workflow.",
   "targetKeyword": "amazon white background photo",
   "publishedAt": "2026-08-16T09:00:00.000Z",
   "date": "2026-08-16",
+  "updatedAt": "2026-09-08T00:00:00.000Z",
   "reviewedBy": "edit-photo editorial team",
   "blocks": [
     {
       "kind": "paragraph",
-      "text": "If you've ever had an Amazon listing suppressed for \"non-compliant main image,\" you know the pain. You spent hours on that photo. Amazon killed your listing in 30 seconds."
+      "text": "An Amazon MAIN image needs more than a background that looks white on your screen. The background should be pure white RGB 255, 255, 255, the product should fill at least 85% of the frame, and the image must avoid text, logos, borders, watermarks, or extra graphics. Category-specific rules can add exceptions, so Seller Central remains the final check before upload."
     },
     {
       "kind": "paragraph",
-      "text": "Here's what Amazon actually wants—and how to hit it every single time using tools you already have."
+      "text": "Quick answer: create one clean transparent master, place it on a true-white canvas for Amazon, then inspect the edge and crop before export. This separates background removal from marketplace formatting and makes future variants easier to produce."
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "What Amazon Really Requires"
+      "text": "Amazon MAIN image checklist"
     },
     {
-      "kind": "paragraph",
-      "text": "Amazon's main image policy is strict:"
-    },
-    {
-      "kind": "list",
-      "items": [
+      "kind": "table",
+      "caption": "Practical checklist reviewed against Amazon guidance on September 8, 2026. Exact category requirements can override these general rules.",
+      "headers": ["Check", "Current baseline", "How to verify before upload"],
+      "rows": [
         {
-          "text": "Pure white background: RGB (255, 255, 255)"
+          "cells": ["Background", "Pure white RGB 255, 255, 255 for the MAIN image", "Sample several corner pixels with an eyedropper; do not judge white by eye alone."]
         },
         {
-          "text": "Product fills 85%+ of the frame"
+          "cells": ["Product coverage", "Product fills at least 85% of the image area", "Keep a small safety margin and make sure no product edge is accidentally cropped."]
         },
         {
-          "text": "No text, logos, watermarks, or props"
+          "cells": ["Image content", "Show the actual product; avoid text, logos, borders, watermarks, and background graphics", "Remove promotional badges and any prop that could be mistaken for an included item."]
         },
         {
-          "text": "No shadows, gradients, or off-white tones"
+          "cells": ["Dimensions", "500–10,000 px on the longest side; Amazon recommends more than 1,000 px on each side for zoom", "Start from a sharp original and export at 1,600 px or larger when the source supports it."]
+        },
+        {
+          "cells": ["File format", "JPEG, TIFF, PNG, or non-animated GIF", "Use a high-quality flattened JPEG for a straightforward white-background MAIN image; keep the transparent PNG as your private master."]
+        },
+        {
+          "cells": ["Image quality", "Clear, unpixelated, and free of jagged edges", "Inspect at 100% zoom for blur, halos, missing parts, and compression damage."]
         }
       ]
-    },
-    {
-      "kind": "paragraph",
-      "text": "A photographed white surface can still appear gray, yellow, or blue because of lighting, exposure, and camera white balance."
-    },
-    {
-      "kind": "heading",
-      "level": 2,
-      "text": "The Camera Lie"
-    },
-    {
-      "kind": "paragraph",
-      "text": "Even in a professional studio, cameras rarely capture true 255-white. Sensors interpret light, and there's almost always a slight cast—gray, yellow, or blue."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Which means you have two options:"
-    },
-    {
-      "kind": "list",
-      "items": [
-        {
-          "text": "Build and calibrate a controlled lighting setup, then finish the image in editing"
-        },
-        {
-          "text": "Shoot against a contrasting, uncluttered surface, then use background removal to create a compliant export"
-        }
-      ]
-    },
-    {
-      "kind": "paragraph",
-      "text": "For many small catalogs, the second approach is faster to test and easier to repeat."
-    },
-    {
-      "kind": "heading",
-      "level": 2,
-      "text": "The 3-Minute Workflow"
-    },
-    {
-      "kind": "list",
-      "items": [
-        {
-          "text": "Shoot your product on any background (a white sheet, a table, even carpet)"
-        },
-        {
-          "text": "Upload to edit-photo.com"
-        },
-        {
-          "text": "Remove the original background with one click"
-        },
-        {
-          "text": "Apply a pure white background (RGB 255) from the preset options"
-        },
-        {
-          "text": "Export a high-quality file that meets the current size and format rules for your Amazon category"
-        }
-      ]
-    },
-    {
-      "kind": "paragraph",
-      "text": "Before publishing, compare the export against Amazon's current product image requirements."
-    },
-    {
-      "kind": "heading",
-      "level": 2,
-      "text": "Common Mistakes That Get Listings Suppressed"
-    },
-    {
-      "kind": "list",
-      "items": [
-        {
-          "text": "Off-white backgrounds. Cream, ivory, or \"warm white\" all fail Amazon's automated checks."
-        },
-        {
-          "text": "Heavy or artificial shadows. Keep the background pure white and verify that the image still follows the current category rules."
-        },
-        {
-          "text": "Reflections on glossy surfaces. Amazon's AI flags these as \"additional objects.\""
-        },
-        {
-          "text": "Cropping too tight. Product must fill 85%, not 100%. Leave a small margin."
-        }
-      ]
-    },
-    {
-      "kind": "heading",
-      "level": 2,
-      "text": "Why AI Beats Manual Editing"
-    },
-    {
-      "kind": "paragraph",
-      "text": "Manual editing offers precise control but can take longer. AI background removal is a useful first pass for jewelry chains, hair, fur, and mesh, although difficult edges may still need manual refinement."
-    },
-    {
-      "kind": "paragraph",
-      "text": "For a larger catalog, test both quality and total review time on a small representative batch before choosing a workflow."
-    },
-    {
-      "kind": "heading",
-      "level": 2,
-      "text": "Bonus: Reuse for Every Platform"
-    },
-    {
-      "kind": "paragraph",
-      "text": "Once you have a clean transparent PNG, you can drop your product onto:"
-    },
-    {
-      "kind": "list",
-      "items": [
-        {
-          "text": "Pure white → Amazon"
-        },
-        {
-          "text": "Lifestyle background → Instagram/Facebook ads"
-        },
-        {
-          "text": "Branded color → Shopify hero images"
-        },
-        {
-          "text": "Seasonal scenes → Email campaigns"
-        }
-      ]
-    },
-    {
-      "kind": "paragraph",
-      "text": "One shoot. Infinite variations. Zero re-shooting."
-    },
-    {
-      "kind": "heading",
-      "level": 2,
-      "text": "Start Now"
-    },
-    {
-      "kind": "paragraph",
-      "text": "Marketplace rules change. Check the current Amazon guidance, create a compliant master image, and keep the transparent source so future variants are easy to export."
     },
     {
       "kind": "source",
-      "text": "Marketplace requirements can change. Review the current policy before exporting your final image.",
+      "text": "Official Amazon guidance used for the checklist:",
+      "label": "Amazon product photo requirements and best practices",
+      "href": "https://sell.amazon.com/blog/product-photos"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "A real cutout before Amazon formatting"
+    },
+    {
+      "kind": "imagePair",
+      "images": [
+        {
+          "src": "/images/demo/tomato-cutout-demo.webp",
+          "alt": "Red tomato timer photographed on a desk before preparing an Amazon white background photo",
+          "caption": "Source photo: useful detail, but the desk and laptop cannot remain in an Amazon MAIN image"
+        },
+        {
+          "src": "/images/demo/tomato-cutout-result.webp",
+          "alt": "Red tomato timer isolated from its desk background as a reusable transparent product cutout",
+          "caption": "Transparent master: ready to place on an RGB 255 white canvas and crop for Amazon"
+        }
+      ],
+      "caption": "Background removal is the middle step, not the final marketplace file. Inspect the cutout first, then create a separate flattened white-background export for Amazon."
+    },
+    {
+      "kind": "internalLink",
+      "text": "Need the complete browser-local cutout process first?",
+      "label": "Follow the product-photo background removal workflow",
+      "href": "/blog/remove-background-product-photos"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Five-step workflow without a studio"
+    },
+    {
+      "kind": "heading",
+      "level": 3,
+      "text": "1. Shoot for a clean edge, not a perfect white backdrop"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use soft, even light and a background that contrasts with the product. A phone, a stable support, white foam board, and window light are enough for many small products. Avoid busy carpet or fabric when it blends into thin product edges."
+    },
+    {
+      "kind": "heading",
+      "level": 3,
+      "text": "2. Remove the original background"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Create a transparent cutout and inspect difficult areas such as handles, chains, hair, glass, mesh, and gaps between product parts. AI is a fast first pass, but a seller remains responsible for checking the result."
+    },
+    {
+      "kind": "heading",
+      "level": 3,
+      "text": "3. Place the cutout on true white"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Add a solid RGB 255, 255, 255 canvas behind the cutout and flatten the marketplace copy. Keep the transparent PNG separately; transparency itself is not the same as an Amazon white background."
+    },
+    {
+      "kind": "internalLink",
+      "text": "Not sure why a transparent PNG and a white-background image are different?",
+      "label": "Read the transparent PNG guide",
+      "href": "/blog/transparent-png-guide"
+    },
+    {
+      "kind": "heading",
+      "level": 3,
+      "text": "4. Crop to the product, with a safety margin"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Scale the product so it fills at least 85% of the frame while preserving every part. The correct crop depends on the shape: a tall bottle, a wide bag, and a multi-piece set should not be forced into the same margins."
+    },
+    {
+      "kind": "heading",
+      "level": 3,
+      "text": "5. Export and run a 100% inspection"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Export from the original-resolution source rather than enlarging a small screenshot. Check the white corners, edge halo, sharpness, crop, color, and included-product accuracy. Then compare the final file with the current rule shown for your category in Seller Central."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Keep three files, not one"
+    },
+    {
+      "kind": "table",
+      "caption": "A small asset system prevents repeated cutouts and accidental marketplace uploads.",
+      "headers": ["File", "Purpose", "Example name"],
+      "rows": [
+        {
+          "cells": ["Original photo", "Preserves all captured detail for future re-editing", "sku123-source.jpg"]
+        },
+        {
+          "cells": ["Transparent master", "Reusable cutout for channel-specific backgrounds", "sku123-transparent.png"]
+        },
+        {
+          "cells": ["Amazon MAIN export", "Flattened pure-white image prepared for the listing", "sku123-amazon-main.jpg"]
+        }
+      ]
+    },
+    {
+      "kind": "internalLink",
+      "text": "Selling on more than one marketplace?",
+      "label": "Compare Amazon, Etsy, eBay, Google, and Shopify image rules",
+      "href": "/blog/ecommerce-image-specs"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Common reasons a MAIN image still fails"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "label": "The background only looks white",
+          "text": "Lighting can turn paper gray, yellow, or blue. Verify pixel values after export."
+        },
+        {
+          "label": "A white or colored halo remains",
+          "text": "Inspect around curved and reflective edges at 100% zoom."
+        },
+        {
+          "label": "The product is too small or clipped",
+          "text": "Meet the frame-coverage rule without cutting off handles, caps, or bundled parts."
+        },
+        {
+          "label": "The image implies extra items",
+          "text": "Remove props, badges, and packaging elements unless they are genuinely included and permitted for the category."
+        },
+        {
+          "label": "The file is soft or enlarged",
+          "text": "Return to the original photo instead of scaling up a compressed file."
+        },
+        {
+          "label": "The category has an extra rule",
+          "text": "Apparel, books, jewelry, multipacks, and other categories can have requirements beyond the general checklist."
+        }
+      ]
+    },
+    {
+      "kind": "faq",
+      "title": "Amazon white background photo FAQ",
+      "items": [
+        {
+          "question": "Does an Amazon MAIN image need a pure white background?",
+          "answer": "Amazon's general MAIN image guidance specifies a pure white background with RGB values 255, 255, 255. Check Seller Central for category-specific requirements before uploading."
+        },
+        {
+          "question": "Is a transparent PNG the same as an Amazon white background image?",
+          "answer": "No. A transparent PNG has no background pixels. For the Amazon MAIN file, place the cutout on a solid RGB 255 white canvas and export a flattened marketplace copy."
+        },
+        {
+          "question": "How large should an Amazon product image be?",
+          "answer": "Amazon currently accepts images from 500 to 10,000 pixels on the longest side and recommends more than 1,000 pixels on each side for zoom. A 1,600-pixel-or-larger export is a practical target when the source is sharp enough."
+        },
+        {
+          "question": "Can the Amazon MAIN image contain text or a logo?",
+          "answer": "The general MAIN image rules prohibit added text, logos, borders, watermarks, and other graphics. Use secondary images for explanatory callouts when the category permits them."
+        },
+        {
+          "question": "Can I use the same white-background image on other marketplaces?",
+          "answer": "Often yes, but image dimensions, transparency handling, crop behavior, and overlay rules vary. Keep one transparent master and create a checked export for each channel."
+        }
+      ]
+    },
+    {
+      "kind": "source",
+      "text": "Seller Central is the final authority and rules can change:",
       "label": "Amazon product image requirements",
       "href": "https://sellercentral.amazon.com/help/hub/reference/external/G1881"
     }
   ],
   "cta": {
-    "title": "Ready to test a product photo?",
-    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
-    "button": "Try background removal"
+    "title": "Prepare a reusable product cutout",
+    "description": "Remove the background locally, inspect the edge, and keep a transparent master before creating the Amazon white-background export.",
+    "button": "Remove background free"
   }
 }

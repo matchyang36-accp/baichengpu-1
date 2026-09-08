@@ -30,8 +30,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }, CONTENT_UPDATED_AT);
   const latestEnglishArticleAt = publishedScheduledArticles.reduce(
     (latest, article) => {
-      const publishedAt = new Date(article.publishedAt);
-      return publishedAt > latest ? publishedAt : latest;
+      const lastModified = new Date(article.updatedAt ?? article.publishedAt);
+      return lastModified > latest ? lastModified : latest;
     },
     latestLegacyArticleAt("en"),
   );
@@ -75,7 +75,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const scheduledArticleRoutes = publishedScheduledArticles.map((article) => ({
     url: absoluteUrl(localizedPath("en", `/blog/${article.id}`)),
-    lastModified: new Date(article.publishedAt),
+    lastModified: new Date(article.updatedAt ?? article.publishedAt),
     changeFrequency: "monthly" as const,
     priority: 0.6,
     alternates: {
