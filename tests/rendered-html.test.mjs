@@ -396,7 +396,7 @@ test("renders localized article bodies with discoverable SEO metadata", async ()
   assert.match(englishHtml, /aria-label="Breadcrumb"/);
   assert.match(englishHtml, /"name":"Home","item":"https:\/\/edit-photo\.com\/en"/);
   assert.match(englishHtml, /href="\/en\/blog">Guides/);
-  assert.match(englishHtml, /data-ad-client="ca-pub-7218285443802148"/);
+  assert.match(englishHtml, /data-ad-client="ca-pub-9105586882004544"/);
   assert.match(englishHtml, /data-ad-slot="5021891765"/);
   assert.match(englishHtml, /data-ad-layout="in-article"/);
   assert.match(englishHtml, /data-ad-format="fluid"/);

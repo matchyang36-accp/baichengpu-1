@@ -1,2 +1,2 @@
-export const ADSENSE_CLIENT_ID = "ca-pub-7218285443802148";
+export const ADSENSE_CLIENT_ID = "ca-pub-9105586882004544";
 export const ADSENSE_ARTICLE_SLOT_ID = "5021891765";
