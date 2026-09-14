@@ -84,7 +84,7 @@ export function AdminUsersDashboard({
   }, [page, plan, query, status]);
 
   useEffect(() => {
-    void loadUsers();
+    window.queueMicrotask(() => void loadUsers());
   }, [loadUsers]);
 
   const totalPages = Math.max(1, Math.ceil(data.total / data.pageSize));

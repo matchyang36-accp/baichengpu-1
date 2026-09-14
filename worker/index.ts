@@ -49,6 +49,10 @@ type StoredCredential = SessionUser & {
   status: string;
 };
 
+type CacheStorageWithDefault = CacheStorage & {
+  default: Cache;
+};
+
 const SESSION_COOKIE = "bcp_session";
 const VISITOR_COOKIE = "bcp_visitor";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
@@ -82,6 +86,11 @@ const INTERNAL_USER_HEADERS = {
   admin: "x-baichengpu-admin",
   plan: "x-baichengpu-user-plan",
 } as const;
+
+function defaultCache(): Cache | null {
+  if (typeof globalThis.caches === "undefined") return null;
+  return (globalThis.caches as CacheStorageWithDefault).default;
+}
 
 function isPublicContentPath(pathname: string): boolean {
   if (pathname === "/" || /^\/(?:en|zh)$/.test(pathname)) return true;
@@ -1492,9 +1501,10 @@ async function handleRequest(
     if (redirectResponse) return redirectResponse;
 
     const cacheKey = publicHtmlCacheKey(request, url);
+    const htmlCache = cacheKey ? defaultCache() : null;
     if (cacheKey) {
       try {
-        const cachedResponse = await globalThis.caches.default.match(cacheKey);
+        const cachedResponse = await htmlCache?.match(cacheKey);
         if (cachedResponse) return publicHtmlResponse(cachedResponse, "HIT");
       } catch (reason) {
         console.error(JSON.stringify({
@@ -1915,15 +1925,17 @@ async function handleRequest(
         statusText: finalResponse.statusText,
         headers: cacheHeaders,
       });
-      ctx.waitUntil(
-        globalThis.caches.default.put(cacheKey, cacheResponse.clone()).catch((reason) => {
+      if (htmlCache) {
+        ctx.waitUntil(
+          htmlCache.put(cacheKey, cacheResponse.clone()).catch((reason: unknown) => {
           console.error(JSON.stringify({
             event: "public_html_cache_put_failed",
             path: url.pathname,
             error: cacheErrorMessage(reason),
           }));
-        }),
-      );
+          }),
+        );
+      }
       return publicHtmlResponse(cacheResponse, "MISS");
     }
 

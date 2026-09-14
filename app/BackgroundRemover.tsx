@@ -556,6 +556,7 @@ export function BackgroundRemover({
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [processingSeconds, setProcessingSeconds] = useState(0);
   const [requiresReload, setRequiresReload] = useState(false);
+  const [editableResultBlob, setEditableResultBlob] = useState<Blob | null>(null);
   const [cacheCleared, setCacheCleared] = useState(false);
 
   const clearUrls = useCallback(() => {
@@ -586,13 +587,13 @@ export function BackgroundRemover({
       window.localStorage.getItem("edit-photo-platform") ??
       window.localStorage.getItem("baichengpu-platform");
     if (PLATFORM_IDS.includes(saved as Platform)) {
-      setPlatform(saved as Platform);
+      window.queueMicrotask(() => setPlatform(saved as Platform));
     }
   }, []);
 
   useEffect(() => {
     if (stage !== "processing") {
-      setProcessingSeconds(0);
+      window.queueMicrotask(() => setProcessingSeconds(0));
       return;
     }
     const startedAt = Date.now();
@@ -604,9 +605,11 @@ export function BackgroundRemover({
 
   useEffect(() => {
     if (zoom <= 100) {
-      setPan({ x: 0, y: 0 });
-      setPanning(false);
-      setComparePanMode(false);
+      window.queueMicrotask(() => {
+        setPan({ x: 0, y: 0 });
+        setPanning(false);
+        setComparePanMode(false);
+      });
     }
   }, [zoom]);
 
@@ -672,6 +675,7 @@ export function BackgroundRemover({
     setFeedbackIssues([]);
     setFeedbackSent(false);
     setRequiresReload(false);
+    setEditableResultBlob(null);
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -729,6 +733,7 @@ export function BackgroundRemover({
       setViewMode("side-by-side");
       setComparePosition(50);
       setManualEditorOpen(false);
+      setEditableResultBlob(null);
       setFeedbackChoice(null);
       setFeedbackIssues([]);
       setFeedbackSent(false);
@@ -777,6 +782,7 @@ export function BackgroundRemover({
           MODEL_INIT_TIMEOUT_MS,
         );
         rawResultRef.current = output;
+        setEditableResultBlob(output);
         setCleanupMode("standard");
         setStatusText(t("tool.status.cleaning"));
         setProgress(99);
@@ -819,7 +825,7 @@ export function BackgroundRemover({
         setStage("error");
       }
     },
-    [clearUrls, t],
+    [clearUrls, setManualEditorOpen, t],
   );
 
   useEffect(() => {
@@ -1343,7 +1349,7 @@ export function BackgroundRemover({
                 <button
                   className="secondary-button"
                   type="button"
-                  disabled={isRefining || !rawResultRef.current}
+                  disabled={isRefining || !editableResultBlob}
                   onClick={() => setManualEditorOpen(true)}
                 >
                   {t("tool.cleanup.manualButton")}
@@ -1618,11 +1624,11 @@ export function BackgroundRemover({
         </div>
       </section>
 
-      {manualEditorOpen && resultUrl && rawResultRef.current && (
+      {manualEditorOpen && resultUrl && editableResultBlob && (
         <Suspense fallback={null}>
           <ManualMaskEditor
             resultUrl={resultUrl}
-            restoreBlob={rawResultRef.current}
+            restoreBlob={editableResultBlob}
             onApply={applyManualEdit}
             onClose={() => setManualEditorOpen(false)}
           />

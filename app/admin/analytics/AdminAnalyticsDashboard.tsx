@@ -117,7 +117,7 @@ export function AdminAnalyticsDashboard() {
   }, [days]);
 
   useEffect(() => {
-    void loadAnalytics();
+    window.queueMicrotask(() => void loadAnalytics());
   }, [loadAnalytics]);
 
   const trendMax = useMemo(

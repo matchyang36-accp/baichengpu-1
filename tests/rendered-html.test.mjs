@@ -893,13 +893,14 @@ test("server-renders the professional plan and privacy pages", async () => {
 
   assert.match(pricingHtml, /Pro beta/);
   assert.match(pricingHtml, /¥39/);
-  assert.match(pricingHtml, /Get Pro/);
+  assert.match(pricingHtml, /Apply for beta/);
   assert.match(pricingHtml, /¥199/);
   assert.match(pricingHtml, /What to know before you start/);
   assert.match(pricingHtml, /Submit beta application/);
+  assert.doesNotMatch(pricingHtml, /\/api\/checkout/);
 
   assert.match(zhPricingHtml, /专业版/);
-  assert.match(zhPricingHtml, /升级专业版/);
+  assert.match(zhPricingHtml, /申请内测/);
   assert.match(zhPricingHtml, /团队版/);
   assert.match(zhPricingHtml, /常见问题/);
   assert.match(zhPricingHtml, /提交内测申请/);

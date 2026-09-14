@@ -2,6 +2,7 @@ import type { Locale } from "../../i18n/config";
 import type { Translator } from "../../i18n/core";
 import { ARTICLE_CONTENT } from "./article-content";
 import { ARTICLE_IDS, LEGACY_ARTICLE_IDS, isLegacyArticleId } from "./article-ids";
+import type { LegacyArticleId } from "./article-ids";
 import type { ArticleBody, ScheduledArticle } from "./article-types";
 import { SCHEDULED_ARTICLE_BY_ID, SCHEDULED_ARTICLES } from "./scheduled-articles";
 

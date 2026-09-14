@@ -33,6 +33,10 @@ function canvasToBlob(canvas: HTMLCanvasElement) {
   });
 }
 
+const MIN_EDITOR_ZOOM = 50;
+const MAX_EDITOR_ZOOM = 500;
+const EDITOR_ZOOM_STEP = 25;
+
 export function ManualMaskEditor({
   resultUrl,
   resultBlob,
@@ -54,6 +58,7 @@ export function ManualMaskEditor({
   const [prepareError, setPrepareError] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [zoom, setZoom] = useState(100);
 
   useEffect(() => {
     let cancelled = false;
@@ -87,6 +92,7 @@ export function ManualMaskEditor({
       strokesRef.current = [];
       activeStrokeRef.current = null;
       setCanUndo(false);
+      setZoom(100);
       setReady(true);
     };
 
@@ -103,6 +109,15 @@ export function ManualMaskEditor({
     };
   }, [restoreBlob, resultBlob, resultUrl]);
 
+  const adjustZoom = (direction: -1 | 1) => {
+    setZoom((value) =>
+      Math.max(
+        MIN_EDITOR_ZOOM,
+        Math.min(MAX_EDITOR_ZOOM, value + direction * EDITOR_ZOOM_STEP),
+      ),
+    );
+  };
+
   const pointFromEvent = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     const canvas = event.currentTarget;
     const rect = canvas.getBoundingClientRect();
@@ -118,8 +133,14 @@ export function ManualMaskEditor({
     const cursor = brushCursorRef.current;
     if (!cursor || !ready || event.pointerType === "touch") return;
     const rect = event.currentTarget.getBoundingClientRect();
-    cursor.style.left = `${event.clientX - rect.left}px`;
-    cursor.style.top = `${event.clientY - rect.top}px`;
+    const stage = event.currentTarget.parentElement?.parentElement;
+    const stageRect = stage?.getBoundingClientRect();
+    cursor.style.left = `${
+      event.clientX - (stageRect?.left ?? rect.left) + (stage?.scrollLeft ?? 0)
+    }px`;
+    cursor.style.top = `${
+      event.clientY - (stageRect?.top ?? rect.top) + (stage?.scrollTop ?? 0)
+    }px`;
     cursor.style.opacity = "1";
   };
 
@@ -289,22 +310,60 @@ export function ManualMaskEditor({
             <span className="step-kicker">手动修边</span>
             <h3>擦掉杂点，恢复缺失边缘</h3>
           </div>
-          <button type="button" onClick={onClose} aria-label="关闭手动修边">
-            ×
-          </button>
+          <div className="mask-editor-head-actions">
+            <button type="button" onClick={onClose} aria-label="关闭手动修边">
+              ×
+            </button>
+          </div>
+        </div>
+
+        <div className="mask-editor-zoom-row">
+          <span>图片缩放</span>
+          <div className="mask-editor-zoom" aria-label="画布缩放">
+            <button
+              type="button"
+              disabled={zoom <= MIN_EDITOR_ZOOM}
+              onClick={() => adjustZoom(-1)}
+              aria-label="缩小画布"
+            >
+              缩小
+            </button>
+            <button
+              className="zoom-value"
+              type="button"
+              disabled={zoom === 100}
+              onClick={() => setZoom(100)}
+              aria-label={`当前缩放 ${zoom}%，点击恢复 100%`}
+            >
+              {zoom}%
+            </button>
+            <button
+              type="button"
+              disabled={zoom >= MAX_EDITOR_ZOOM}
+              onClick={() => adjustZoom(1)}
+              aria-label="放大画布"
+            >
+              放大
+            </button>
+          </div>
         </div>
 
         <div className="mask-editor-stage checkerboard">
-          <canvas
-            ref={canvasRef}
-            aria-label="手动修边画布"
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={stopDrawing}
-            onPointerCancel={stopDrawing}
-            onPointerEnter={updateBrushCursor}
-            onPointerLeave={hideBrushCursor}
-          />
+          <div
+            className="mask-editor-canvas-wrap"
+            style={{ width: `${zoom}%`, height: `${zoom}%` }}
+          >
+            <canvas
+              ref={canvasRef}
+              aria-label="手动修边画布"
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={stopDrawing}
+              onPointerCancel={stopDrawing}
+              onPointerEnter={updateBrushCursor}
+              onPointerLeave={hideBrushCursor}
+            />
+          </div>
           <span
             ref={brushCursorRef}
             className={`mask-brush-cursor is-${tool}`}

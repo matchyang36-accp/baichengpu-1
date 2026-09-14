@@ -1,5 +1,5 @@
 const MODEL_CACHE_PREFIX = "baichengpu-model-";
-const MODEL_CACHE_NAME = `${MODEL_CACHE_PREFIX}v2`;
+const MODEL_CACHE_NAME = `${MODEL_CACHE_PREFIX}v3`;
 const MODEL_PATH_PREFIX = "/bg-removal/";
 const MAX_NETWORK_REQUESTS = 2;
 let activeNetworkRequests = 0;

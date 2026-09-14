@@ -12,7 +12,6 @@ type PricingPlan = {
   href: string;
   price: string;
   period: string;
-  planId?: "pro" | "team";
   featured?: boolean;
 };
 
@@ -56,17 +55,17 @@ const content: Record<Locale, PricingContent> = {
     },
     plansLabel: "edit-photo plans",
     plans: [
-      { id: "free", name: "Free", label: "Available now", price: "¥0", period: "/month", description: "For occasional product photos and testing real cutout quality.", features: ["20 cutouts per month after sign-in", "Transparent PNG and white-background image", "Private browser processing", "Manual edge refinement"], action: "Start free", href: links.free },
-      { id: "pro", name: "Pro", label: "Recommended", price: "¥39", period: "/month", planId: "pro", description: "For e-commerce operators, content editors, and frequent image production.", features: ["500 cutouts per month", "Larger batch workflow", "Manual touch-up and edge cleanup", "All marketplace presets"], action: "Get Pro", href: links.pro, featured: true },
-      { id: "team", name: "Team", label: "High volume", price: "¥199", period: "/month", planId: "team", description: "For stores, studios, and companies with repeatable image standards.", features: ["3,000 cutouts per month", "High-volume batch workflow", "Marketplace image specifications", "Business support"], action: "Get Team", href: links.team },
+      { id: "free", name: "Free", label: "Available now", price: "¥0", period: "/month", description: "For occasional product photos and testing real cutout quality.", features: ["Free beta access", "Transparent PNG and white-background image", "Private browser processing", "Manual edge refinement"], action: "Start free", href: links.free },
+      { id: "pro", name: "Pro", label: "Recommended", price: "¥39", period: "/month", description: "For e-commerce operators, content editors, and frequent image production.", features: ["Planned higher monthly quota", "Larger batch workflow", "Manual touch-up and edge cleanup", "All marketplace presets"], action: "Apply for beta", href: links.pro, featured: true },
+      { id: "team", name: "Team", label: "High volume", price: "¥199", period: "/month", description: "For stores, studios, and companies with repeatable image standards.", features: ["Planned team quota", "High-volume batch workflow", "Marketplace image specifications", "Business support"], action: "Contact us", href: links.team },
     ],
-    note: { eyebrow: "Billing note", title: "Start free, then upgrade only when volume requires it.", description: "Paid plans use Stripe checkout. The image itself still stays in your browser; the server only handles account, quota, and billing records." },
+    note: { eyebrow: "Free beta note", title: "The current launch strategy is free beta first.", description: "Paid checkout is not exposed during the beta. We are using real workflow feedback to decide when quota and billing should be enabled." },
     faq: {
       eyebrow: "FAQ", title: "What to know before you start",
       items: [
         ["Are my images uploaded to a server?", "No. Current single and batch cutout runs in your browser, so original images are not uploaded to edit-photo servers."],
-        ["How does billing work?", "Pro and Team are monthly subscriptions processed by Stripe. You always see the amount before confirming payment."],
-        ["What happens when I reach the free quota?", "The account keeps working, but new quota-controlled processing waits for the next monthly reset or a plan upgrade."],
+        ["How does billing work?", "Billing is not open during the free beta. Pro and Team users can apply first, and paid checkout will be enabled only after the plan is ready."],
+        ["What happens when I reach the free quota?", "During the beta, the core tools remain free while we validate usage patterns and the right quota rules."],
         ["What if a complex image is not clean enough?", "Try strong cleanup, shadow preservation, or manual touch-up. You can also send a non-sensitive example through the contact page."],
       ],
     },
@@ -94,9 +93,9 @@ const content: Record<Locale, PricingContent> = {
     hero: { eyebrow: "围绕真实商品图工作流开发", title: "先把重复劳动省下来，再决定要不要升级。", description: "免费体验核心功能；高频用户可申请专业版内测。我们会根据真实场景验证速度、批量上限和导出要求。" },
     plansLabel: "edit-photo 产品方案",
     plans: [
-      { id: "free", name: "免费版", label: "立即可用", price: "¥0", period: "/月", description: "适合偶尔处理商品图，先验证真实图片效果。", features: ["登录后每月 20 次", "透明 PNG 与白底主图", "浏览器本地处理", "手动修边"], action: "免费开始", href: links.free },
-      { id: "pro", name: "专业版", label: "推荐", price: "¥39", period: "/月", planId: "pro", description: "适合电商运营、新媒体编辑和高频图片生产。", features: ["每月 500 次", "更大的批量处理能力", "手动修边与边缘净化", "全部平台主图规格"], action: "升级专业版", href: links.pro, featured: true },
-      { id: "team", name: "团队版", label: "高用量", price: "¥199", period: "/月", planId: "team", description: "适合店群、摄影团队和有固定图片规范的企业。", features: ["每月 3,000 次", "高用量批量工作流", "平台主图规格适配", "商务支持"], action: "升级团队版", href: links.team },
+      { id: "free", name: "免费版", label: "立即可用", price: "¥0", period: "/月", description: "适合偶尔处理商品图，先验证真实图片效果。", features: ["免费灰度体验", "透明 PNG 与白底主图", "浏览器本地处理", "手动修边"], action: "免费开始", href: links.free },
+      { id: "pro", name: "专业版", label: "推荐", price: "¥39", period: "/月", description: "适合电商运营、新媒体编辑和高频图片生产。", features: ["计划开放更高月额度", "更大的批量处理能力", "手动修边与边缘净化", "全部平台主图规格"], action: "申请内测", href: links.pro, featured: true },
+      { id: "team", name: "团队版", label: "高用量", price: "¥199", period: "/月", description: "适合店群、摄影团队和有固定图片规范的企业。", features: ["计划开放团队额度", "高用量批量工作流", "平台主图规格适配", "商务支持"], action: "联系我们", href: links.team },
     ],
     note: { eyebrow: "内测阶段说明", title: "现在不急着卖套餐，先确认什么真正值得付费。", description: "我们重点验证批量速度、复杂背景成功率、平台规格和团队协作需求。你的反馈会直接影响正式版能力与定价。" },
     faq: {

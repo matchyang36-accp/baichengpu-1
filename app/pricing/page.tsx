@@ -8,7 +8,6 @@ import { getAccountUser } from "../account-auth";
 import { localizedAlternates } from "../seo";
 import { FaqSchema } from "../lib/structured-data";
 import { InterestForm } from "./InterestForm";
-import { CheckoutButton } from "./CheckoutButton";
 import { getPricingContent } from "./content";
 
 function localize(locale: Locale, path: string): string {
@@ -75,16 +74,12 @@ export default async function PricingPage() {
                 <li key={feature}>✓ {feature}</li>
               ))}
             </ul>
-            {plan.planId ? (
-              <CheckoutButton
-                plan={plan.planId}
-                label={plan.action}
-                className={plan.featured ? "primary-button" : "secondary-button"}
-                locale={locale}
-              />
-            ) : (
-              <a className="secondary-button" href={localize(locale, plan.href)}>{plan.action}</a>
-            )}
+            <a
+              className={plan.featured ? "primary-button" : "secondary-button"}
+              href={localize(locale, plan.href)}
+            >
+              {plan.action}
+            </a>
           </article>
         ))}
       </section>

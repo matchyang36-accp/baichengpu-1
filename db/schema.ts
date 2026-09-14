@@ -52,6 +52,27 @@ export const authRateLimits = sqliteTable(
   (table) => [index("auth_rate_limits_blocked_idx").on(table.blockedUntil)],
 );
 
+export const passwordResetCodes = sqliteTable(
+  "password_reset_codes",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    codeHash: text("code_hash").notNull(),
+    codeSalt: text("code_salt").notNull(),
+    codeIterations: integer("code_iterations").notNull(),
+    attempts: integer("attempts").notNull().default(0),
+    createdAt: text("created_at").notNull(),
+    expiresAt: text("expires_at").notNull(),
+    usedAt: text("used_at"),
+  },
+  (table) => [
+    index("password_reset_codes_user_idx").on(table.userId, table.createdAt),
+    index("password_reset_codes_expiry_idx").on(table.expiresAt),
+  ],
+);
+
 export const proInterests = sqliteTable(
   "pro_interests",
   {
