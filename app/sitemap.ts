@@ -16,7 +16,14 @@ const STATIC_PUBLIC_ROUTES = [
   { path: "/disclaimer", priority: 0.3, changeFrequency: "yearly" as const },
 ];
 
+const ENGLISH_LANDING_ROUTES = [
+  { path: "/product-background-remover", priority: 0.9 },
+  { path: "/amazon-white-background-maker", priority: 0.8 },
+  { path: "/transparent-png-maker", priority: 0.8 },
+];
+
 const CONTENT_UPDATED_AT = new Date("2026-08-11T00:00:00.000Z");
+const LANDING_PAGE_UPDATED_AT = new Date("2026-09-22T00:00:00.000Z");
 export const dynamic = "force-dynamic";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -86,5 +93,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   }));
 
-  return [...localizedRoutes, ...legacyArticleRoutes, ...scheduledArticleRoutes];
+  const landingPageRoutes = ENGLISH_LANDING_ROUTES.map((route) => {
+    return {
+      url: absoluteUrl(localizedPath("en", route.path)),
+      lastModified: LANDING_PAGE_UPDATED_AT,
+      changeFrequency: "monthly" as const,
+      priority: route.priority,
+      alternates: {
+        languages: {
+          en: absoluteUrl(localizedPath("en", route.path)),
+          "x-default": absoluteUrl(localizedPath("en", route.path)),
+        },
+      },
+    };
+  });
+
+  return [...localizedRoutes, ...landingPageRoutes, ...legacyArticleRoutes, ...scheduledArticleRoutes];
 }

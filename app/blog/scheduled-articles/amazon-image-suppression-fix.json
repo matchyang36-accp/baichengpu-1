@@ -39,6 +39,12 @@
       "text": "Use edit-photo to remove the background and export a transparent PNG. Create white or branded layout versions with the site's supported main-image workflow or a separate design editor; capture and color correction still need to be handled before or after background removal."
     },
     {
+      "kind": "internalLink",
+      "text": "For a focused white-background preparation flow,",
+      "label": "open the Amazon white background maker",
+      "href": "/amazon-white-background-maker"
+    },
+    {
       "kind": "paragraph",
       "text": "If a source image contains a watermark, obtain an unwatermarked file from the rights holder or create your own photo. edit-photo does not remove watermarks, and removing ownership marks without permission can create legal and marketplace risks."
     },

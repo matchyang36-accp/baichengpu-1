@@ -73,6 +73,12 @@
       "text": "AI background removers like edit-photo.com win on:"
     },
     {
+      "kind": "internalLink",
+      "text": "To see the browser-local workflow before comparing it with Photoshop,",
+      "label": "open the product background remover",
+      "href": "/product-background-remover"
+    },
+    {
       "kind": "list",
       "items": [
         {

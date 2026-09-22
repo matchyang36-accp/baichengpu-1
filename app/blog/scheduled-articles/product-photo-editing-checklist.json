@@ -47,6 +47,12 @@
       "text": "□ Background removed cleanly\nUse edit-photo.com for one-click AI removal. Check edges for cleanup."
     },
     {
+      "kind": "internalLink",
+      "text": "For the background-removal part of this checklist,",
+      "label": "use the product background remover workflow",
+      "href": "/product-background-remover"
+    },
+    {
       "kind": "paragraph",
       "text": "□ Consistent background across catalog\nWhite for Amazon, brand color or transparent for other platforms."
     },

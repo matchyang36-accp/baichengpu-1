@@ -89,6 +89,12 @@
       "text": "Step 2: For every non-compliant image:"
     },
     {
+      "kind": "internalLink",
+      "text": "When the same catalog also needs marketplace-style white product images,",
+      "label": "prepare them with the Amazon white background maker",
+      "href": "/amazon-white-background-maker"
+    },
+    {
       "kind": "list",
       "items": [
         {

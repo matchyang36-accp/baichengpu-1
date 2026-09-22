@@ -86,6 +86,12 @@
       "text": "Upload all shots to edit-photo.com. Batch process. Remove backgrounds."
     },
     {
+      "kind": "internalLink",
+      "text": "If you want to validate one sample before the full set,",
+      "label": "run it through the product background remover",
+      "href": "/product-background-remover"
+    },
+    {
       "kind": "paragraph",
       "text": "Apply consistent output:"
     },

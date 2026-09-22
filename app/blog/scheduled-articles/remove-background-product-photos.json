@@ -18,6 +18,12 @@
       "text": "edit-photo performs the single-image cutout locally in the browser. The original photo and result stay on the device. JPG, PNG, and WebP inputs up to 12 MB are supported by the current tool, and the first run may take longer while the browser downloads the AI model."
     },
     {
+      "kind": "internalLink",
+      "text": "Want the direct tool page for this workflow?",
+      "label": "Open the product background remover",
+      "href": "/product-background-remover"
+    },
+    {
       "kind": "heading",
       "level": 2,
       "text": "The complete workflow at a glance"

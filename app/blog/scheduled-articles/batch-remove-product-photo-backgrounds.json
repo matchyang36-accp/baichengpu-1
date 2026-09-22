@@ -69,6 +69,12 @@
       "text": "Step 2: Upload in Batches"
     },
     {
+      "kind": "internalLink",
+      "text": "For a one-image quality baseline before processing a whole folder,",
+      "label": "test the product background remover first",
+      "href": "/product-background-remover"
+    },
+    {
       "kind": "paragraph",
       "text": "Open edit-photo.com's batch tool and add up to 20 images. Process larger catalogs as multiple batches so a failed image does not block the entire job."
     },

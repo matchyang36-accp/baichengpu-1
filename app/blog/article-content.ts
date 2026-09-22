@@ -99,6 +99,7 @@ export const ARTICLE_CONTENT: Record<LegacyArticleId, Record<Locale, ArticleBody
         { kind: "heading", text: "How to make a transparent PNG" },
         { kind: "heading", level: 3, text: "Method 1: AI background removal" },
         { kind: "paragraph", text: "Upload a product photo, let the model identify the subject, then export the cutout as PNG. This is fast and works well for most clearly photographed products." },
+        { kind: "internalLink", text: "Need the focused tool page for this export?", label: "Open the transparent PNG maker", href: "/transparent-png-maker" },
         { kind: "heading", level: 3, text: "Method 2: Manual selection" },
         { kind: "paragraph", text: "For demanding edges, use a desktop editor with pen, selection, and mask tools. It takes longer but gives direct control over individual pixels." },
         { kind: "heading", level: 3, text: "Method 3: Controlled background shooting" },

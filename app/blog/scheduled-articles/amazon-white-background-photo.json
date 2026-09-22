@@ -18,6 +18,12 @@
       "text": "Quick answer: create one clean transparent master, place it on a true-white canvas for Amazon, then inspect the edge and crop before export. This separates background removal from marketplace formatting and makes future variants easier to produce."
     },
     {
+      "kind": "internalLink",
+      "text": "If you want a focused workflow for that white-background export,",
+      "label": "use the Amazon white background maker",
+      "href": "/amazon-white-background-maker"
+    },
+    {
       "kind": "heading",
       "level": 2,
       "text": "Amazon MAIN image checklist"

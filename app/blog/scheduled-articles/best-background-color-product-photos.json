@@ -103,6 +103,12 @@
       "text": "Use edit-photo to create a transparent PNG, then place that export on the required background in a general design editor. Keep the transparent master so the change remains reversible."
     },
     {
+      "kind": "internalLink",
+      "text": "Need that reusable master first?",
+      "label": "Create it with the transparent PNG maker",
+      "href": "/transparent-png-maker"
+    },
+    {
       "kind": "heading",
       "level": 2,
       "text": "Color 2: Soft Sage or Muted Green"
