@@ -902,6 +902,92 @@ test("renders the product photo editing workflow hub and removes its consolidate
   assert.match(sitemapXml, /\/en\/blog\/remove-person-from-photo/);
 });
 
+test("renders the product color accuracy guide without automatic correction claims", async () => {
+  const [
+    articleResponse,
+    checklistResponse,
+    productRemoverResponse,
+    transparentPngResponse,
+    reflectiveGuideResponse,
+    phoneGuideResponse,
+  ] = await Promise.all([
+    render("/en/blog/product-photo-color-correction"),
+    render("/en/blog/product-photo-editing-checklist"),
+    render("/en/product-background-remover"),
+    render("/en/transparent-png-maker"),
+    render("/en/blog/reflective-product-photography"),
+    render("/en/blog/phone-product-photography"),
+  ]);
+  for (const response of [
+    articleResponse,
+    checklistResponse,
+    productRemoverResponse,
+    transparentPngResponse,
+    reflectiveGuideResponse,
+    phoneGuideResponse,
+  ]) {
+    assert.equal(response.status, 200);
+  }
+
+  const [html, checklistHtml] = await Promise.all([
+    articleResponse.text(),
+    checklistResponse.text(),
+  ]);
+  assert.match(
+    html,
+    /<title>Product Photo Color Correction: Accuracy &amp; Consistency Guide \| edit-photo<\/title>/,
+  );
+  assert.match(html, /<h1>How to Keep Product Photo Colors Accurate and Consistent<\/h1>/);
+  assert.match(
+    html,
+    /Learn how to reduce color mismatches in product photos with better capture, white balance checks/,
+  );
+  for (const heading of [
+    "Why product colors look different online",
+    "Start with controlled lighting",
+    "Set and check white balance",
+    "Use a neutral reference when needed",
+    "Avoid mixed lighting",
+    "Compare against the real product",
+    "Review color variants separately",
+    "Check images on more than one screen",
+    "What background removal can and cannot fix",
+    "Export and ecommerce QA",
+    "When professional color calibration is worth it",
+    "Common product color mistakes",
+  ]) {
+    assert.match(html, new RegExp(heading));
+  }
+  assert.match(html, /href="\/en\/blog\/product-photo-editing-checklist"/);
+  assert.match(html, /href="\/en\/product-background-remover"/);
+  assert.match(html, /href="\/en\/transparent-png-maker"/);
+  assert.match(html, /href="\/en\/blog\/reflective-product-photography"/);
+  assert.match(html, /href="\/en\/blog\/phone-product-photography"/);
+  assert.match(checklistHtml, /href="\/en\/blog\/product-photo-color-correction"/);
+  assert.match(html, /"@type":"Article"/);
+  assert.match(html, /"@type":"BreadcrumbList"/);
+  assert.match(html, /"@type":"FAQPage"/);
+  assert.equal((html.match(/"@type":"Question"/g) ?? []).length, 5);
+  assert.equal((html.match(/<details/g) ?? []).length, 5);
+  assert.match(html, /"dateModified":"2026-09-23T00:00:00.000Z"/);
+  assert.match(
+    html,
+    /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/product-photo-color-correction"/,
+  );
+  assert.match(html, /edit-photo does not automatically correct color/);
+  for (const riskyClaim of [
+    /#1 non-defect reason/i,
+    /20-35% lower return rates/i,
+    /Massive ROI/i,
+    /Fix your photos, fix your return rate/i,
+    /buyers who read this.*rarely return/i,
+    /AI automatically corrects color/i,
+    /background removal to a pure white background helps normalize perceived color/i,
+  ]) {
+    assert.doesNotMatch(html, riskyClaim);
+  }
+});
+
 test("renders signed-in account navigation and protected account page", async () => {
   const authenticatedHeaders = {
     cookie: "bcp_session=test-session-token",
