@@ -1,237 +1,264 @@
 {
   "id": "amazon-fba-product-photos",
-  "tag": "E-commerce Photo Guide",
-  "title": "The Product Photo Mistake Amazon FBA Sellers Make in Every Category (Fix This Weekend)",
-  "description": "Every Amazon FBA seller makes this one photo mistake. Fix it this weekend and watch your rank climb.",
+  "tag": "Amazon Image Workflow",
+  "title": "Amazon FBA Product Photos: Complete Image Checklist | edit-photo",
+  "heading": "Amazon Product Image Checklist for FBA Sellers",
+  "description": "Plan and review Amazon product images with a practical checklist covering the main image, secondary images, product details, scale, packaging, context shots, and pre-upload QA.",
   "targetKeyword": "amazon fba product photos",
   "publishedAt": "2026-09-05T09:00:00.000Z",
   "date": "2026-09-05",
+  "updatedAt": "2026-09-23T00:00:00.000Z",
   "reviewedBy": "edit-photo editorial team",
   "blocks": [
     {
       "kind": "paragraph",
-      "text": "Amazon FBA sellers obsess over keywords, PPC bids, and backend fields. But most ignore the single biggest conversion lever available: their main product image."
+      "text": "A complete Amazon product image set should help a shopper identify the item, understand what is included, judge important details, estimate size, and see how the product fits into a real situation. The main image starts that job, but the rest of the image sequence must answer the questions that remain."
     },
     {
       "kind": "paragraph",
-      "text": "Here's the mistake almost every FBA seller makes."
+      "text": "This checklist focuses on planning the full image set and reviewing it before upload. It does not replace Amazon's current category requirements, guarantee acceptance, or promise a sales outcome. Check Seller Central before publishing because marketplace rules and available image features can change."
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "The Mistake"
-    },
-    {
-      "kind": "paragraph",
-      "text": "Using the manufacturer/supplier's stock photo as your main image."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Just about every Alibaba supplier provides \"professional\" product photos. Sellers upload them directly. Which means 20-100 other Amazon sellers are using the exact same photo for the same product."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Amazon's algorithm doesn't know who to prioritize. Buyers can't distinguish sellers. Rank suffers."
-    },
-    {
-      "kind": "heading",
-      "level": 2,
-      "text": "Why This Kills Your Listing"
-    },
-    {
-      "kind": "paragraph",
-      "text": "Amazon actively deprioritizes duplicate images. If your main photo is a reverse-image match for 50 other listings, you're competing on price alone. And someone will always undercut you."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Also: manufacturer photos are often:"
+      "text": "What an Amazon product image set should accomplish"
     },
     {
       "kind": "list",
       "items": [
-        {
-          "text": "Off-white background (not pure RGB 255)"
-        },
-        {
-          "text": "Slightly outdated"
-        },
-        {
-          "text": "Watermarked (visible or hidden)"
-        },
-        {
-          "text": "Compressed to hell"
-        }
+        { "label": "Identify", "text": "Show the actual product clearly and make the main purchase option easy to recognize." },
+        { "label": "Explain", "text": "Use secondary images to show details, materials, controls, dimensions, packaging, and included items." },
+        { "label": "Provide context", "text": "Help shoppers understand scale and intended use without implying accessories or results that are not included." },
+        { "label": "Stay consistent", "text": "Keep product color, orientation, crop logic, typography, and visual treatment coherent across the listing." },
+        { "label": "Pass review", "text": "Check every export against the current rules for the relevant product category and marketplace." }
       ]
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "The Fix"
+      "text": "Main image preparation"
     },
     {
       "kind": "paragraph",
-      "text": "Take your own photos. Even with a phone. Even in your kitchen."
+      "text": "Treat the main image as a precise identification image, not the entire sales presentation. Start with a sharp source photo, preserve every product edge, verify what belongs in the frame, and prepare the required background and crop only after the product cutout has been checked."
     },
     {
       "kind": "paragraph",
-      "text": "Then:"
+      "text": "Do not copy old dimensions, product-coverage percentages, file formats, or zoom thresholds from an earlier listing without checking Amazon's current guidance. Requirements can vary by category and marketplace."
+    },
+    {
+      "kind": "internalLink",
+      "text": "For the detailed main-image background workflow and current-rule checkpoints,",
+      "label": "use the Amazon white-background photo guide",
+      "href": "/blog/amazon-white-background-photo"
+    },
+    {
+      "kind": "internalLink",
+      "text": "When you are ready to prepare the white-background working file,",
+      "label": "open the Amazon image preparation tool",
+      "href": "/amazon-white-background-maker"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Secondary image sequence"
+    },
+    {
+      "kind": "paragraph",
+      "text": "There is no useful one-size-fits-all sequence. Choose each secondary image because it answers a buyer question that the main image cannot. A simple product may need fewer explanations than a configurable, technical, wearable, or multi-part item."
+    },
+    {
+      "kind": "table",
+      "caption": "Build the sequence around buyer questions rather than a fixed image count.",
+      "headers": ["Image role", "Question it should answer", "QA focus"],
+      "rows": [
+        { "cells": ["Alternate view", "What does the back, side, top, or underside look like?", "Same product variant, consistent orientation, no missing parts"] },
+        { "cells": ["Detail view", "What are the important materials, controls, finishes, or construction details?", "Sharp focus and truthful detail"] },
+        { "cells": ["Scale view", "How large is the product in a familiar context?", "Readable dimensions and no misleading perspective"] },
+        { "cells": ["Included-items view", "Exactly what arrives with the order?", "Every shown item is included or clearly identified"] },
+        { "cells": ["Context view", "Where and how is the product normally used?", "Plausible setting without unsupported performance claims"] }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Product details and close-ups"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use close-ups for details that affect selection or use: texture, finish, connectors, closures, labels, controls, stitching, ingredients, or craftsmanship. Keep enough surrounding product visible that the shopper can understand where the detail belongs."
     },
     {
       "kind": "list",
       "items": [
-        {
-          "text": "Upload to edit-photo.com"
-        },
-        {
-          "text": "Remove background"
-        },
-        {
-          "text": "Apply pure white"
-        },
-        {
-          "text": "Export at 2000x2000"
-        }
+        { "text": "Prioritize details that distinguish variants or answer common pre-purchase questions." },
+        { "text": "Check that the close-up belongs to the exact color, size, model, and bundle shown on the listing." },
+        { "text": "Avoid enlarging a soft crop until compression artifacts look like product texture." }
       ]
     },
     {
+      "kind": "heading",
+      "level": 2,
+      "text": "Size and scale"
+    },
+    {
       "kind": "paragraph",
-      "text": "Your images are now unique to your listing. Amazon's algorithm treats you as a distinct product, not a duplicate."
+      "text": "A shopper should not have to infer scale from the main image crop. Use a dimension graphic created in an appropriate layout tool, a truthful in-context photograph, or a comparison with a familiar object when current category rules allow it. Keep units readable and make sure perspective does not exaggerate size."
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "Use Rights-Safe Source Images"
+      "text": "Packaging and included items"
     },
     {
       "kind": "paragraph",
-      "text": "If a source image contains a watermark, obtain an unwatermarked file from the rights holder or create your own photo. edit-photo does not remove watermarks, and removing ownership marks without permission can create legal and marketplace risks."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Long term, always shoot your own."
+      "text": "Show packaging when it matters for gifting, storage, authenticity, assembly, or delivery expectations. Use a separate included-items image for sets, accessories, cables, refills, and components. Do not add props that can be mistaken for part of the order."
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "The Enhanced Brand Content Angle"
+      "text": "Lifestyle and context images"
     },
     {
       "kind": "paragraph",
-      "text": "If you're brand-registered on Amazon, you have access to A+ Content and Enhanced Brand Content. These sections rank your listing higher and convert 5-10% better."
+      "text": "Context images should demonstrate normal use, environment, fit, or scale. Photograph the actual product in a suitable setting and review every visible accessory, person, label, and screen. edit-photo does not generate lifestyle scenes or replace objects inside a photograph; create or license those images separately."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Image consistency across the listing"
     },
     {
       "kind": "paragraph",
-      "text": "They require:"
+      "text": "Consistency makes the set easier to scan, but it should not erase useful differences between image roles. Compare the full sequence as thumbnails and at full size."
     },
     {
       "kind": "list",
       "items": [
-        {
-          "text": "Multiple high-quality images"
-        },
-        {
-          "text": "Lifestyle context photos"
-        },
-        {
-          "text": "Detail and infographic images"
-        },
-        {
-          "text": "Consistent brand aesthetic"
-        }
+        { "label": "Composition", "text": "Keep repeated angles, margins, and orientation deliberate rather than almost aligned." },
+        { "label": "Lighting", "text": "Check that highlights and shadows describe the same product accurately across the set." },
+        { "label": "Color", "text": "Compare the product with a reliable reference and investigate unexplained color shifts between photos." },
+        { "label": "Graphics", "text": "If permitted, use one readable hierarchy and consistent units, labels, and spacing." },
+        { "label": "Variant accuracy", "text": "Do not mix images from different colors, sizes, bundles, revisions, or regional packaging." }
       ]
     },
     {
+      "kind": "heading",
+      "level": 2,
+      "text": "Background and edge QA"
+    },
+    {
       "kind": "paragraph",
-      "text": "All buildable from transparent PNG masters at edit-photo.com. One shoot = full A+ Content library."
+      "text": "When an image needs isolation, background removal is only the first pass. Compare the cutout with the source and inspect the outer contour, holes, handles, cables, transparent regions, and fine product parts. Check for retained background, halos, missing edges, and accidental transparency."
+    },
+    {
+      "kind": "internalLink",
+      "text": "For a focused cutout and manual-edge review workflow,",
+      "label": "use the product background remover",
+      "href": "/product-background-remover"
+    },
+    {
+      "kind": "internalLink",
+      "text": "Keep a reusable source asset when more than one channel export is needed;",
+      "label": "learn when to use a transparent PNG master",
+      "href": "/transparent-png-maker"
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "The Split-Test Reality"
+      "text": "Color and lighting review"
     },
     {
       "kind": "paragraph",
-      "text": "Serious FBA sellers split-test their main images. Amazon offers \"Manage Your Experiments\" for this."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Which means: You need at least two versions of your main image to test. Both must be unique to you, both compliant, both compelling."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Prepare test variants at edit-photo.com."
+      "text": "Review color and lighting against the physical product and the original files. Watch for mixed white balance, clipped highlights, blocked shadows, screen glare, and inconsistent exposure. These are capture or color-editing issues: edit-photo removes backgrounds and supports edge inspection, but it does not calibrate color, relight products, repair blur, or correct exposure automatically."
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "The Full FBA Photo Requirement"
+      "text": "File and export checks"
     },
     {
       "kind": "paragraph",
-      "text": "For every ASIN:"
+      "text": "Export from the best available source rather than a marketplace screenshot. Open the final file after export and inspect it at normal viewing size and at 100% zoom. Confirm that compression, resizing, flattening, and color-profile changes have not introduced visible damage. Then compare file dimensions, format, naming, and upload limits with Amazon's current requirements for the target marketplace."
     },
     {
-      "kind": "list",
+      "kind": "heading",
+      "level": 2,
+      "text": "Pre-upload checklist"
+    },
+    {
+      "kind": "table",
+      "caption": "Run this review on the complete set before uploading or replacing listing images.",
+      "headers": ["Review area", "Questions to answer", "Action if it fails"],
+      "rows": [
+        { "cells": ["Listing match", "Is every image for the correct ASIN, variant, bundle, and packaging version?", "Return to the source selection and replace mismatched assets"] },
+        { "cells": ["Sequence", "Does each image answer a different useful buyer question?", "Remove repetition and fill the most important information gap"] },
+        { "cells": ["Product accuracy", "Are colors, proportions, included items, and visible claims truthful?", "Reshoot or correct the source in an appropriate editor"] },
+        { "cells": ["Edge quality", "Are contours, openings, transparent areas, and fine details intact?", "Return to the cutout and manually inspect the affected edge"] },
+        { "cells": ["Consistency", "Do orientation, lighting, crop logic, units, and graphic treatment feel intentional?", "Compare the set side by side and standardize only what should match"] },
+        { "cells": ["Current rules", "Does every file meet today's category and marketplace requirements?", "Verify in Seller Central before upload"] }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "When to use the white background guide"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use the white-background guide when the unresolved task is specifically the Amazon MAIN image: background preparation, product crop, transparent-versus-white output, or current main-image requirements. Keep those detailed rules there so this Hub can focus on the complete listing image set."
+    },
+    {
+      "kind": "internalLink",
+      "text": "Review the focused workflow in",
+      "label": "the Amazon white-background checklist",
+      "href": "/blog/amazon-white-background-photo"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "When to use the suppression troubleshooting guide"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use the suppression guide only after Amazon reports an image-related listing problem. Start with the exact message in Seller Central, identify the affected image, and avoid rebuilding the whole set until the reported issue is understood."
+    },
+    {
+      "kind": "internalLink",
+      "text": "If an existing listing has already been affected,",
+      "label": "follow the image-suppression troubleshooting guide",
+      "href": "/blog/amazon-image-suppression-fix"
+    },
+    {
+      "kind": "faq",
+      "title": "Amazon product image checklist FAQ",
       "items": [
         {
-          "text": "Main image (pure white, compliant)"
+          "question": "How many images should an Amazon product listing have?",
+          "answer": "Use enough permitted images to answer the important buyer questions for that product without repeating the same information. Check the current image availability and requirements in Seller Central rather than relying on a fixed universal number."
         },
         {
-          "text": "Product with packaging"
+          "question": "Should every Amazon image use a white background?",
+          "answer": "The main image and secondary images serve different jobs, and current requirements can differ by image role and category. Use the dedicated white-background guide for main-image preparation and verify the current rules before upload."
         },
         {
-          "text": "Lifestyle in-use shot"
+          "question": "What should secondary product images show?",
+          "answer": "Choose views that add new information, such as alternate angles, important details, dimensions, scale, packaging, included items, and truthful context. The right sequence depends on the product."
         },
         {
-          "text": "Feature callout infographic"
+          "question": "Can edit-photo create the complete Amazon image set?",
+          "answer": "No. edit-photo removes image backgrounds, supports cutout-edge inspection, and exports reusable assets. It does not generate lifestyle scenes, design A+ Content, create complex listing graphics, relight products, or calibrate color."
         },
         {
-          "text": "Size/scale reference"
-        },
-        {
-          "text": "Ingredient/spec highlights"
-        },
-        {
-          "text": "Brand story image"
-        },
-        {
-          "text": "Guarantee/badge image"
-        },
-        {
-          "text": "Comparison to alternatives"
+          "question": "What is the final check before uploading Amazon product photos?",
+          "answer": "Confirm the correct product and variant, review the whole sequence for accuracy and consistency, inspect every exported file, and compare it with Amazon's current requirements for the relevant marketplace and category."
         }
       ]
-    },
-    {
-      "kind": "paragraph",
-      "text": "Nine images. All from consistent master files. All standardized through edit-photo.com."
-    },
-    {
-      "kind": "heading",
-      "level": 2,
-      "text": "The Weekend Fix"
-    },
-    {
-      "kind": "paragraph",
-      "text": "This weekend, pick your top 5 FBA products. Shoot new photos (phone is fine). Edit through edit-photo.com. Upload."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Watch your rank over the next 30 days."
-    },
-    {
-      "kind": "heading",
-      "level": 2,
-      "text": "Start Winning FBA"
-    },
-    {
-      "kind": "paragraph",
-      "text": "Duplicate images are the silent killer. Fix yours free at edit-photo.com."
     }
   ],
   "cta": {
-    "title": "Ready to improve a product photo?",
-    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
-    "button": "Try background removal"
+    "title": "Prepare a reusable product cutout",
+    "description": "Remove the original background, inspect the product edge, and keep a reusable asset for the marketplace exports in your image plan.",
+    "button": "Open the background remover"
   }
 }

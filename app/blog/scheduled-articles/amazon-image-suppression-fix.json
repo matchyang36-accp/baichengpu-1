@@ -90,6 +90,12 @@
       "text": "Review time and marketplace outcomes vary. Check the exported image carefully and follow the platform's current review or resubmission process."
     },
     {
+      "kind": "internalLink",
+      "text": "For routine checks before a future upload,",
+      "label": "use the complete Amazon product image checklist",
+      "href": "/blog/amazon-fba-product-photos"
+    },
+    {
       "kind": "heading",
       "level": 2,
       "text": "Preventing Future Suppressions"

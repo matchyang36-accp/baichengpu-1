@@ -229,6 +229,11 @@ export const SEO_LANDING_PAGES: Record<SeoLandingPageId, LandingPageContent> = {
         description: "Common image issues to check when a listing image is suppressed.",
       },
       {
+        title: "Amazon Product Image Checklist",
+        href: "/blog/amazon-fba-product-photos",
+        description: "Plan the complete listing image set and run pre-upload quality checks.",
+      },
+      {
         title: "Google Shopping Product Images",
         href: "/blog/google-shopping-product-images",
         description: "How to prepare clean product images for feed-based commerce channels.",

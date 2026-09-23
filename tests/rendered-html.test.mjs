@@ -273,6 +273,37 @@ test("permanently redirects consolidated difficult-edge articles without chains"
   );
 });
 
+test("permanently redirects the consolidated Amazon article without a chain", async () => {
+  const worker = await loadWorker("amazon-cluster-redirect");
+  const env = {
+    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    DB: {},
+  };
+  const ctx = { waitUntil() {}, passThroughOnException() {} };
+
+  const response = await worker.fetch(
+    new Request("https://edit-photo.com/en/blog/amateur-amazon-product-photos"),
+    env,
+    ctx,
+  );
+  assert.equal(response.status, 308);
+  assert.equal(
+    response.headers.get("location"),
+    "https://edit-photo.com/en/blog/amazon-fba-product-photos",
+  );
+
+  const canonicalizedResponse = await worker.fetch(
+    new Request("https://www.edit-photo.com/en/blog/amateur-amazon-product-photos/?source=audit"),
+    env,
+    ctx,
+  );
+  assert.equal(canonicalizedResponse.status, 308);
+  assert.equal(
+    canonicalizedResponse.headers.get("location"),
+    "https://edit-photo.com/en/blog/amazon-fba-product-photos?source=audit",
+  );
+});
+
 test("edge-caches only anonymous public HTML documents", async () => {
   const previousCaches = globalThis.caches;
   const storedResponses = new Map();
@@ -582,6 +613,91 @@ test("renders the consolidated difficult-product guide and removes source URLs f
     assert.doesNotMatch(sitemapXml, new RegExp(`/en/blog/${source}`));
     assert.doesNotMatch(blogHtml, new RegExp(`/en/blog/${source}`));
   }
+});
+
+test("renders the Amazon image-set hub and removes its consolidated source from discovery", async () => {
+  const [
+    hubResponse,
+    sourceAppResponse,
+    blogResponse,
+    sitemapResponse,
+    landingResponse,
+    whiteGuideResponse,
+    suppressionResponse,
+    productRemoverResponse,
+    transparentPngResponse,
+  ] = await Promise.all([
+    render("/en/blog/amazon-fba-product-photos"),
+    render("/en/blog/amateur-amazon-product-photos"),
+    render("/en/blog"),
+    render("/sitemap.xml"),
+    render("/en/amazon-white-background-maker"),
+    render("/en/blog/amazon-white-background-photo"),
+    render("/en/blog/amazon-image-suppression-fix"),
+    render("/en/product-background-remover"),
+    render("/en/transparent-png-maker"),
+  ]);
+  assert.equal(hubResponse.status, 200);
+  assert.equal(sourceAppResponse.status, 308);
+  assert.equal(
+    sourceAppResponse.headers.get("location"),
+    "http://localhost/en/blog/amazon-fba-product-photos",
+  );
+  assert.equal(blogResponse.status, 200);
+  assert.equal(sitemapResponse.status, 200);
+  assert.equal(landingResponse.status, 200);
+  assert.equal(whiteGuideResponse.status, 200);
+  assert.equal(suppressionResponse.status, 200);
+  assert.equal(productRemoverResponse.status, 200);
+  assert.equal(transparentPngResponse.status, 200);
+
+  const [hubHtml, blogHtml, sitemapXml, landingHtml, whiteGuideHtml, suppressionHtml] =
+    await Promise.all([
+      hubResponse.text(),
+      blogResponse.text(),
+      sitemapResponse.text(),
+      landingResponse.text(),
+      whiteGuideResponse.text(),
+      suppressionResponse.text(),
+    ]);
+
+  assert.match(
+    hubHtml,
+    /<title>Amazon FBA Product Photos: Complete Image Checklist \| edit-photo<\/title>/,
+  );
+  assert.match(hubHtml, /<h1>Amazon Product Image Checklist for FBA Sellers<\/h1>/);
+  assert.match(
+    hubHtml,
+    /Plan and review Amazon product images with a practical checklist covering the main image/,
+  );
+  assert.match(hubHtml, /What an Amazon product image set should accomplish/);
+  assert.match(hubHtml, /Secondary image sequence/);
+  assert.match(hubHtml, /Pre-upload checklist/);
+  assert.match(hubHtml, /href="\/en\/amazon-white-background-maker"/);
+  assert.match(hubHtml, /href="\/en\/blog\/amazon-white-background-photo"/);
+  assert.match(hubHtml, /href="\/en\/blog\/amazon-image-suppression-fix"/);
+  assert.match(hubHtml, /href="\/en\/product-background-remover"/);
+  assert.match(hubHtml, /href="\/en\/transparent-png-maker"/);
+  assert.match(hubHtml, /"@type":"Article"/);
+  assert.match(hubHtml, /"@type":"BreadcrumbList"/);
+  assert.match(hubHtml, /"@type":"FAQPage"/);
+  assert.match(hubHtml, /"dateModified":"2026-09-23T00:00:00.000Z"/);
+  assert.match(
+    hubHtml,
+    /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/amazon-fba-product-photos"/,
+  );
+  assert.doesNotMatch(hubHtml, /20-100 other Amazon sellers/);
+  assert.doesNotMatch(hubHtml, /convert 5-10% better/);
+  assert.doesNotMatch(hubHtml, /Nine images/);
+  assert.doesNotMatch(hubHtml, /Watch your rank over the next 30 days/);
+  assert.doesNotMatch(hubHtml, /wins the buy box/i);
+
+  assert.match(sitemapXml, /\/en\/blog\/amazon-fba-product-photos/);
+  assert.doesNotMatch(sitemapXml, /\/en\/blog\/amateur-amazon-product-photos/);
+  assert.doesNotMatch(blogHtml, /\/en\/blog\/amateur-amazon-product-photos/);
+  assert.match(landingHtml, /href="\/en\/blog\/amazon-fba-product-photos"/);
+  assert.match(whiteGuideHtml, /href="\/en\/blog\/amazon-fba-product-photos"/);
+  assert.match(suppressionHtml, /href="\/en\/blog\/amazon-fba-product-photos"/);
 });
 
 test("renders signed-in account navigation and protected account page", async () => {
