@@ -988,6 +988,102 @@ test("renders the product color accuracy guide without automatic correction clai
   }
 });
 
+test("renders the phone product photography guide without camera-equivalence claims", async () => {
+  const [
+    articleResponse,
+    checklistResponse,
+    colorGuideResponse,
+    productRemoverResponse,
+    transparentPngResponse,
+    reflectiveGuideResponse,
+    batchResponse,
+  ] = await Promise.all([
+    render("/en/blog/phone-product-photography"),
+    render("/en/blog/product-photo-editing-checklist"),
+    render("/en/blog/product-photo-color-correction"),
+    render("/en/product-background-remover"),
+    render("/en/transparent-png-maker"),
+    render("/en/blog/reflective-product-photography"),
+    render("/en/batch"),
+  ]);
+  for (const response of [
+    articleResponse,
+    checklistResponse,
+    colorGuideResponse,
+    productRemoverResponse,
+    transparentPngResponse,
+    reflectiveGuideResponse,
+    batchResponse,
+  ]) {
+    assert.equal(response.status, 200);
+  }
+
+  const [html, checklistHtml] = await Promise.all([
+    articleResponse.text(),
+    checklistResponse.text(),
+  ]);
+  assert.match(
+    html,
+    /<title>Phone Product Photography: Ecommerce Shooting Guide \| edit-photo<\/title>/,
+  );
+  assert.match(html, /<h1>How to Take Better Product Photos with Your Phone<\/h1>/);
+  assert.match(
+    html,
+    /Learn how to photograph products with a phone using better lighting, stable framing/,
+  );
+  for (const heading of [
+    "What phone product photography can realistically do",
+    "Clean the lens and stabilize the phone",
+    "Use soft, consistent lighting",
+    "Avoid mixed light and harsh reflections",
+    "Choose the right camera distance",
+    "Keep perspective natural",
+    "Lock exposure and focus when useful",
+    "Use simple backgrounds",
+    "Photograph reflective and difficult products carefully",
+    "Capture enough angles and details",
+    "Review before background removal",
+    "Remove the background only after choosing the best source image",
+    "Export and ecommerce QA",
+    "When a phone is not enough",
+  ]) {
+    assert.match(html, new RegExp(heading));
+  }
+  assert.match(html, /href="\/en\/blog\/product-photo-editing-checklist"/);
+  assert.match(html, /href="\/en\/blog\/product-photo-color-correction"/);
+  assert.match(html, /href="\/en\/product-background-remover"/);
+  assert.match(html, /href="\/en\/transparent-png-maker"/);
+  assert.match(html, /href="\/en\/blog\/reflective-product-photography"/);
+  assert.match(html, /href="\/en\/batch"/);
+  assert.match(checklistHtml, /href="\/en\/blog\/phone-product-photography"/);
+  assert.match(html, /"@type":"Article"/);
+  assert.match(html, /"@type":"BreadcrumbList"/);
+  assert.match(html, /"@type":"FAQPage"/);
+  assert.equal((html.match(/"@type":"Question"/g) ?? []).length, 5);
+  assert.equal((html.match(/<details/g) ?? []).length, 5);
+  assert.match(html, /"dateModified":"2026-09-23T00:00:00.000Z"/);
+  assert.match(
+    html,
+    /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/phone-product-photography"/,
+  );
+  assert.match(html, /edit-photo does not fix blur/);
+  assert.match(html, /A phone does not guarantee catalog-quality results/);
+  for (const riskyClaim of [
+    /indistinguishable from DSLRs/i,
+    /Ten minutes per product/i,
+    /80% of your buyers/i,
+    /Zero equipment cost/i,
+    /competes with sellers who spent \$5,000/i,
+    /phone \+ edit-photo\.com wins on ROI/i,
+    /Phone photos \+ AI editing = catalog quality/i,
+    /AI can fix all/i,
+    /fixed conversion/i,
+    /fixed revenue/i,
+  ]) {
+    assert.doesNotMatch(html, riskyClaim);
+  }
+});
+
 test("renders signed-in account navigation and protected account page", async () => {
   const authenticatedHeaders = {
     cookie: "bcp_session=test-session-token",
