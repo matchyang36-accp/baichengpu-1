@@ -34,6 +34,7 @@ export type ScheduledArticle = ArticleBody & {
   id: string;
   tag: string;
   title: string;
+  heading?: string;
   description: string;
   targetKeyword: string;
   publishedAt: string;

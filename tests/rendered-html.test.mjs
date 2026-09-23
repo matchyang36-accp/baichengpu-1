@@ -223,6 +223,56 @@ test("canonicalizes legacy hosts and trailing slashes before app work", async ()
   }
 });
 
+test("permanently redirects consolidated difficult-edge articles without chains", async () => {
+  const worker = await loadWorker("difficult-edge-redirects");
+  const env = {
+    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    DB: {},
+  };
+  const ctx = { waitUntil() {}, passThroughOnException() {} };
+  const sources = [
+    "glass-product-photography",
+    "electronics-product-photography",
+    "jewelry-product-photography",
+    "small-product-photography",
+  ];
+
+  for (const source of sources) {
+    const response = await worker.fetch(
+      new Request(`https://edit-photo.com/en/blog/${source}`),
+      env,
+      ctx,
+    );
+    assert.equal(response.status, 308);
+    assert.equal(
+      response.headers.get("location"),
+      "https://edit-photo.com/en/blog/reflective-product-photography",
+    );
+  }
+
+  const trailingSlashResponse = await worker.fetch(
+    new Request("https://www.edit-photo.com/en/blog/glass-product-photography/?source=test"),
+    env,
+    ctx,
+  );
+  assert.equal(trailingSlashResponse.status, 308);
+  assert.equal(
+    trailingSlashResponse.headers.get("location"),
+    "https://edit-photo.com/en/blog/reflective-product-photography?source=test",
+  );
+
+  const canonicalArticleResponse = await worker.fetch(
+    new Request("https://edit-photo.com/en/blog/reflective-product-photography/"),
+    env,
+    ctx,
+  );
+  assert.equal(canonicalArticleResponse.status, 308);
+  assert.equal(
+    canonicalArticleResponse.headers.get("location"),
+    "https://edit-photo.com/en/blog/reflective-product-photography",
+  );
+});
+
 test("edge-caches only anonymous public HTML documents", async () => {
   const previousCaches = globalThis.caches;
   const storedResponses = new Map();
@@ -350,14 +400,17 @@ test("serves stable SEO discovery and locale metadata", async () => {
     sitemapXml,
     /<loc>https:\/\/edit-photo\.com\/en\/blog\/remove-background-product-photos<\/loc>[\s\S]{0,400}<lastmod>2026-09-08T00:00:00\.000Z<\/lastmod>/,
   );
-  const latestPublishedArticle = scheduledArticleManifest
+  const latestPublishedArticleAt = scheduledArticleManifest
     .filter(({ publishedAt }) => Date.parse(publishedAt) <= Date.now())
-    .at(-1);
+    .reduce((latest, article) => {
+      const lastModified = article.updatedAt ?? article.publishedAt;
+      return Date.parse(lastModified) > Date.parse(latest) ? lastModified : latest;
+    }, "1970-01-01T00:00:00.000Z");
   const englishBlogEntry = sitemapXml.slice(
     sitemapXml.indexOf("<loc>https://edit-photo.com/en/blog</loc>"),
     sitemapXml.indexOf("<loc>https://edit-photo.com/zh/blog</loc>"),
   );
-  assert.match(englishBlogEntry, new RegExp(`<lastmod>${latestPublishedArticle.publishedAt}</lastmod>`));
+  assert.match(englishBlogEntry, new RegExp(`<lastmod>${latestPublishedArticleAt}</lastmod>`));
   assert.doesNotMatch(sitemapXml, /\/auth|\/admin|\/account/);
   assert.match(pricingHtml, /rel="canonical" href="https:\/\/edit-photo\.com\/en\/pricing"/);
   assert.match(pricingHtml, /hrefLang="zh-CN" href="https:\/\/edit-photo\.com\/zh\/pricing"/);
@@ -456,6 +509,79 @@ test("renders the refreshed product-background-removal workflow", async () => {
     html,
     /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/remove-background-product-photos"/,
   );
+});
+
+test("renders the consolidated difficult-product guide and removes source URLs from discovery", async () => {
+  const [
+    articleResponse,
+    blogResponse,
+    sitemapResponse,
+    productLandingResponse,
+    transparentPngResponse,
+    amazonWhiteResponse,
+    removalGuideResponse,
+    photoTipsResponse,
+  ] = await Promise.all([
+    render("/en/blog/reflective-product-photography"),
+    render("/en/blog"),
+    render("/sitemap.xml"),
+    render("/en/product-background-remover"),
+    render("/en/transparent-png-maker"),
+    render("/en/amazon-white-background-maker"),
+    render("/en/blog/remove-background-product-photos"),
+    render("/en/blog/product-photo-tips"),
+  ]);
+  assert.equal(articleResponse.status, 200);
+  assert.equal(blogResponse.status, 200);
+  assert.equal(sitemapResponse.status, 200);
+  assert.equal(productLandingResponse.status, 200);
+  assert.equal(transparentPngResponse.status, 200);
+  assert.equal(amazonWhiteResponse.status, 200);
+  assert.equal(removalGuideResponse.status, 200);
+  assert.equal(photoTipsResponse.status, 200);
+
+  const [html, blogHtml, sitemapXml, removalGuideHtml, photoTipsHtml] = await Promise.all([
+    articleResponse.text(),
+    blogResponse.text(),
+    sitemapResponse.text(),
+    removalGuideResponse.text(),
+    photoTipsResponse.text(),
+  ]);
+  assert.match(
+    html,
+    /<title>Reflective Product Photography &amp; Background Removal Guide \| edit-photo<\/title>/,
+  );
+  assert.match(html, /<h1>How to Photograph and Remove Backgrounds from Difficult Products<\/h1>/);
+  assert.match(html, /Why difficult materials fail during background removal/);
+  assert.match(html, /Real-case evidence checklist/);
+  assert.match(html, /What edit-photo does and does not do/);
+  assert.match(html, /href="\/en\/product-background-remover"/);
+  assert.match(html, /href="\/en\/transparent-png-maker"/);
+  assert.match(html, /href="\/en\/amazon-white-background-maker"/);
+  assert.match(html, /href="\/en\/blog\/remove-background-product-photos"/);
+  assert.match(html, /"@type":"Article"/);
+  assert.match(html, /"@type":"BreadcrumbList"/);
+  assert.match(html, /"@type":"FAQPage"/);
+  assert.match(html, /"dateModified":"2026-09-23T00:00:00.000Z"/);
+  assert.match(
+    html,
+    /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/reflective-product-photography"/,
+  );
+  assert.doesNotMatch(html, /Remove any residual environmental reflections/);
+  assert.doesNotMatch(html, /Keep 20-30% of the natural reflection/);
+  assert.match(removalGuideHtml, /href="\/en\/blog\/reflective-product-photography"/);
+  assert.match(photoTipsHtml, /href="\/en\/blog\/reflective-product-photography"/);
+
+  assert.match(sitemapXml, /\/en\/blog\/reflective-product-photography/);
+  for (const source of [
+    "glass-product-photography",
+    "electronics-product-photography",
+    "jewelry-product-photography",
+    "small-product-photography",
+  ]) {
+    assert.doesNotMatch(sitemapXml, new RegExp(`/en/blog/${source}`));
+    assert.doesNotMatch(blogHtml, new RegExp(`/en/blog/${source}`));
+  }
 });
 
 test("renders signed-in account navigation and protected account page", async () => {

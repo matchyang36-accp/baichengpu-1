@@ -33,6 +33,7 @@ export const ARTICLE_CONTENT: Record<LegacyArticleId, Record<Locale, ArticleBody
           { text: "Adjust exposure so the outline stays distinct." },
           { text: "Plan for a quick manual edge touch-up after AI processing." },
         ] },
+        { kind: "internalLink", text: "For material-specific capture and edge checks,", label: "read the difficult-product background removal guide", href: "/blog/reflective-product-photography" },
         { kind: "heading", text: "6. Capture enough resolution" },
         { kind: "paragraph", text: "Start with a high-resolution original and resize later for each marketplace. Enlarging a small, blurry file cannot recover missing edge detail. On phones, check that the camera is using its full photo resolution rather than a messaging or screenshot mode." },
         { kind: "heading", text: "Summary" },

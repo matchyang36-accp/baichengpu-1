@@ -5,11 +5,13 @@ import { ARTICLE_IDS, LEGACY_ARTICLE_IDS, isLegacyArticleId } from "./article-id
 import type { LegacyArticleId } from "./article-ids";
 import type { ArticleBody, ScheduledArticle } from "./article-types";
 import { SCHEDULED_ARTICLE_BY_ID, SCHEDULED_ARTICLES } from "./scheduled-articles";
+import { isConsolidatedArticleId } from "../../shared/seo-redirects";
 
 export type ArticleView = ArticleBody & {
   id: string;
   tag: string;
   title: string;
+  heading?: string;
   description: string;
   date: string;
   publishedAt: string;
@@ -22,7 +24,7 @@ function legacyKey(articleId: string): string {
 }
 
 export function isArticleId(value: string): boolean {
-  return ARTICLE_IDS.includes(value);
+  return ARTICLE_IDS.includes(value) && !isConsolidatedArticleId(value);
 }
 
 export function getLegacyArticleUpdatedAt(articleId: LegacyArticleId, locale: Locale): string | null {
@@ -38,15 +40,17 @@ export function isScheduledArticlePublished(
 
 export function getPublishedArticleIds(locale: Locale, now = new Date()): string[] {
   const scheduled = locale === "en"
-    ? SCHEDULED_ARTICLES.filter((article) => isScheduledArticlePublished(article, now)).map(
-        (article) => article.id,
-      )
+    ? getPublishedScheduledArticles(now).map((article) => article.id)
     : [];
   return [...LEGACY_ARTICLE_IDS, ...scheduled];
 }
 
 export function getPublishedScheduledArticles(now = new Date()): ScheduledArticle[] {
-  return SCHEDULED_ARTICLES.filter((article) => isScheduledArticlePublished(article, now));
+  return SCHEDULED_ARTICLES.filter(
+    (article) =>
+      isScheduledArticlePublished(article, now) &&
+      !isConsolidatedArticleId(article.id),
+  );
 }
 
 export function getArticleView(
@@ -55,6 +59,8 @@ export function getArticleView(
   t: Translator,
   now = new Date(),
 ): ArticleView | null {
+  if (isConsolidatedArticleId(articleId)) return null;
+
   if (isLegacyArticleId(articleId)) {
     const key = legacyKey(articleId);
     const date = t(`${key}.date`);
@@ -80,6 +86,8 @@ export function getArticleView(
 }
 
 export function getArticleSummary(articleId: string, locale: Locale, t: Translator) {
+  if (isConsolidatedArticleId(articleId)) return null;
+
   if (isLegacyArticleId(articleId)) {
     const key = legacyKey(articleId);
     const body = ARTICLE_CONTENT[articleId][locale];

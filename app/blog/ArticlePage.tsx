@@ -165,7 +165,7 @@ export async function ArticlePage({ articleId }: { articleId: string }) {
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: article.title,
+    headline: article.heading ?? article.title,
     description: article.description,
     datePublished: article.publishedAt,
     dateModified: article.updatedAt ?? article.publishedAt,
@@ -252,7 +252,7 @@ export async function ArticlePage({ articleId }: { articleId: string }) {
         </nav>
         <section className="article-hero">
           <span className="eyebrow">{article.tag}</span>
-          <h1>{article.title}</h1>
+          <h1>{article.heading ?? article.title}</h1>
           <p className="article-dates">
             <time dateTime={article.publishedAt}>
               {locale === "zh" ? "发布" : "Published"} {article.date}

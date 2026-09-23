@@ -10,6 +10,7 @@ import {
   loadHttpAnalytics,
   scheduleHttpRequestStat,
 } from "./http-analytics";
+import { consolidatedArticleTarget } from "../shared/seo-redirects";
 
 interface Env {
   ASSETS: Fetcher;
@@ -194,6 +195,17 @@ function canonicalRedirect(request: Request, url: URL): Response | null {
 
   if (destination.pathname.length > 1 && destination.pathname.endsWith("/")) {
     destination.pathname = destination.pathname.replace(/\/+$/, "");
+    shouldRedirect = true;
+  }
+
+  const consolidatedArticleMatch = destination.pathname.match(
+    /^\/(?:en\/)?blog\/([^/]+)$/,
+  );
+  const consolidatedTarget = consolidatedArticleMatch
+    ? consolidatedArticleTarget(consolidatedArticleMatch[1])
+    : null;
+  if (consolidatedTarget) {
+    destination.pathname = `/en/blog/${consolidatedTarget}`;
     shouldRedirect = true;
   }
 
