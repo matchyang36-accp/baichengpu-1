@@ -4,6 +4,7 @@ export const CONSOLIDATED_ARTICLE_REDIRECTS: Readonly<Record<string, string>> = 
   "jewelry-product-photography": "reflective-product-photography",
   "small-product-photography": "reflective-product-photography",
   "amateur-amazon-product-photos": "amazon-fba-product-photos",
+  "solo-founder-photo-editing-skills": "product-photo-editing-checklist",
 };
 
 export function consolidatedArticleTarget(articleId: string): string | null {

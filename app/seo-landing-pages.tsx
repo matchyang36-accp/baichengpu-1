@@ -138,6 +138,11 @@ export const SEO_LANDING_PAGES: Record<SeoLandingPageId, LandingPageContent> = {
         href: "/blog/batch-remove-product-photo-backgrounds",
         description: "How to organize larger catalogs without losing quality control.",
       },
+      {
+        title: "Product Photo Editing Checklist",
+        href: "/blog/product-photo-editing-checklist",
+        description: "Review the complete workflow from source selection through export and listing QA.",
+      },
     ],
   },
   "amazon-white-background-maker": {

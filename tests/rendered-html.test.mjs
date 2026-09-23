@@ -304,6 +304,39 @@ test("permanently redirects the consolidated Amazon article without a chain", as
   );
 });
 
+test("permanently redirects the consolidated solo editing article without a chain", async () => {
+  const worker = await loadWorker("editing-workflow-redirect");
+  const env = {
+    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    DB: {},
+  };
+  const ctx = { waitUntil() {}, passThroughOnException() {} };
+
+  const response = await worker.fetch(
+    new Request("https://edit-photo.com/en/blog/solo-founder-photo-editing-skills"),
+    env,
+    ctx,
+  );
+  assert.equal(response.status, 308);
+  assert.equal(
+    response.headers.get("location"),
+    "https://edit-photo.com/en/blog/product-photo-editing-checklist",
+  );
+
+  const canonicalizedResponse = await worker.fetch(
+    new Request(
+      "https://www.edit-photo.com/en/blog/solo-founder-photo-editing-skills/?source=workflow",
+    ),
+    env,
+    ctx,
+  );
+  assert.equal(canonicalizedResponse.status, 308);
+  assert.equal(
+    canonicalizedResponse.headers.get("location"),
+    "https://edit-photo.com/en/blog/product-photo-editing-checklist?source=workflow",
+  );
+});
+
 test("edge-caches only anonymous public HTML documents", async () => {
   const previousCaches = globalThis.caches;
   const storedResponses = new Map();
@@ -752,6 +785,121 @@ test("renders the Amazon image suppression troubleshooting guide without recover
   ]) {
     assert.doesNotMatch(html, riskyClaim);
   }
+});
+
+test("renders the product photo editing workflow hub and removes its consolidated source", async () => {
+  const [
+    hubResponse,
+    sourceResponse,
+    blogResponse,
+    sitemapResponse,
+    productLandingResponse,
+    batchResponse,
+    transparentPngResponse,
+    amazonWhiteResponse,
+    reflectiveGuideResponse,
+    colorGuideResponse,
+    phoneGuideResponse,
+    removePersonResponse,
+  ] = await Promise.all([
+    render("/en/blog/product-photo-editing-checklist"),
+    render("/en/blog/solo-founder-photo-editing-skills"),
+    render("/en/blog"),
+    render("/sitemap.xml"),
+    render("/en/product-background-remover"),
+    render("/en/batch"),
+    render("/en/transparent-png-maker"),
+    render("/en/amazon-white-background-maker"),
+    render("/en/blog/reflective-product-photography"),
+    render("/en/blog/product-photo-color-correction"),
+    render("/en/blog/phone-product-photography"),
+    render("/en/blog/remove-person-from-photo"),
+  ]);
+  assert.equal(hubResponse.status, 200);
+  assert.equal(sourceResponse.status, 308);
+  assert.equal(
+    sourceResponse.headers.get("location"),
+    "http://localhost/en/blog/product-photo-editing-checklist",
+  );
+  for (const response of [
+    blogResponse,
+    sitemapResponse,
+    productLandingResponse,
+    batchResponse,
+    transparentPngResponse,
+    amazonWhiteResponse,
+    reflectiveGuideResponse,
+    colorGuideResponse,
+    phoneGuideResponse,
+    removePersonResponse,
+  ]) {
+    assert.equal(response.status, 200);
+  }
+
+  const [hubHtml, blogHtml, sitemapXml, productLandingHtml] = await Promise.all([
+    hubResponse.text(),
+    blogResponse.text(),
+    sitemapResponse.text(),
+    productLandingResponse.text(),
+  ]);
+  assert.match(
+    hubHtml,
+    /<title>Product Photo Editing Checklist: Ecommerce Workflow \| edit-photo<\/title>/,
+  );
+  assert.match(hubHtml, /<h1>Product Photo Editing Checklist for Ecommerce Sellers<\/h1>/);
+  assert.match(
+    hubHtml,
+    /Use a practical product photo editing workflow covering image selection, background removal/,
+  );
+  for (const heading of [
+    "Start with the best source photo",
+    "Reject photos that should be reshot",
+    "Check framing and composition",
+    "Review color and lighting",
+    "Remove the background when appropriate",
+    "Inspect difficult edges",
+    "Choose transparent PNG or white background",
+    "Check scale and consistency across the image set",
+    "Export and file checks",
+    "Marketplace and listing QA",
+    "Batch workflow for larger catalogs",
+    "When another editing tool is required",
+    "Final product photo editing checklist",
+  ]) {
+    assert.match(hubHtml, new RegExp(heading));
+  }
+  assert.match(hubHtml, /href="\/en\/product-background-remover"/);
+  assert.match(hubHtml, /href="\/en\/batch"/);
+  assert.match(hubHtml, /href="\/en\/transparent-png-maker"/);
+  assert.match(hubHtml, /href="\/en\/amazon-white-background-maker"/);
+  assert.match(hubHtml, /href="\/en\/blog\/reflective-product-photography"/);
+  assert.match(hubHtml, /href="\/en\/blog\/product-photo-color-correction"/);
+  assert.match(hubHtml, /href="\/en\/blog\/phone-product-photography"/);
+  assert.match(hubHtml, /"@type":"Article"/);
+  assert.match(hubHtml, /"@type":"BreadcrumbList"/);
+  assert.match(hubHtml, /"@type":"FAQPage"/);
+  assert.match(hubHtml, /"dateModified":"2026-09-23T00:00:00.000Z"/);
+  assert.match(
+    hubHtml,
+    /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/product-photo-editing-checklist"/,
+  );
+  for (const riskyClaim of [
+    /80% of the value/i,
+    /10x faster/i,
+    /90-Day Transformation/i,
+    /20-30% return rate reduction/i,
+    /Kill supplier watermarks/i,
+    /AI handles enough/i,
+  ]) {
+    assert.doesNotMatch(hubHtml, riskyClaim);
+  }
+
+  assert.match(sitemapXml, /\/en\/blog\/product-photo-editing-checklist/);
+  assert.doesNotMatch(sitemapXml, /\/en\/blog\/solo-founder-photo-editing-skills/);
+  assert.match(blogHtml, /\/en\/blog\/product-photo-editing-checklist/);
+  assert.doesNotMatch(blogHtml, /\/en\/blog\/solo-founder-photo-editing-skills/);
+  assert.match(productLandingHtml, /href="\/en\/blog\/product-photo-editing-checklist"/);
+  assert.match(sitemapXml, /\/en\/blog\/remove-person-from-photo/);
 });
 
 test("renders signed-in account navigation and protected account page", async () => {

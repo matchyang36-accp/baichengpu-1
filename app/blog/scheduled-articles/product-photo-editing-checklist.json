@@ -1,202 +1,316 @@
 {
   "id": "product-photo-editing-checklist",
-  "tag": "E-commerce Guide",
-  "title": "The Product Photo Editing Checklist Every E-commerce Seller Should Steal",
-  "description": "A step-by-step editing checklist for e-commerce product photos. Save this and use it for every new listing.",
+  "tag": "Ecommerce Editing Workflow",
+  "title": "Product Photo Editing Checklist: Ecommerce Workflow | edit-photo",
+  "heading": "Product Photo Editing Checklist for Ecommerce Sellers",
+  "description": "Use a practical product photo editing workflow covering image selection, background removal, edge review, export checks, and final ecommerce listing QA.",
   "targetKeyword": "product photo editing checklist",
   "publishedAt": "2026-08-20T09:00:00.000Z",
   "date": "2026-08-20",
+  "updatedAt": "2026-09-23T00:00:00.000Z",
   "reviewedBy": "edit-photo editorial team",
   "blocks": [
     {
       "kind": "paragraph",
-      "text": "Consistent photos = consistent sales. But most sellers edit each photo differently, in a different mood, on a different day. The result: a storefront that looks like a chaotic yard sale."
+      "text": "A reliable product photo editing workflow starts before background removal and ends after the exported file has been checked in its listing context. The goal is not to apply every possible edit. It is to reject weak source photos early, make only the changes the image needs, and verify that every final asset is accurate, consistent, and suitable for its destination."
     },
     {
       "kind": "paragraph",
-      "text": "Here's the checklist top sellers use for every single product photo. Bookmark this."
+      "text": "Use the same sequence for each SKU: select, diagnose, edit, inspect, export, and review. A fixed order reduces repeated decisions and makes it easier to find where a bad image entered the catalog."
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "✅ Pre-Editing Checklist"
+      "text": "Start with the best source photo"
     },
     {
       "kind": "paragraph",
-      "text": "□ Original file saved separately\nNever edit destructively. Keep raw originals in a dedicated folder."
+      "text": "Keep the original files untouched and compare the available frames before editing. Choose the sharpest image that shows the correct product, color, variant, packaging, and included items. Prefer the original camera or phone file over a screenshot, marketplace download, or repeatedly compressed copy."
     },
     {
-      "kind": "paragraph",
-      "text": "□ File resolution verified (2000px+ recommended)\nAnything smaller and you'll regret it when marketplaces demand zoom features."
-    },
-    {
-      "kind": "paragraph",
-      "text": "□ Photo is sharp and in focus\nBlurry can't be fixed. Reshoot before wasting time editing."
-    },
-    {
-      "kind": "paragraph",
-      "text": "□ Product clearly visible, not clipped\nIf parts of the product are cut off, reshoot."
-    },
-    {
-      "kind": "heading",
-      "level": 2,
-      "text": "✅ Background Editing Checklist"
-    },
-    {
-      "kind": "paragraph",
-      "text": "□ Background removed cleanly\nUse edit-photo.com for one-click AI removal. Check edges for cleanup."
+      "kind": "list",
+      "items": [
+        {
+          "label": "Confirm identity",
+          "text": "Match the image to the correct SKU, variant, bundle, and product revision."
+        },
+        {
+          "label": "Protect the source",
+          "text": "Keep an untouched original and create working files for edits and exports."
+        },
+        {
+          "label": "Choose usable detail",
+          "text": "Start from a sharp exposure with visible product edges and enough resolution for the intended channel."
+        }
+      ]
     },
     {
       "kind": "internalLink",
-      "text": "For the background-removal part of this checklist,",
-      "label": "use the product background remover workflow",
+      "text": "If the source images are being captured on a phone,",
+      "label": "review the phone product photography guide before editing",
+      "href": "/blog/phone-product-photography"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Reject photos that should be reshot"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Stop editing when the source is missing information that software cannot recover reliably. Reshoot a photo that is out of focus, heavily motion-blurred, severely clipped, blocked by an unwanted object, captured at the wrong angle, or showing the wrong product. Editing a fundamentally unusable frame adds time without restoring the missing product detail."
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "label": "Reshoot",
+          "text": "Missing product parts, wrong variant, unrepairable blur, misleading perspective, or blocked details."
+        },
+        {
+          "label": "Continue editing",
+          "text": "A valid, sharp product photo that mainly needs background isolation, edge cleanup, framing, or destination-specific export work."
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Check framing and composition"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Check that the product is complete, upright where appropriate, and photographed from an angle that serves the image role. Leave enough source space to create different crops later. Do not force every product into one universal margin: a tall bottle, a wide bag, a ring, and a furniture item need different framing decisions."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Review color and lighting"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Compare the source with the physical product or another reliable reference. Look for mixed white balance, color casts, blocked shadows, clipped highlights, screen glare, and inconsistent exposure across the set. Decide whether the source is acceptable before removing its background, because isolation can make color and lighting differences more obvious."
+    },
+    {
+      "kind": "paragraph",
+      "text": "edit-photo does not calibrate color, correct white balance, relight a product, or repair blur. Use a suitable capture or color-editing workflow when those problems need correction, then return to background removal with the corrected source."
+    },
+    {
+      "kind": "internalLink",
+      "text": "For the separate capture and review process,",
+      "label": "read the product photo color accuracy guide",
+      "href": "/blog/product-photo-color-correction"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Remove the background when appropriate"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Remove the background when the destination needs a clean cutout, a transparent master, a white-background marketplace image, or consistent catalog presentation. Keep the original photo when the environment is part of the evidence, scale, or intended lifestyle context. Background removal should support the image's job rather than become an automatic step for every file."
+    },
+    {
+      "kind": "internalLink",
+      "text": "For a single product image that needs isolation,",
+      "label": "open the product background remover",
       "href": "/product-background-remover"
     },
     {
-      "kind": "paragraph",
-      "text": "□ Consistent background across catalog\nWhite for Amazon, brand color or transparent for other platforms."
+      "kind": "heading",
+      "level": 2,
+      "text": "Inspect difficult edges"
     },
     {
       "kind": "paragraph",
-      "text": "□ No shadows from original background\nShadows imply an environment. For marketplace mains, remove them."
+      "text": "Treat the automatic cutout as a first pass. Compare it with the source at 100% zoom and inspect the outer contour, holes, handles, straps, cables, chains, mesh, glass, fur, and reflective surfaces. Look for retained background, colored halos, missing product parts, and accidental transparency. Use manual edge controls to correct the mask before export."
     },
     {
-      "kind": "paragraph",
-      "text": "□ Product centered with proper padding\n10-15% margin around all sides."
+      "kind": "internalLink",
+      "text": "For glass, jewelry, chrome, electronics, and other difficult contours,",
+      "label": "use the difficult product edge guide",
+      "href": "/blog/reflective-product-photography"
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "✅ Watermark and Branding Checklist"
+      "text": "Choose transparent PNG or white background"
     },
     {
       "kind": "paragraph",
-      "text": "□ Every image is licensed and free of unauthorized supplier marks\nRequest clean supplier originals or shoot the product yourself; do not erase ownership marks without permission."
+      "text": "Keep a transparent PNG when the product needs to be reused across storefront layouts, banners, ads, or channel-specific backgrounds. Create a separate flattened white-background export when the marketplace or image role requires white. Transparency and white pixels are different deliverables, so name and store them separately."
     },
     {
-      "kind": "paragraph",
-      "text": "□ Unwanted timestamps are resolved at the source\nUse an original without a burned-in date, or reshoot the item when accurate reconstruction is not possible."
+      "kind": "internalLink",
+      "text": "For a reusable cutout and export decision,",
+      "label": "follow the transparent PNG workflow",
+      "href": "/transparent-png-maker"
     },
     {
-      "kind": "paragraph",
-      "text": "□ Your own branding added subtly (optional)\nSmall, tasteful, not overwhelming. Corner logo max 5% of image area."
+      "kind": "internalLink",
+      "text": "For an Amazon-style main-image preparation flow,",
+      "label": "use the Amazon white background maker",
+      "href": "/amazon-white-background-maker"
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "✅ Color and Light Checklist"
+      "text": "Check scale and consistency across the image set"
     },
     {
       "kind": "paragraph",
-      "text": "□ White balance consistent across catalog\nNo mixing warm and cool tones between products."
-    },
-    {
-      "kind": "paragraph",
-      "text": "□ Product colors accurate\nThe blue in the photo should match the blue in real life. Returns for \"color not as shown\" are conversion killers."
-    },
-    {
-      "kind": "paragraph",
-      "text": "□ No blown-out highlights\nDetails in white and reflective areas should still be visible."
-    },
-    {
-      "kind": "paragraph",
-      "text": "□ Adequate contrast\nProduct should pop from background without looking artificial."
+      "text": "Review related product images together, first as thumbnails and then at full size. Check that crop logic, orientation, product scale, background treatment, and graphic style feel intentional. Consistency does not mean making every product fill the frame identically; it means applying documented rules that account for different product shapes and image roles."
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "✅ Composition Checklist"
+      "text": "Export and file checks"
     },
     {
       "kind": "paragraph",
-      "text": "□ Consistent aspect ratio across catalog\nPick 1:1 (square), 4:5, or 3:4—stick with it."
+      "text": "Export from the best working file and open the result after saving. Confirm dimensions, aspect ratio, format, transparency, color appearance, orientation, compression quality, and filename. Keep the source, transparent master, and destination exports as separate files so a marketplace version does not replace the reusable asset."
     },
     {
-      "kind": "paragraph",
-      "text": "□ Product at consistent scale\nA ring and a chair shouldn't both fill 100% of their frames. Buyers get scale confusion."
-    },
-    {
-      "kind": "paragraph",
-      "text": "□ Multiple angles captured\nFront, side, back, detail, in-use context."
+      "kind": "list",
+      "items": [
+        {
+          "label": "Source",
+          "text": "Untouched original with the captured detail preserved."
+        },
+        {
+          "label": "Master",
+          "text": "Reviewed working file or transparent cutout used to create channel variants."
+        },
+        {
+          "label": "Export",
+          "text": "A final file prepared and checked for one destination and image role."
+        }
+      ]
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "✅ Platform-Specific Requirements"
+      "text": "Marketplace and listing QA"
     },
     {
       "kind": "paragraph",
-      "text": "□ Amazon: check the current main-image requirements\nUse a pure white background where required and verify the current rules for your category before publishing."
+      "text": "Compare the final export with the current requirements for the marketplace, category, and image role. Check the product and variant, included items, background, crop, overlays, file specifications, and any category-specific restrictions. Preview the image at listing size and on a narrow screen, then verify that it remains clear without implying accessories or results that are not included."
     },
     {
       "kind": "paragraph",
-      "text": "□ Etsy: use clean and lifestyle views where they help the buyer\nUse available photo slots to answer real questions about scale, detail, packaging, and context."
-    },
-    {
-      "kind": "paragraph",
-      "text": "□ Shopify: Lifestyle context photos\nEmotion sells more than isolation on Shopify."
-    },
-    {
-      "kind": "paragraph",
-      "text": "□ Instagram/TikTok: Square + vertical versions\nNever post horizontal on mobile-first platforms."
+      "text": "Platform rules can change. Keep detailed marketplace requirements in the relevant channel guide or Seller Center instead of copying fixed numbers into a general editing workflow."
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "✅ Final Quality Check"
+      "text": "Batch workflow for larger catalogs"
     },
     {
       "kind": "paragraph",
-      "text": "□ Zoom to 100% and check edges\nFuzzy hair, jewelry chains, mesh—these are where AI sometimes leaves artifacts."
+      "text": "Standardize repeated work before increasing volume. Group photos by destination and background treatment, use predictable SKU-based filenames, process a reviewed batch, and inspect the outputs before starting the next group. Batch background removal reduces repeated uploads, but it does not remove the need to review difficult products individually."
     },
     {
-      "kind": "paragraph",
-      "text": "□ Preview on mobile\n80%+ of shoppers browse on phones. Check how it looks small."
+      "kind": "list",
+      "items": [
+        {
+          "label": "Define the batch",
+          "text": "Use one destination, naming pattern, and expected output type for the group."
+        },
+        {
+          "label": "Test representative files",
+          "text": "Include a simple edge and a difficult edge before processing the rest of the catalog group."
+        },
+        {
+          "label": "Review exceptions",
+          "text": "Separate glass, reflective, fine-detail, and failed cutouts for individual inspection."
+        },
+        {
+          "label": "Record completion",
+          "text": "Track source, output, QA status, and destination so work can resume without repeating finished items."
+        }
+      ]
     },
     {
-      "kind": "paragraph",
-      "text": "□ Compare against 2-3 competitor listings\nDoes yours look premium next to theirs? If no, revise."
+      "kind": "internalLink",
+      "text": "When the current catalog group needs repeated background removal,",
+      "label": "open the batch background remover",
+      "href": "/batch"
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "✅ Publishing Checklist"
+      "text": "When another editing tool is required"
     },
     {
       "kind": "paragraph",
-      "text": "□ Filenames use SKU convention\nSKU12345_main.jpg, SKU12345_02.jpg, etc."
+      "text": "Use edit-photo for product background removal, cutout-edge inspection and correction, transparent or background-ready exports, and the batch background-removal workflow supported by the current product. Move to an appropriate specialist tool or reshoot when the task requires color calibration, white-balance correction, blur repair, object or person removal, image generation, complex compositing, or watermark removal."
     },
     {
       "kind": "paragraph",
-      "text": "□ Alt text written for accessibility and SEO\nDescribe the product literally. \"Blue ceramic coffee mug with white handle, 12oz.\""
-    },
-    {
-      "kind": "paragraph",
-      "text": "□ Compressed for the destination without visible damage\nUse the platform's current size guidance and compare image quality before choosing a fixed file-size target."
+      "text": "Do not erase a watermark to reuse an image without permission. Obtain an authorized clean source, confirm the image rights, or create a new product photo."
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "The One-Hour Weekly Habit"
+      "text": "Final product photo editing checklist"
     },
     {
-      "kind": "paragraph",
-      "text": "Every Sunday, pick 10-20 photos from your catalog. Run them through this checklist. In 3 months, your entire store will look like it was shot by a professional team."
+      "kind": "table",
+      "caption": "Run this checklist in order for each image or catalog batch.",
+      "headers": ["Stage", "Pass condition", "Action if it fails"],
+      "rows": [
+        {
+          "cells": ["Source", "Correct product, sharp detail, complete subject, usable resolution", "Select a better source or reshoot"]
+        },
+        {
+          "cells": ["Framing", "Product is complete and the composition suits the image role", "Return to the source crop or reshoot the angle"]
+        },
+        {
+          "cells": ["Color and light", "Appearance is accurate enough for the listing workflow", "Use a capture or color-editing workflow before isolation"]
+        },
+        {
+          "cells": ["Background", "Background treatment matches the destination", "Keep the scene or create and review a cutout"]
+        },
+        {
+          "cells": ["Edges", "Contours, holes, fine parts, and transparent areas match the source", "Correct the mask manually"]
+        },
+        {
+          "cells": ["Output", "Transparent or flattened export is intentional and clearly named", "Return to the reviewed master and export again"]
+        },
+        {
+          "cells": ["Listing QA", "File matches the current channel, category, product, and image role", "Resolve the exact failed check before publishing"]
+        }
+      ]
     },
     {
-      "kind": "paragraph",
-      "text": "Start your checklist workflow free at edit-photo.com."
-    },
-    {
-      "kind": "source",
-      "text": "For image rights questions, start with the license or supplier agreement and seek qualified legal advice when needed.",
-      "label": "U.S. Copyright Office: copyright basics",
-      "href": "https://www.copyright.gov/what-is-copyright/"
+      "kind": "faq",
+      "title": "Product photo editing workflow FAQ",
+      "items": [
+        {
+          "question": "What order should I edit ecommerce product photos in?",
+          "answer": "Select and validate the source first, then review framing, color, and lighting before removing a background. Inspect edges, choose the correct output, export, and complete listing QA last."
+        },
+        {
+          "question": "When should I reshoot instead of edit?",
+          "answer": "Reshoot when the product is out of focus, severely clipped, blocked, shown as the wrong variant, or missing detail that editing cannot reconstruct accurately."
+        },
+        {
+          "question": "Should every product photo have its background removed?",
+          "answer": "No. Remove the background when the destination needs a cutout or standardized background. Keep an environmental image when context, scale, or real use is part of its purpose."
+        },
+        {
+          "question": "Can edit-photo complete every step in this checklist?",
+          "answer": "No. It supports background removal, mask-edge correction, transparent or background-ready assets, and batch background removal. It does not calibrate color, repair blur, remove objects or people, generate images, create complex composites, or remove watermarks."
+        },
+        {
+          "question": "How do I keep a large catalog editing workflow consistent?",
+          "answer": "Document the source, naming, background, crop, output, and QA rules. Process similar files in reviewed batches, separate exceptions, and keep a clear record of completed exports."
+        }
+      ]
     }
   ],
   "cta": {
-    "title": "Ready to test a product photo?",
-    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
-    "button": "Try background removal"
+    "title": "Start the background-removal stage",
+    "description": "Use a validated source photo, remove its background, inspect the cutout edge, and continue through the export and listing QA checklist.",
+    "button": "Open the background remover"
   }
 }
