@@ -700,6 +700,60 @@ test("renders the Amazon image-set hub and removes its consolidated source from 
   assert.match(suppressionHtml, /href="\/en\/blog\/amazon-fba-product-photos"/);
 });
 
+test("renders the Amazon image suppression troubleshooting guide without recovery promises", async () => {
+  const response = await render("/en/blog/amazon-image-suppression-fix");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(
+    html,
+    /<title>Amazon Listing Suppressed for Image Issues\? Troubleshooting Guide \| edit-photo<\/title>/,
+  );
+  assert.match(html, /<h1>How to Fix Amazon Listing Image Suppression<\/h1>/);
+  assert.match(
+    html,
+    /Troubleshoot Amazon listing image suppression by checking the reported image issue/,
+  );
+  for (const heading of [
+    "What image suppression means",
+    "Read the exact Seller Central reason",
+    "Confirm which image is affected",
+    "Main image background issues",
+    "Cropping and product framing",
+    "Text, logos and watermark problems",
+    "Edge and transparency issues",
+    "File and export checks",
+    "Fix and resubmit",
+    "What to do if suppression remains",
+  ]) {
+    assert.match(html, new RegExp(heading));
+  }
+  assert.match(html, /href="\/en\/amazon-white-background-maker"/);
+  assert.match(html, /href="\/en\/blog\/amazon-white-background-photo"/);
+  assert.match(html, /href="\/en\/blog\/amazon-fba-product-photos"/);
+  assert.match(html, /href="\/en\/product-background-remover"/);
+  assert.match(html, /href="\/en\/transparent-png-maker"/);
+  assert.match(html, /"@type":"Article"/);
+  assert.match(html, /"@type":"BreadcrumbList"/);
+  assert.match(html, /"@type":"FAQPage"/);
+  assert.match(html, /"dateModified":"2026-09-23T00:00:00.000Z"/);
+  assert.match(
+    html,
+    /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/amazon-image-suppression-fix"/,
+  );
+  for (const riskyClaim of [
+    /10-Minute Fix/i,
+    /95% of suppressions/i,
+    /rank collapsing hourly/i,
+    /every hour a listing is suppressed/i,
+    /10-15% margin/i,
+    /What passed in 2023 doesn't pass in 2026/i,
+    /Audit 20 listings each month/i,
+  ]) {
+    assert.doesNotMatch(html, riskyClaim);
+  }
+});
+
 test("renders signed-in account navigation and protected account page", async () => {
   const authenticatedHeaders = {
     cookie: "bcp_session=test-session-token",
