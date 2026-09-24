@@ -831,10 +831,10 @@ test("renders the product photo editing workflow hub and removes its consolidate
     reflectiveGuideResponse,
     colorGuideResponse,
     phoneGuideResponse,
-    removePersonResponse,
   ]) {
     assert.equal(response.status, 200);
   }
+  assert.equal(removePersonResponse.status, 410);
 
   const [hubHtml, blogHtml, sitemapXml, productLandingHtml] = await Promise.all([
     hubResponse.text(),
@@ -899,7 +899,7 @@ test("renders the product photo editing workflow hub and removes its consolidate
   assert.match(blogHtml, /\/en\/blog\/product-photo-editing-checklist/);
   assert.doesNotMatch(blogHtml, /\/en\/blog\/solo-founder-photo-editing-skills/);
   assert.match(productLandingHtml, /href="\/en\/blog\/product-photo-editing-checklist"/);
-  assert.match(sitemapXml, /\/en\/blog\/remove-person-from-photo/);
+  assert.doesNotMatch(sitemapXml, /\/en\/blog\/remove-person-from-photo/);
 });
 
 test("renders the product color accuracy guide without automatic correction claims", async () => {
@@ -1081,6 +1081,80 @@ test("renders the phone product photography guide without camera-equivalence cla
     /fixed revenue/i,
   ]) {
     assert.doesNotMatch(html, riskyClaim);
+  }
+});
+
+test("returns 410 for retired person-removal content and removes discovery links", async () => {
+  const [
+    retiredResponse,
+    blogResponse,
+    sitemapResponse,
+    pinterestResponse,
+    googleShoppingResponse,
+    suppressionResponse,
+  ] = await Promise.all([
+    render("/en/blog/remove-person-from-photo"),
+    render("/en/blog"),
+    render("/sitemap.xml"),
+    render("/en/blog/pinterest-product-pins"),
+    render("/en/blog/google-shopping-product-images"),
+    render("/en/blog/amazon-image-suppression-fix"),
+  ]);
+
+  assert.equal(retiredResponse.status, 410);
+  assert.equal(retiredResponse.headers.get("location"), null);
+  assert.equal(retiredResponse.headers.get("content-type"), "text/plain; charset=utf-8");
+  assert.equal(retiredResponse.headers.get("x-robots-tag"), "noindex, nofollow");
+  const retiredBody = await retiredResponse.text();
+  assert.equal(retiredBody, "Gone");
+  for (const indexingSignal of [
+    /rel="canonical"/i,
+    /"@type":"Article"/,
+    /"@type":"FAQPage"/,
+    /hreflang=/i,
+    /property="og:/i,
+    /http-equiv="refresh"/i,
+    /<script/i,
+  ]) {
+    assert.doesNotMatch(retiredBody, indexingSignal);
+  }
+
+  for (const response of [
+    blogResponse,
+    sitemapResponse,
+    pinterestResponse,
+    googleShoppingResponse,
+    suppressionResponse,
+  ]) {
+    assert.equal(response.status, 200);
+  }
+  const discoveryDocuments = await Promise.all([
+    blogResponse.text(),
+    sitemapResponse.text(),
+    pinterestResponse.text(),
+    googleShoppingResponse.text(),
+    suppressionResponse.text(),
+  ]);
+  for (const document of discoveryDocuments) {
+    assert.doesNotMatch(document, /\/en\/blog\/remove-person-from-photo/);
+  }
+
+  const relatedDocuments = discoveryDocuments.slice(2);
+  const regeneratedBlogLinks = [
+    ...new Set(
+      relatedDocuments.flatMap((document) =>
+        [...document.matchAll(/href="(\/en\/blog(?:\/[^"?#]+)?)"/g)].map(
+          (match) => match[1],
+        ),
+      ),
+    ),
+  ];
+  assert.ok(regeneratedBlogLinks.length > 0);
+  const regeneratedLinkResponses = await Promise.all(
+    regeneratedBlogLinks.map((href) => render(href)),
+  );
+  for (const response of regeneratedLinkResponses) {
+    assert.equal(response.status, 200);
   }
 });
 

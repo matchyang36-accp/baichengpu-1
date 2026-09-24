@@ -5,7 +5,10 @@ import { ARTICLE_IDS, LEGACY_ARTICLE_IDS, isLegacyArticleId } from "./article-id
 import type { LegacyArticleId } from "./article-ids";
 import type { ArticleBody, ScheduledArticle } from "./article-types";
 import { SCHEDULED_ARTICLE_BY_ID, SCHEDULED_ARTICLES } from "./scheduled-articles";
-import { isConsolidatedArticleId } from "../../shared/seo-redirects";
+import {
+  isConsolidatedArticleId,
+  isRetiredArticleId,
+} from "../../shared/seo-redirects";
 
 export type ArticleView = ArticleBody & {
   id: string;
@@ -24,7 +27,11 @@ function legacyKey(articleId: string): string {
 }
 
 export function isArticleId(value: string): boolean {
-  return ARTICLE_IDS.includes(value) && !isConsolidatedArticleId(value);
+  return (
+    ARTICLE_IDS.includes(value) &&
+    !isConsolidatedArticleId(value) &&
+    !isRetiredArticleId(value)
+  );
 }
 
 export function getLegacyArticleUpdatedAt(articleId: LegacyArticleId, locale: Locale): string | null {
@@ -49,7 +56,8 @@ export function getPublishedScheduledArticles(now = new Date()): ScheduledArticl
   return SCHEDULED_ARTICLES.filter(
     (article) =>
       isScheduledArticlePublished(article, now) &&
-      !isConsolidatedArticleId(article.id),
+      !isConsolidatedArticleId(article.id) &&
+      !isRetiredArticleId(article.id),
   );
 }
 
@@ -59,7 +67,7 @@ export function getArticleView(
   t: Translator,
   now = new Date(),
 ): ArticleView | null {
-  if (isConsolidatedArticleId(articleId)) return null;
+  if (isConsolidatedArticleId(articleId) || isRetiredArticleId(articleId)) return null;
 
   if (isLegacyArticleId(articleId)) {
     const key = legacyKey(articleId);
@@ -86,7 +94,7 @@ export function getArticleView(
 }
 
 export function getArticleSummary(articleId: string, locale: Locale, t: Translator) {
-  if (isConsolidatedArticleId(articleId)) return null;
+  if (isConsolidatedArticleId(articleId) || isRetiredArticleId(articleId)) return null;
 
   if (isLegacyArticleId(articleId)) {
     const key = legacyKey(articleId);

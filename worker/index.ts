@@ -10,7 +10,10 @@ import {
   loadHttpAnalytics,
   scheduleHttpRequestStat,
 } from "./http-analytics";
-import { consolidatedArticleTarget } from "../shared/seo-redirects";
+import {
+  consolidatedArticleTarget,
+  isRetiredArticleId,
+} from "../shared/seo-redirects";
 
 interface Env {
   ASSETS: Fetcher;
@@ -215,6 +218,22 @@ function canonicalRedirect(request: Request, url: URL): Response | null {
     headers: {
       "cache-control": "public, max-age=3600",
       location: destination.toString(),
+    },
+  });
+}
+
+function retiredContentResponse(request: Request, url: URL): Response | null {
+  if (request.method !== "GET" && request.method !== "HEAD") return null;
+
+  const articleMatch = url.pathname.match(/^\/(?:en\/)?blog\/([^/]+)$/);
+  if (!articleMatch || !isRetiredArticleId(articleMatch[1])) return null;
+
+  return new Response(request.method === "HEAD" ? null : "Gone", {
+    status: 410,
+    headers: {
+      "cache-control": "public, max-age=3600",
+      "content-type": "text/plain; charset=utf-8",
+      "x-robots-tag": "noindex, nofollow",
     },
   });
 }
@@ -1511,6 +1530,8 @@ async function handleRequest(
     const url = new URL(request.url);
     const redirectResponse = canonicalRedirect(request, url);
     if (redirectResponse) return redirectResponse;
+    const retiredResponse = retiredContentResponse(request, url);
+    if (retiredResponse) return retiredResponse;
 
     const cacheKey = publicHtmlCacheKey(request, url);
     const htmlCache = cacheKey ? defaultCache() : null;
