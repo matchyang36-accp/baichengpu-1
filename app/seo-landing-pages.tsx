@@ -338,6 +338,11 @@ export const SEO_LANDING_PAGES: Record<SeoLandingPageId, LandingPageContent> = {
         href: "/blog/remove-background-product-photos",
         description: "A complete workflow for making a reliable transparent master.",
       },
+      {
+        title: "Social Commerce Product Images",
+        href: "/blog/social-commerce-product-images",
+        description: "Reuse one reviewed cutout across TikTok, Instagram, and Pinterest layouts.",
+      },
     ],
   },
 };

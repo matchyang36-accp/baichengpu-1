@@ -5,6 +5,9 @@ export const CONSOLIDATED_ARTICLE_REDIRECTS: Readonly<Record<string, string>> = 
   "small-product-photography": "reflective-product-photography",
   "amateur-amazon-product-photos": "amazon-fba-product-photos",
   "solo-founder-photo-editing-skills": "product-photo-editing-checklist",
+  "tiktok-ads-product-photos": "social-commerce-product-images",
+  "instagram-product-photos": "social-commerce-product-images",
+  "pinterest-product-pins": "social-commerce-product-images",
 };
 
 export const RETIRED_ARTICLE_IDS: ReadonlySet<string> = new Set([

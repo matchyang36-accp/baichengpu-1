@@ -161,6 +161,12 @@
       "text": "Review related product images together, first as thumbnails and then at full size. Check that crop logic, orientation, product scale, background treatment, and graphic style feel intentional. Consistency does not mean making every product fill the frame identically; it means applying documented rules that account for different product shapes and image roles."
     },
     {
+      "kind": "internalLink",
+      "text": "When one approved cutout needs consistent derivatives for social channels,",
+      "label": "follow the social commerce image workflow",
+      "href": "/blog/social-commerce-product-images"
+    },
+    {
       "kind": "heading",
       "level": 2,
       "text": "Export and file checks"

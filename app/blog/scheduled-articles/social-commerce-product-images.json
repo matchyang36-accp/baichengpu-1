@@ -1,0 +1,242 @@
+{
+  "id": "social-commerce-product-images",
+  "tag": "Social Commerce Workflow",
+  "title": "Social Commerce Product Images: TikTok, Instagram & Pinterest | edit-photo",
+  "heading": "Social Commerce Product Images from One Reusable Cutout",
+  "description": "Create a reusable product cutout and prepare clear, consistent image assets for TikTok, Instagram, Pinterest, and other social commerce channels.",
+  "targetKeyword": "social commerce product images",
+  "publishedAt": "2026-09-24T00:00:00.000Z",
+  "date": "2026-09-24",
+  "updatedAt": "2026-09-24T00:00:00.000Z",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "Social commerce channels need product images that remain recognizable across feeds, carousels, pins, covers, and small screens. A reviewed transparent cutout gives a seller one stable product asset to reuse, while each channel-specific layout remains a separate design and publishing task."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Why one reusable master asset is useful"
+    },
+    {
+      "kind": "paragraph",
+      "text": "A transparent master separates the product from the original shooting background. That makes it easier to prepare crops and layouts without repeating background removal for every channel. Keep the approved cutout unchanged, then create copies for channel-specific work so later edits do not damage the master."
+    },
+    {
+      "kind": "internalLink",
+      "text": "If you need the reusable source asset first,",
+      "label": "follow the transparent PNG workflow",
+      "href": "/transparent-png-maker"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start with the strongest source photo"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Choose a sharp, complete view of the correct product and variant. Check that the item is not clipped, blocked by props, blurred, or distorted by an extreme camera angle. Background removal cannot recreate missing product detail, correct inaccurate color, or repair a poor source photograph."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Remove the original background"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Remove the shooting background when isolation supports the intended layout. Preserve the original file separately, because lifestyle context or scale may still be useful in another post. The cutout should represent the photographed product rather than invent a different scene."
+    },
+    {
+      "kind": "internalLink",
+      "text": "For the isolation step,",
+      "label": "open the product background remover",
+      "href": "/product-background-remover"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Inspect difficult edges"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Zoom in around handles, gaps, fine packaging, cables that belong to the product, reflective borders, and semi-transparent areas. Compare the cutout with the source, correct the mask where necessary, and check it against both light and dark temporary backgrounds. Do not erase a real product part merely to make the outline simpler."
+    },
+    {
+      "kind": "internalLink",
+      "text": "For glass, metal, jewelry, and other difficult contours,",
+      "label": "use the difficult-edge inspection guide",
+      "href": "/blog/reflective-product-photography"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Export a reusable transparent PNG"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Export PNG when the downstream design needs transparency. Open the saved file once to confirm that transparency is present, the product is complete, and the edge is clean. Keep a clear filename that identifies the product, variant, view, and approval state."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Keep one approved master asset"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Store one reviewed cutout as the master and create derivatives from copies. Record the source, product variant, approval date, and reviewer so a team can tell which file is current. This reduces accidental drift between channels and makes a future correction traceable."
+    },
+    {
+      "kind": "table",
+      "caption": "Real case-study capture plan. The repository does not yet contain a verified five-stage social-commerce image set, so these are evidence requirements rather than claimed results.",
+      "headers": ["Case", "Evidence to capture", "Pass condition"],
+      "rows": [
+        {
+          "cells": ["Simple packaged product", "Input, automatic cutout, edge review, transparent PNG, and three channel layouts", "Product identity, color, and complete outline stay consistent"]
+        },
+        {
+          "cells": ["Reflective or fine-edge product", "Source close-up, automatic mask issue, manual correction, final cutout, and final crop", "Correction is visible and no product detail is invented"]
+        },
+        {
+          "cells": ["Tall or wide product", "Master cutout plus TikTok, Instagram, and Pinterest placement examples", "Each crop stays legible without clipping important product parts"]
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Prepare TikTok product visuals"
+    },
+    {
+      "kind": "paragraph",
+      "text": "TikTok placements often favor vertical, small-screen viewing, but current requirements depend on the chosen placement and can change. Start with a clear silhouette and enough surrounding space for later cropping. A cutout can support a static product frame, cover, or end card, but edit-photo does not create video, animation, text overlays, or publish content."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Prepare Instagram feed and carousel assets"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For a feed post or carousel, keep product scale and placement consistent from slide to slide while preserving the purpose of each frame. Story and Reel covers may need different crops from feed assets. Build those layouts in a design tool, and verify the current placement specifications before export instead of assuming one size fits every surface."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Prepare Pinterest product pins"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Pinterest layouts commonly use a vertical composition. Keep the product identifiable at thumbnail size, preserve clear space for any title or supporting graphic, and avoid placing text over essential product details. edit-photo supplies the cutout; a separate design tool is required for the finished pin layout and typography."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Plan aspect ratios and cropping"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Check the current requirements for the exact channel and placement before building a derivative. Place the approved master inside a destination frame without stretching it, keep important details away from crop boundaries, and preview at the size people will actually see. Create separate files when placements need materially different compositions."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Keep branding consistent without changing the product"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use a documented system for background colors, spacing, product scale, typography, and graphic treatment. The product itself should remain faithful to the source: do not change a variant color, hide included parts, or alter proportions to force consistency. Brand consistency comes from repeatable layout decisions, not from making every channel asset identical."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Add text and graphics outside edit-photo"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use a general design or video tool for text, prices, badges, logos, campaign layouts, motion, and channel-specific templates. edit-photo does not publish to social platforms, generate campaign backgrounds, create copy, animate products, or optimize content for recommendation algorithms. Keep those tasks separate from the reviewed cutout so the master remains reusable."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Run export and channel QA"
+    },
+    {
+      "kind": "list",
+      "items": [
+        {
+          "label": "Product accuracy",
+          "text": "Confirm the correct product, variant, view, included parts, color, and edge detail."
+        },
+        {
+          "label": "Composition",
+          "text": "Preview the real placement and check crop boundaries, product scale, text clearance, and thumbnail legibility."
+        },
+        {
+          "label": "File",
+          "text": "Verify dimensions, format, transparency or flattened background, filename, and file integrity against current channel requirements."
+        },
+        {
+          "label": "Consistency",
+          "text": "Compare related assets together so background treatment, spacing, and visual hierarchy feel intentional."
+        },
+        {
+          "label": "Approval",
+          "text": "Record the approved master and derivatives instead of overwriting files without a review trail."
+        }
+      ]
+    },
+    {
+      "kind": "internalLink",
+      "text": "For the wider source-to-listing review sequence,",
+      "label": "use the product photo editing checklist",
+      "href": "/blog/product-photo-editing-checklist"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "What edit-photo can and cannot do"
+    },
+    {
+      "kind": "paragraph",
+      "text": "edit-photo can remove a product-photo background, let you inspect and correct the cutout mask, export a transparent or background-ready asset, and support the current batch background-removal workflow. It does not publish posts, edit video, animate products, add text or branded layouts, generate backgrounds, create campaign concepts, optimize platform algorithms, repair blur, calibrate color, or remove arbitrary objects and people."
+    },
+    {
+      "kind": "internalLink",
+      "text": "When a reviewed catalog group needs repeated background removal,",
+      "label": "use the batch workflow",
+      "href": "/batch"
+    },
+    {
+      "kind": "faq",
+      "title": "Social commerce product image FAQ",
+      "items": [
+        {
+          "question": "Can one transparent PNG be used on every social platform?",
+          "answer": "It can be a reusable master, but each placement may need its own crop, background, layout, format, and export settings. Check the current requirements for the exact destination."
+        },
+        {
+          "question": "Does edit-photo create TikTok videos or Instagram posts?",
+          "answer": "No. It prepares the product cutout. Use an appropriate design, video, or publishing tool for motion, text, layouts, audio, captions, and posting."
+        },
+        {
+          "question": "Should I remove the background from every social commerce image?",
+          "answer": "No. Keep a real scene when context, use, or scale is important. Use a cutout when isolation and reuse support the asset's purpose."
+        },
+        {
+          "question": "How should a team avoid inconsistent product assets?",
+          "answer": "Approve one master cutout, keep it unchanged, create named derivatives, document layout rules, and review related assets together before publishing."
+        },
+        {
+          "question": "Can background removal fix a blurry or badly lit product photo?",
+          "answer": "No. Select a stronger source or reshoot when detail, focus, lighting, or color is not adequate. Background removal only addresses separation of the subject from its background."
+        }
+      ]
+    }
+  ],
+  "cta": {
+    "title": "Create a reusable product cutout",
+    "description": "Start with the strongest source photo, remove its background, inspect the edges, and save an approved transparent master before building channel layouts.",
+    "button": "Open the background remover"
+  }
+}

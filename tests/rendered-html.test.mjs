@@ -13,11 +13,14 @@ const scheduledArticleManifest = (
 ).toSorted((left, right) => Date.parse(left.publishedAt) - Date.parse(right.publishedAt));
 
 test("keeps the complete editorial schedule deterministic", () => {
-  assert.equal(scheduledArticleManifest.length, 60);
-  assert.equal(new Set(scheduledArticleManifest.map(({ id }) => id)).size, 60);
+  assert.equal(scheduledArticleManifest.length, 61);
+  assert.equal(new Set(scheduledArticleManifest.map(({ id }) => id)).size, 61);
   const publicationTimes = scheduledArticleManifest.map(({ publishedAt }) => Date.parse(publishedAt));
   assert.ok(publicationTimes.every(Number.isFinite));
-  const dailyCounts = scheduledArticleManifest.reduce((counts, { date }) => {
+  const originalEditorialSchedule = scheduledArticleManifest.filter(
+    ({ id }) => id !== "social-commerce-product-images",
+  );
+  const dailyCounts = originalEditorialSchedule.reduce((counts, { date }) => {
     counts[date] = (counts[date] ?? 0) + 1;
     return counts;
   }, {});
@@ -26,12 +29,12 @@ test("keeps the complete editorial schedule deterministic", () => {
   assert.equal(scheduledArticleManifest[0].publishedAt, "2026-08-16T01:00:00.000Z");
   assert.equal(scheduledArticleManifest[9].publishedAt, "2026-08-20T09:00:00.000Z");
   assert.equal(scheduledArticleManifest[10].publishedAt, "2026-08-21T01:00:00.000Z");
-  assert.equal(scheduledArticleManifest.at(-1).publishedAt, "2026-09-14T09:00:00.000Z");
+  assert.equal(scheduledArticleManifest.at(-1).publishedAt, "2026-09-24T00:00:00.000Z");
   assert.deepEqual(publicationTimes, publicationTimes.toSorted((a, b) => a - b));
 });
 
 test("schedules the second English series twice daily for 25 days", () => {
-  const secondSeries = scheduledArticleManifest.slice(10);
+  const secondSeries = scheduledArticleManifest.slice(10, 60);
   assert.equal(secondSeries.length, 50);
   const expectedDates = Array.from({ length: 25 }, (_, index) => {
     const value = new Date(Date.UTC(2026, 7, 21 + index));
@@ -334,6 +337,46 @@ test("permanently redirects the consolidated solo editing article without a chai
   assert.equal(
     canonicalizedResponse.headers.get("location"),
     "https://edit-photo.com/en/blog/product-photo-editing-checklist?source=workflow",
+  );
+});
+
+test("permanently redirects consolidated social-commerce articles without chains", async () => {
+  const worker = await loadWorker("social-commerce-redirects");
+  const env = {
+    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    DB: {},
+  };
+  const ctx = { waitUntil() {}, passThroughOnException() {} };
+  const sources = [
+    "tiktok-ads-product-photos",
+    "instagram-product-photos",
+    "pinterest-product-pins",
+  ];
+
+  for (const source of sources) {
+    const response = await worker.fetch(
+      new Request(`https://edit-photo.com/en/blog/${source}`),
+      env,
+      ctx,
+    );
+    assert.equal(response.status, 308);
+    assert.equal(
+      response.headers.get("location"),
+      "https://edit-photo.com/en/blog/social-commerce-product-images",
+    );
+  }
+
+  const canonicalizedResponse = await worker.fetch(
+    new Request(
+      "https://www.edit-photo.com/en/blog/pinterest-product-pins/?source=social-audit",
+    ),
+    env,
+    ctx,
+  );
+  assert.equal(canonicalizedResponse.status, 308);
+  assert.equal(
+    canonicalizedResponse.headers.get("location"),
+    "https://edit-photo.com/en/blog/social-commerce-product-images?source=social-audit",
   );
 });
 
@@ -1084,19 +1127,175 @@ test("renders the phone product photography guide without camera-equivalence cla
   }
 });
 
+test("renders the social-commerce hub and removes consolidated sources from discovery", async () => {
+  const [
+    articleResponse,
+    tiktokAdsResponse,
+    instagramResponse,
+    pinterestResponse,
+    tiktokShopResponse,
+    blogResponse,
+    sitemapResponse,
+    transparentPngResponse,
+    checklistResponse,
+    productRemoverResponse,
+    batchResponse,
+    reflectiveGuideResponse,
+  ] = await Promise.all([
+    render("/en/blog/social-commerce-product-images"),
+    render("/en/blog/tiktok-ads-product-photos"),
+    render("/en/blog/instagram-product-photos"),
+    render("/en/blog/pinterest-product-pins"),
+    render("/en/blog/tiktok-shop-product-photos"),
+    render("/en/blog"),
+    render("/sitemap.xml"),
+    render("/en/transparent-png-maker"),
+    render("/en/blog/product-photo-editing-checklist"),
+    render("/en/product-background-remover"),
+    render("/en/batch"),
+    render("/en/blog/reflective-product-photography"),
+  ]);
+
+  assert.equal(articleResponse.status, 200);
+  for (const response of [tiktokAdsResponse, instagramResponse, pinterestResponse]) {
+    assert.equal(response.status, 308);
+    assert.equal(
+      response.headers.get("location"),
+      "http://localhost/en/blog/social-commerce-product-images",
+    );
+  }
+  for (const response of [
+    tiktokShopResponse,
+    blogResponse,
+    sitemapResponse,
+    transparentPngResponse,
+    checklistResponse,
+    productRemoverResponse,
+    batchResponse,
+    reflectiveGuideResponse,
+  ]) {
+    assert.equal(response.status, 200);
+  }
+
+  const [html, blogHtml, sitemapXml, transparentPngHtml, checklistHtml] =
+    await Promise.all([
+      articleResponse.text(),
+      blogResponse.text(),
+      sitemapResponse.text(),
+      transparentPngResponse.text(),
+      checklistResponse.text(),
+    ]);
+  assert.match(
+    html,
+    /<title>Social Commerce Product Images: TikTok, Instagram &amp; Pinterest \| edit-photo<\/title>/,
+  );
+  assert.match(html, /<h1>Social Commerce Product Images from One Reusable Cutout<\/h1>/);
+  assert.match(
+    html,
+    /Create a reusable product cutout and prepare clear, consistent image assets for TikTok/,
+  );
+  for (const heading of [
+    "Why one reusable master asset is useful",
+    "Start with the strongest source photo",
+    "Remove the original background",
+    "Inspect difficult edges",
+    "Export a reusable transparent PNG",
+    "Keep one approved master asset",
+    "Prepare TikTok product visuals",
+    "Prepare Instagram feed and carousel assets",
+    "Prepare Pinterest product pins",
+    "Plan aspect ratios and cropping",
+    "Keep branding consistent without changing the product",
+    "Add text and graphics outside edit-photo",
+    "Run export and channel QA",
+    "What edit-photo can and cannot do",
+  ]) {
+    assert.match(html, new RegExp(heading));
+  }
+  assert.match(html, /Real case-study capture plan/);
+  assert.match(html, /evidence requirements rather than claimed results/);
+  assert.match(html, /href="\/en\/transparent-png-maker"/);
+  assert.match(html, /href="\/en\/product-background-remover"/);
+  assert.match(html, /href="\/en\/blog\/product-photo-editing-checklist"/);
+  assert.match(html, /href="\/en\/batch"/);
+  assert.match(html, /href="\/en\/blog\/reflective-product-photography"/);
+  assert.match(html, /"@type":"Article"/);
+  assert.match(html, /"@type":"BreadcrumbList"/);
+  assert.match(html, /"@type":"FAQPage"/);
+  assert.equal((html.match(/"@type":"Question"/g) ?? []).length, 5);
+  assert.equal((html.match(/<details/g) ?? []).length, 5);
+  assert.match(html, /"dateModified":"2026-09-24T00:00:00.000Z"/);
+  assert.match(
+    html,
+    /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/social-commerce-product-images"/,
+  );
+  assert.match(
+    html,
+    /hrefLang="en" href="https:\/\/edit-photo\.com\/en\/blog\/social-commerce-product-images"/,
+  );
+  assert.match(
+    html,
+    /hrefLang="x-default" href="https:\/\/edit-photo\.com\/en\/blog\/social-commerce-product-images"/,
+  );
+  assert.match(html, /does not publish to social platforms/);
+  assert.match(html, /does not create video, animation, text overlays, or publish content/);
+  for (const riskyClaim of [
+    /highest CPM/i,
+    /algorithm deprioritizes/i,
+    /3-7 days/i,
+    /24\+ months/i,
+    /5-10 pins per week/i,
+    /guarantee.{0,30}(reach|ranking|conversion)/i,
+    /fixed conversion/i,
+    /fixed revenue/i,
+  ]) {
+    assert.doesNotMatch(html, riskyClaim);
+  }
+
+  assert.match(sitemapXml, /\/en\/blog\/social-commerce-product-images/);
+  assert.match(sitemapXml, /\/en\/blog\/tiktok-shop-product-photos/);
+  assert.match(blogHtml, /\/en\/blog\/social-commerce-product-images/);
+  assert.match(transparentPngHtml, /href="\/en\/blog\/social-commerce-product-images"/);
+  assert.match(checklistHtml, /href="\/en\/blog\/social-commerce-product-images"/);
+  for (const source of [
+    "tiktok-ads-product-photos",
+    "instagram-product-photos",
+    "pinterest-product-pins",
+  ]) {
+    assert.doesNotMatch(sitemapXml, new RegExp(`/en/blog/${source}`));
+    assert.doesNotMatch(blogHtml, new RegExp(`/en/blog/${source}`));
+    assert.doesNotMatch(html, new RegExp(`/en/blog/${source}`));
+  }
+
+  const articleBlogLinks = [
+    ...new Set(
+      [...html.matchAll(/href="(\/en\/blog(?:\/[^"?#]+)?)"/g)].map(
+        (match) => match[1],
+      ),
+    ),
+  ];
+  assert.ok(articleBlogLinks.length > 0);
+  const articleBlogLinkResponses = await Promise.all(
+    articleBlogLinks.map((href) => render(href)),
+  );
+  for (const response of articleBlogLinkResponses) {
+    assert.equal(response.status, 200);
+  }
+});
+
 test("returns 410 for retired person-removal content and removes discovery links", async () => {
   const [
     retiredResponse,
     blogResponse,
     sitemapResponse,
-    pinterestResponse,
+    socialCommerceResponse,
     googleShoppingResponse,
     suppressionResponse,
   ] = await Promise.all([
     render("/en/blog/remove-person-from-photo"),
     render("/en/blog"),
     render("/sitemap.xml"),
-    render("/en/blog/pinterest-product-pins"),
+    render("/en/blog/social-commerce-product-images"),
     render("/en/blog/google-shopping-product-images"),
     render("/en/blog/amazon-image-suppression-fix"),
   ]);
@@ -1122,7 +1321,7 @@ test("returns 410 for retired person-removal content and removes discovery links
   for (const response of [
     blogResponse,
     sitemapResponse,
-    pinterestResponse,
+    socialCommerceResponse,
     googleShoppingResponse,
     suppressionResponse,
   ]) {
@@ -1131,7 +1330,7 @@ test("returns 410 for retired person-removal content and removes discovery links
   const discoveryDocuments = await Promise.all([
     blogResponse.text(),
     sitemapResponse.text(),
-    pinterestResponse.text(),
+    socialCommerceResponse.text(),
     googleShoppingResponse.text(),
     suppressionResponse.text(),
   ]);
