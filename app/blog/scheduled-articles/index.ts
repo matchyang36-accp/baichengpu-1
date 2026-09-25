@@ -59,6 +59,7 @@ import seriesTwo58 from "./product-photo-color-variants.json";
 import seriesTwo59 from "./amateur-amazon-product-photos.json";
 import seriesTwo60 from "./timeless-product-photography.json";
 import socialCommerceProductImages from "./social-commerce-product-images.json";
+import apparelProductPhotoWorkflow from "./apparel-product-photo-workflow.json";
 import type { ScheduledArticle } from "../article-types";
 
 export const SCHEDULED_ARTICLES = [
@@ -123,6 +124,7 @@ export const SCHEDULED_ARTICLES = [
   seriesTwo59,
   seriesTwo60,
   socialCommerceProductImages,
+  apparelProductPhotoWorkflow,
 ] as ScheduledArticle[];
 
 function validateSchedule(articles: ScheduledArticle[]): void {

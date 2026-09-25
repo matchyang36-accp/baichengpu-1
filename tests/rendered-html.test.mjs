@@ -13,12 +13,15 @@ const scheduledArticleManifest = (
 ).toSorted((left, right) => Date.parse(left.publishedAt) - Date.parse(right.publishedAt));
 
 test("keeps the complete editorial schedule deterministic", () => {
-  assert.equal(scheduledArticleManifest.length, 61);
-  assert.equal(new Set(scheduledArticleManifest.map(({ id }) => id)).size, 61);
+  assert.equal(scheduledArticleManifest.length, 62);
+  assert.equal(new Set(scheduledArticleManifest.map(({ id }) => id)).size, 62);
   const publicationTimes = scheduledArticleManifest.map(({ publishedAt }) => Date.parse(publishedAt));
   assert.ok(publicationTimes.every(Number.isFinite));
   const originalEditorialSchedule = scheduledArticleManifest.filter(
-    ({ id }) => id !== "social-commerce-product-images",
+    ({ id }) => ![
+      "social-commerce-product-images",
+      "apparel-product-photo-workflow",
+    ].includes(id),
   );
   const dailyCounts = originalEditorialSchedule.reduce((counts, { date }) => {
     counts[date] = (counts[date] ?? 0) + 1;
@@ -29,7 +32,7 @@ test("keeps the complete editorial schedule deterministic", () => {
   assert.equal(scheduledArticleManifest[0].publishedAt, "2026-08-16T01:00:00.000Z");
   assert.equal(scheduledArticleManifest[9].publishedAt, "2026-08-20T09:00:00.000Z");
   assert.equal(scheduledArticleManifest[10].publishedAt, "2026-08-21T01:00:00.000Z");
-  assert.equal(scheduledArticleManifest.at(-1).publishedAt, "2026-09-24T00:00:00.000Z");
+  assert.equal(scheduledArticleManifest.at(-1).publishedAt, "2026-09-25T00:00:00.000Z");
   assert.deepEqual(publicationTimes, publicationTimes.toSorted((a, b) => a - b));
 });
 
@@ -377,6 +380,45 @@ test("permanently redirects consolidated social-commerce articles without chains
   assert.equal(
     canonicalizedResponse.headers.get("location"),
     "https://edit-photo.com/en/blog/social-commerce-product-images?source=social-audit",
+  );
+});
+
+test("permanently redirects consolidated apparel articles without chains", async () => {
+  const worker = await loadWorker("apparel-workflow-redirects");
+  const env = {
+    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    DB: {},
+  };
+  const ctx = { waitUntil() {}, passThroughOnException() {} };
+  const sources = [
+    "poshmark-depop-product-photos",
+    "ghost-mannequin-photo-effect",
+  ];
+
+  for (const source of sources) {
+    const response = await worker.fetch(
+      new Request(`https://edit-photo.com/en/blog/${source}`),
+      env,
+      ctx,
+    );
+    assert.equal(response.status, 308);
+    assert.equal(
+      response.headers.get("location"),
+      "https://edit-photo.com/en/blog/apparel-product-photo-workflow",
+    );
+  }
+
+  const canonicalizedResponse = await worker.fetch(
+    new Request(
+      "https://www.edit-photo.com/en/blog/ghost-mannequin-photo-effect/?source=apparel-audit",
+    ),
+    env,
+    ctx,
+  );
+  assert.equal(canonicalizedResponse.status, 308);
+  assert.equal(
+    canonicalizedResponse.headers.get("location"),
+    "https://edit-photo.com/en/blog/apparel-product-photo-workflow?source=apparel-audit",
   );
 });
 
@@ -1261,6 +1303,179 @@ test("renders the social-commerce hub and removes consolidated sources from disc
     "tiktok-ads-product-photos",
     "instagram-product-photos",
     "pinterest-product-pins",
+  ]) {
+    assert.doesNotMatch(sitemapXml, new RegExp(`/en/blog/${source}`));
+    assert.doesNotMatch(blogHtml, new RegExp(`/en/blog/${source}`));
+    assert.doesNotMatch(html, new RegExp(`/en/blog/${source}`));
+  }
+
+  const articleBlogLinks = [
+    ...new Set(
+      [...html.matchAll(/href="(\/en\/blog(?:\/[^"?#]+)?)"/g)].map(
+        (match) => match[1],
+      ),
+    ),
+  ];
+  assert.ok(articleBlogLinks.length > 0);
+  const articleBlogLinkResponses = await Promise.all(
+    articleBlogLinks.map((href) => render(href)),
+  );
+  for (const response of articleBlogLinkResponses) {
+    assert.equal(response.status, 200);
+  }
+});
+
+test("renders the apparel workflow hub and removes consolidated sources from discovery", async () => {
+  const [
+    articleResponse,
+    poshmarkResponse,
+    ghostResponse,
+    blogResponse,
+    sitemapResponse,
+    productRemoverResponse,
+    transparentPngResponse,
+    checklistResponse,
+    batchResponse,
+    reflectiveGuideResponse,
+    colorGuideResponse,
+    phoneGuideResponse,
+  ] = await Promise.all([
+    render("/en/blog/apparel-product-photo-workflow"),
+    render("/en/blog/poshmark-depop-product-photos"),
+    render("/en/blog/ghost-mannequin-photo-effect"),
+    render("/en/blog"),
+    render("/sitemap.xml"),
+    render("/en/product-background-remover"),
+    render("/en/transparent-png-maker"),
+    render("/en/blog/product-photo-editing-checklist"),
+    render("/en/batch"),
+    render("/en/blog/reflective-product-photography"),
+    render("/en/blog/product-photo-color-correction"),
+    render("/en/blog/phone-product-photography"),
+  ]);
+
+  assert.equal(articleResponse.status, 200);
+  for (const response of [poshmarkResponse, ghostResponse]) {
+    assert.equal(response.status, 308);
+    assert.equal(
+      response.headers.get("location"),
+      "http://localhost/en/blog/apparel-product-photo-workflow",
+    );
+  }
+  for (const response of [
+    blogResponse,
+    sitemapResponse,
+    productRemoverResponse,
+    transparentPngResponse,
+    checklistResponse,
+    batchResponse,
+    reflectiveGuideResponse,
+    colorGuideResponse,
+    phoneGuideResponse,
+  ]) {
+    assert.equal(response.status, 200);
+  }
+
+  const [
+    html,
+    blogHtml,
+    sitemapXml,
+    productRemoverHtml,
+    transparentPngHtml,
+    checklistHtml,
+  ] = await Promise.all([
+    articleResponse.text(),
+    blogResponse.text(),
+    sitemapResponse.text(),
+    productRemoverResponse.text(),
+    transparentPngResponse.text(),
+    checklistResponse.text(),
+  ]);
+  assert.match(
+    html,
+    /<title>Apparel Product Photo Workflow for Ecommerce Listings \| edit-photo<\/title>/,
+  );
+  assert.match(
+    html,
+    /<h1>Apparel Product Photo Workflow for Clean, Consistent Listings<\/h1>/,
+  );
+  assert.match(
+    html,
+    /Prepare clothing product photos with clean backgrounds, accurate condition details/,
+  );
+  for (const heading of [
+    "What an apparel image set should accomplish",
+    "Plan the clothing shot list",
+    "Choose flat lay, hanger, mannequin, or model",
+    "Keep framing and background consistent",
+    "Remove backgrounds only when appropriate",
+    "Review lace, fringe, mesh, and transparent fabric",
+    "Photograph tags, labels, and materials",
+    "Show defects and condition honestly",
+    "Separate new-apparel and secondhand workflows",
+    "Prepare Poshmark and Depop listing images",
+    "Understand what a real ghost-mannequin workflow requires",
+    "What edit-photo can and cannot do",
+    "Run export and listing QA",
+    "Final apparel product photo checklist",
+  ]) {
+    assert.match(html, new RegExp(heading));
+  }
+  assert.match(html, /Future apparel case-study capture plan/);
+  assert.match(html, /required evidence rather than claimed results/);
+  for (const href of [
+    "/en/product-background-remover",
+    "/en/transparent-png-maker",
+    "/en/blog/product-photo-editing-checklist",
+    "/en/batch",
+    "/en/blog/reflective-product-photography",
+    "/en/blog/product-photo-color-correction",
+    "/en/blog/phone-product-photography",
+  ]) {
+    assert.match(html, new RegExp(`href="${href}"`));
+  }
+  assert.match(html, /"@type":"Article"/);
+  assert.match(html, /"@type":"BreadcrumbList"/);
+  assert.match(html, /"@type":"FAQPage"/);
+  assert.equal((html.match(/"@type":"Question"/g) ?? []).length, 5);
+  assert.equal((html.match(/<details/g) ?? []).length, 5);
+  assert.match(html, /"dateModified":"2026-09-25T00:00:00.000Z"/);
+  assert.match(
+    html,
+    /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/apparel-product-photo-workflow"/,
+  );
+  assert.match(
+    html,
+    /hrefLang="en" href="https:\/\/edit-photo\.com\/en\/blog\/apparel-product-photo-workflow"/,
+  );
+  assert.match(
+    html,
+    /hrefLang="x-default" href="https:\/\/edit-photo\.com\/en\/blog\/apparel-product-photo-workflow"/,
+  );
+  assert.match(html, /does not automatically create a ghost-mannequin composite/);
+  assert.match(html, /cannot reveal fabric that was never photographed/);
+  for (const riskyClaim of [
+    /sell in 24 hours/i,
+    /sit for six months/i,
+    /mostly 18-35/i,
+    /Flat lay clothing photos are dead/i,
+    /nearly indistinguishable from expensive ghost mannequin/i,
+    /rivals major brands/i,
+    /guaranteed exposure/i,
+    /fixed conversion/i,
+    /fixed revenue/i,
+  ]) {
+    assert.doesNotMatch(html, riskyClaim);
+  }
+
+  assert.match(sitemapXml, /\/en\/blog\/apparel-product-photo-workflow/);
+  assert.match(blogHtml, /\/en\/blog\/apparel-product-photo-workflow/);
+  assert.match(productRemoverHtml, /href="\/en\/blog\/apparel-product-photo-workflow"/);
+  assert.match(transparentPngHtml, /href="\/en\/blog\/apparel-product-photo-workflow"/);
+  assert.match(checklistHtml, /href="\/en\/blog\/apparel-product-photo-workflow"/);
+  for (const source of [
+    "poshmark-depop-product-photos",
+    "ghost-mannequin-photo-effect",
   ]) {
     assert.doesNotMatch(sitemapXml, new RegExp(`/en/blog/${source}`));
     assert.doesNotMatch(blogHtml, new RegExp(`/en/blog/${source}`));

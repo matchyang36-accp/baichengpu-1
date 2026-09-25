@@ -8,6 +8,8 @@ export const CONSOLIDATED_ARTICLE_REDIRECTS: Readonly<Record<string, string>> = 
   "tiktok-ads-product-photos": "social-commerce-product-images",
   "instagram-product-photos": "social-commerce-product-images",
   "pinterest-product-pins": "social-commerce-product-images",
+  "poshmark-depop-product-photos": "apparel-product-photo-workflow",
+  "ghost-mannequin-photo-effect": "apparel-product-photo-workflow",
 };
 
 export const RETIRED_ARTICLE_IDS: ReadonlySet<string> = new Set([

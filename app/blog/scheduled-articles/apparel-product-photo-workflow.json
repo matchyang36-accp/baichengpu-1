@@ -1,0 +1,238 @@
+{
+  "id": "apparel-product-photo-workflow",
+  "tag": "Apparel Image Workflow",
+  "title": "Apparel Product Photo Workflow for Ecommerce Listings | edit-photo",
+  "heading": "Apparel Product Photo Workflow for Clean, Consistent Listings",
+  "description": "Prepare clothing product photos with clean backgrounds, accurate condition details, consistent framing, careful fabric-edge review, and ecommerce listing QA.",
+  "targetKeyword": "apparel product photo workflow",
+  "publishedAt": "2026-09-25T00:00:00.000Z",
+  "date": "2026-09-25",
+  "updatedAt": "2026-09-25T00:00:00.000Z",
+  "reviewedBy": "edit-photo editorial team",
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "A useful apparel listing needs more than one polished hero image. Buyers also need an accurate view of shape, fabric, labels, construction, fit context, and condition. Build the image set as a sequence, then use background removal only where isolation improves clarity without hiding evidence."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "What an apparel image set should accomplish"
+    },
+    {
+      "kind": "paragraph",
+      "text": "The set should identify the exact garment, show its front and back, preserve color and texture, explain construction, provide useful scale or fit context, and disclose condition. The main image should be easy to scan, while supporting images answer questions that a clean cutout cannot answer alone."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Plan the clothing shot list"
+    },
+    {
+      "kind": "list",
+      "items": [
+        { "label": "Core views", "text": "Capture front and back views, plus side or interior views when they explain the garment." },
+        { "label": "Construction", "text": "Photograph closures, pockets, seams, cuffs, neckline, lining, and distinctive details." },
+        { "label": "Identification", "text": "Include the brand label, care label, material information, and size label when relevant and permitted." },
+        { "label": "Condition", "text": "Record wear, stains, repairs, pilling, fading, missing parts, or other defects clearly." }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Choose flat lay, hanger, mannequin, or model"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Flat lays show overall shape without support but may flatten drape. Hangers are efficient but can distort shoulders or remain visible. Mannequins help communicate structure, while model photos show fit and scale but introduce pose, styling, privacy, and usage-right considerations. Select the method according to the garment and image role rather than treating one method as universally superior."
+    },
+    {
+      "kind": "internalLink",
+      "text": "When a phone is the practical capture tool,",
+      "label": "use the phone product photography guide",
+      "href": "/blog/phone-product-photography"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Keep framing and background consistent"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Mark the camera position, garment center, and crop boundaries for repeatable sessions. Keep lighting and background treatment stable across related items, but allow enough space for different garment shapes. Consistency should make comparison easier without cropping sleeves, hems, straps, or accessories that belong to the item."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Remove backgrounds only when appropriate"
+    },
+    {
+      "kind": "paragraph",
+      "text": "A clean cutout can standardize a main listing image or create a reusable transparent asset. Keep the original scene when it provides fit, styling, scale, or condition evidence. Background removal does not remove wrinkles, correct inaccurate color, reconstruct hidden fabric, or replace the need for supporting photos."
+    },
+    {
+      "kind": "internalLink",
+      "text": "For a garment image that benefits from isolation,",
+      "label": "open the product background remover",
+      "href": "/product-background-remover"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Review lace, fringe, mesh, and transparent fabric"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Inspect lace openings, mesh transparency, fringe, tassels, loose fibers, straps, and gaps between garment parts at high zoom. Compare the result with the source and test it over light and dark temporary backgrounds. Correct the mask where the cutout removes real fabric or retains the shooting background."
+    },
+    {
+      "kind": "internalLink",
+      "text": "For a broader method for checking transparent and fine edges,",
+      "label": "see the difficult-product edge guide",
+      "href": "/blog/reflective-product-photography"
+    },
+    {
+      "kind": "table",
+      "caption": "Future apparel case-study capture plan. The repository does not yet contain verified source-to-export clothing examples, so these rows define required evidence rather than claimed results.",
+      "headers": ["Case", "Evidence to capture", "Pass condition"],
+      "rows": [
+        { "cells": ["T-shirt or shirt", "Original image, automatic cutout, edge review, manual correction, transparent PNG, and white-background export", "Neckline, sleeves, hem, and garment shape remain complete"] },
+        { "cells": ["Lace, fringe, or mesh garment", "Source close-up, failed edge area, correction detail, and final export on light and dark checks", "Openings and fine fibers match the photographed garment without invented detail"] }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Photograph tags, labels, and materials"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use supporting close-ups for brand, size, fiber content, care information, texture, stitching, and hardware. Keep text readable and photograph the actual garment. A label photo supports identification; it should not replace a clear overall view or written listing details."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Show defects and condition honestly"
+    },
+    {
+      "kind": "paragraph",
+      "text": "For secondhand apparel, photograph each meaningful defect in context and close-up. Do not remove stains, repairs, wear, or missing details from the image to make the item appear newer. Clean presentation and honest condition evidence serve different purposes and should both be present."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Separate new-apparel and secondhand workflows"
+    },
+    {
+      "kind": "paragraph",
+      "text": "New apparel workflows often prioritize consistency across variants, accurate color, construction, packaging, and repeatable catalog views. Secondhand listings need item-specific condition, measurements, alterations, wear, and label evidence. Do not reuse a generic image when the exact item's condition matters."
+    },
+    {
+      "kind": "internalLink",
+      "text": "When color consistency across apparel variants matters,",
+      "label": "review the product color accuracy guide",
+      "href": "/blog/product-photo-color-correction"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Prepare Poshmark and Depop listing images"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use a clear lead image followed by back, detail, label, measurement or fit-context, and condition views in a logical order. Check each platform's current image and listing requirements before export. Do not rely on unsupported assumptions about buyer demographics, platform algorithms, or a fixed number of images."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Understand what a real ghost-mannequin workflow requires"
+    },
+    {
+      "kind": "paragraph",
+      "text": "A genuine invisible-mannequin composite normally requires a carefully styled main photograph plus separate images of areas hidden by the mannequin or model, such as the inside neckline. A retoucher then aligns and composites those captures. Removing the outer background from one hanger or mannequin photo can create a clean floating garment, but it cannot reveal fabric that was never photographed."
+    },
+    {
+      "kind": "list",
+      "items": [
+        { "label": "Capture", "text": "Photograph the supported garment and the hidden interior areas needed for the final composite." },
+        { "label": "Isolation", "text": "Create reviewed masks for the visible garment and any separately photographed inserts." },
+        { "label": "Composite", "text": "Use a dedicated retouching or compositing tool to align layers, reconstruct the view from real captures, and finish the interior transition." },
+        { "label": "QA", "text": "Check shape, symmetry, seams, neckline, shadows, and fabric continuity against the source photographs." }
+      ]
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "What edit-photo can and cannot do"
+    },
+    {
+      "kind": "paragraph",
+      "text": "edit-photo can remove a garment-photo background, let you inspect and correct cutout edges, export transparent or background-ready assets, and support the current batch background-removal workflow. It does not automatically create a ghost-mannequin composite, reconstruct a neckline, invent hidden fabric, remove a model while preserving covered garment areas, perform inpainting, repair wrinkles, or generate an on-model result."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use a specialist retouching or compositing workflow when the task requires neck reconstruction, invisible-mannequin compositing, full garment reconstruction, or model removal with hidden-fabric recovery. Those tasks require additional source images, manual judgment, or tools beyond background removal."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Run export and listing QA"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Choose transparent PNG when the cutout must remain reusable, or create a separate flattened background file when the destination requires it. Verify garment completeness, edge quality, color, crop, image sequence, filename, dimensions, format, and current marketplace requirements before publishing."
+    },
+    {
+      "kind": "internalLink",
+      "text": "For the transparent master and export decision,",
+      "label": "follow the transparent PNG workflow",
+      "href": "/transparent-png-maker"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Final apparel product photo checklist"
+    },
+    {
+      "kind": "table",
+      "caption": "Review the complete apparel image set before publishing.",
+      "headers": ["Check", "Pass condition", "Action if it fails"],
+      "rows": [
+        { "cells": ["Identity", "Correct item, size, color, labels, and included parts", "Reshoot the exact garment or correct the listing"] },
+        { "cells": ["Coverage", "Front, back, construction, material, fit or scale, and condition are adequately shown", "Add the missing source photographs"] },
+        { "cells": ["Background", "Each image intentionally keeps context or uses a reviewed cutout", "Return to the source or correct the mask"] },
+        { "cells": ["Edges", "Lace, mesh, fringe, straps, and openings match the source", "Inspect and correct difficult areas manually"] },
+        { "cells": ["Condition", "Wear and defects are visible and not misleadingly edited", "Add honest context and close-up views"] },
+        { "cells": ["Export", "Sequence, crop, format, dimensions, and filenames match the destination", "Export again from the approved master"] }
+      ]
+    },
+    {
+      "kind": "internalLink",
+      "text": "For the wider source-to-listing process,",
+      "label": "use the product photo editing checklist",
+      "href": "/blog/product-photo-editing-checklist"
+    },
+    {
+      "kind": "internalLink",
+      "text": "When a reviewed apparel catalog needs repeated background removal,",
+      "label": "use the batch workflow",
+      "href": "/batch"
+    },
+    {
+      "kind": "faq",
+      "title": "Apparel product photo workflow FAQ",
+      "items": [
+        { "question": "Should every clothing listing use a removed background?", "answer": "No. A cutout can standardize a main image, while model, fit, scale, styling, and condition photos often need their original context." },
+        { "question": "Can edit-photo create a ghost-mannequin effect from one photo?", "answer": "It can isolate the visible garment, but it cannot reconstruct areas hidden by a mannequin or model. A true ghost-mannequin composite normally needs additional captures and dedicated compositing." },
+        { "question": "How should lace or mesh be checked after background removal?", "answer": "Compare the cutout with the source at high zoom and preview it over light and dark backgrounds. Correct missing fabric, blocked openings, or retained background manually." },
+        { "question": "What should secondhand clothing photos show?", "answer": "Show the exact item's front, back, labels, material, measurements or fit context, and every meaningful defect or sign of wear." },
+        { "question": "Can I batch-process apparel photos without reviewing them?", "answer": "Batch processing reduces repeated setup, but each output still needs review. Separate lace, mesh, fringe, transparent fabric, and failed cutouts for individual inspection." }
+      ]
+    }
+  ],
+  "cta": {
+    "title": "Prepare a clean apparel cutout",
+    "description": "Start with an accurate garment photo, remove the background where appropriate, inspect fabric edges, and export a reviewed asset for the listing workflow.",
+    "button": "Open the background remover"
+  }
+}

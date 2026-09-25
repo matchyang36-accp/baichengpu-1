@@ -143,6 +143,11 @@ export const SEO_LANDING_PAGES: Record<SeoLandingPageId, LandingPageContent> = {
         href: "/blog/product-photo-editing-checklist",
         description: "Review the complete workflow from source selection through export and listing QA.",
       },
+      {
+        title: "Apparel Product Photo Workflow",
+        href: "/blog/apparel-product-photo-workflow",
+        description: "Prepare clean garment cutouts while preserving fabric edges and condition details.",
+      },
     ],
   },
   "amazon-white-background-maker": {
@@ -342,6 +347,11 @@ export const SEO_LANDING_PAGES: Record<SeoLandingPageId, LandingPageContent> = {
         title: "Social Commerce Product Images",
         href: "/blog/social-commerce-product-images",
         description: "Reuse one reviewed cutout across TikTok, Instagram, and Pinterest layouts.",
+      },
+      {
+        title: "Apparel Product Photo Workflow",
+        href: "/blog/apparel-product-photo-workflow",
+        description: "Review lace, mesh, fringe, and garment exports before listing.",
       },
     ],
   },

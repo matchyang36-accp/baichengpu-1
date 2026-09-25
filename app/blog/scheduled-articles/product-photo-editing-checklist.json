@@ -126,6 +126,12 @@
     },
     {
       "kind": "internalLink",
+      "text": "For clothing with lace, mesh, fringe, labels, or secondhand condition details,",
+      "label": "use the apparel product photo workflow",
+      "href": "/blog/apparel-product-photo-workflow"
+    },
+    {
+      "kind": "internalLink",
       "text": "For glass, jewelry, chrome, electronics, and other difficult contours,",
       "label": "use the difficult product edge guide",
       "href": "/blog/reflective-product-photography"
