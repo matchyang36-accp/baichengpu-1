@@ -1618,6 +1618,145 @@ test("renders the POD asset workflow with an explicit external mockup handoff", 
   }
 });
 
+test("renders the physical sticker photography guide without editing capability overclaims", async () => {
+  const [
+    articleResponse,
+    transparentPngResponse,
+    productRemoverResponse,
+    reflectiveGuideResponse,
+    colorGuideResponse,
+    checklistResponse,
+    batchResponse,
+  ] = await Promise.all([
+    render("/en/blog/sticker-product-photography"),
+    render("/en/transparent-png-maker"),
+    render("/en/product-background-remover"),
+    render("/en/blog/reflective-product-photography"),
+    render("/en/blog/product-photo-color-correction"),
+    render("/en/blog/product-photo-editing-checklist"),
+    render("/en/batch"),
+  ]);
+
+  for (const response of [
+    articleResponse,
+    transparentPngResponse,
+    productRemoverResponse,
+    reflectiveGuideResponse,
+    colorGuideResponse,
+    checklistResponse,
+    batchResponse,
+  ]) {
+    assert.equal(response.status, 200);
+  }
+
+  const [html, transparentPngHtml] = await Promise.all([
+    articleResponse.text(),
+    transparentPngResponse.text(),
+  ]);
+  assert.match(
+    html,
+    /<title>Sticker Product Photography: Listing Photo Guide \| edit-photo<\/title>/,
+  );
+  assert.match(
+    html,
+    /<h1>How to Photograph Stickers for Clear, Accurate Listings<\/h1>/,
+  );
+  assert.match(
+    html,
+    /Learn how to photograph stickers with clear die-cut edges, realistic size reference, controlled reflections, packaging details, and ecommerce listing QA\./,
+  );
+  for (const heading of [
+    "What a sticker listing image set should show",
+    "Choose a clean shooting surface",
+    "Control reflections on glossy and holographic stickers",
+    "Keep die-cut edges visible",
+    "Show real size and scale",
+    "Photograph backing, adhesive side, and packaging when relevant",
+    "Show single stickers and sets clearly",
+    "Capture texture and finish",
+    "Use application photos carefully",
+    "Remove backgrounds only when useful",
+    "Inspect cutout edges after background removal",
+    "Keep color and finish realistic",
+    "Export and listing QA",
+    "What edit-photo can and cannot do",
+    "Final sticker listing checklist",
+  ]) {
+    assert.match(html, new RegExp(heading));
+  }
+  for (const material of [
+    /glossy/i,
+    /holographic/i,
+    /metallic/i,
+    /transparent sticker/i,
+    /matte sticker/i,
+    /kiss-cut/i,
+    /die-cut/i,
+  ]) {
+    assert.match(html, material);
+  }
+  for (const href of [
+    "/en/blog/reflective-product-photography",
+    "/en/blog/product-photo-color-correction",
+    "/en/product-background-remover",
+    "/en/transparent-png-maker",
+    "/en/blog/product-photo-editing-checklist",
+    "/en/batch",
+  ]) {
+    assert.match(html, new RegExp(`href="${href}"`));
+  }
+  assert.match(
+    transparentPngHtml,
+    /href="\/en\/blog\/sticker-product-photography"/,
+  );
+  assert.match(html, /does not automatically make lighting, crop, color, scale, or styling consistent/);
+  assert.match(html, /cannot remove platform watermarks, repair glare or reflections/);
+  assert.match(html, /Do not remove third-party platform watermarks/);
+  assert.match(html, /does not guarantee ranking, exposure, conversion, or sales/);
+  assert.match(html, /"@type":"Article"/);
+  assert.match(html, /"@type":"BreadcrumbList"/);
+  assert.match(html, /"@type":"FAQPage"/);
+  assert.equal((html.match(/"@type":"Question"/g) ?? []).length, 5);
+  assert.equal((html.match(/<details/g) ?? []).length, 5);
+  assert.match(html, /"datePublished":"2026-09-04T01:00:00.000Z"/);
+  assert.match(html, /"dateModified":"2026-09-25T00:00:00.000Z"/);
+  assert.match(
+    html,
+    /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/sticker-product-photography"/,
+  );
+  assert.match(
+    html,
+    /hrefLang="en" href="https:\/\/edit-photo\.com\/en\/blog\/sticker-product-photography"/,
+  );
+  assert.match(
+    html,
+    /hrefLang="x-default" href="https:\/\/edit-photo\.com\/en\/blog\/sticker-product-photography"/,
+  );
+  for (const riskyClaim of [
+    /Google doesn't reverse-image/i,
+    /Amazon\/Etsy prohibit watermarks/i,
+    /Same rules as Blog #19[^.]*remove platform watermarks/i,
+    /50,000\+ competing shops/i,
+    /Buyers who see quality up close spend more/i,
+    /instant catalog cohesion/i,
+    /Not better designs\. Better photos\./i,
+  ]) {
+    assert.doesNotMatch(html, riskyClaim);
+  }
+
+  const articleLinks = [
+    ...new Set(
+      [...html.matchAll(/href="(\/en\/(?:blog\/[^"?#]+|[^"?#]+))"/g)].map(
+        (match) => match[1],
+      ),
+    ),
+  ];
+  const linkedResponses = await Promise.all(articleLinks.map((href) => render(href)));
+  for (const response of linkedResponses) {
+    assert.equal(response.status, 200);
+  }
+});
+
 test("returns 410 for retired person-removal content and removes discovery links", async () => {
   const [
     retiredResponse,

@@ -358,6 +358,11 @@ export const SEO_LANDING_PAGES: Record<SeoLandingPageId, LandingPageContent> = {
         href: "/blog/print-on-demand-mockup-editing",
         description: "Prepare and hand off a reviewed transparent PNG to an external mockup or design tool.",
       },
+      {
+        title: "Sticker Product Photography",
+        href: "/blog/sticker-product-photography",
+        description: "Photograph physical sticker edges, scale, finish, packaging, and reusable cutout assets accurately.",
+      },
     ],
   },
 };
