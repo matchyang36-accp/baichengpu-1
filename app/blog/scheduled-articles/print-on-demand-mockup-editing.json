@@ -1,213 +1,302 @@
 {
   "id": "print-on-demand-mockup-editing",
-  "tag": "E-commerce Photo Guide",
-  "title": "Print-on-Demand Sellers: How to Make Your Mockups Look Like Real Products (Not Templates)",
-  "description": "POD sellers using standard mockups look identical to competitors. Here's how to differentiate visually and rank higher.",
+  "tag": "POD Asset Workflow",
+  "title": "Print-on-Demand Mockup Workflow: Prepare Reusable PNG Assets | edit-photo",
+  "heading": "How to Prepare Product Images for Print-on-Demand Mockups",
+  "description": "Prepare clean transparent PNG assets for print-on-demand mockups with background removal, edge review, reusable file organization, and final design-tool handoff.",
   "targetKeyword": "print on demand mockup editing",
   "publishedAt": "2026-08-25T01:00:00.000Z",
   "date": "2026-08-25",
+  "updatedAt": "2026-09-25T00:00:00.000Z",
   "reviewedBy": "edit-photo editorial team",
   "blocks": [
     {
       "kind": "paragraph",
-      "text": "Every Redbubble, Printful, and Teespring seller uses the same 20 mockup templates. Which means buyers see the same t-shirt-on-white-guy image 100 times a day. Yours blends into the noise."
+      "text": "A reliable print-on-demand mockup workflow separates asset preparation from mockup creation. First prepare a clean, reusable image asset. Then place that approved asset into a print-provider template, mockup generator, or design editor that supports the product and print area you are using."
     },
     {
       "kind": "paragraph",
-      "text": "Here's how to stand out without hiring a photographer."
+      "text": "edit-photo covers the background-removal stage of that workflow. It can create and refine a transparent PNG, but it does not generate the mockup, position artwork on a product, build a lifestyle scene, or publish the finished listing."
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "The Mockup Problem"
+      "text": "What edit-photo can do in a POD workflow"
     },
     {
       "kind": "paragraph",
-      "text": "Standard POD mockups have:"
+      "text": "Use edit-photo when an authorized source image has an unwanted background and the next tool needs a transparent asset. The browser-based workflow can remove that background, let you inspect and correct the cutout edge, and export a transparent PNG for reuse. The current batch workflow can also process groups of background-removal jobs, although every important output still needs review."
     },
     {
       "kind": "list",
       "items": [
         {
-          "text": "Watermarks or platform branding"
+          "label": "Background removal",
+          "text": "Isolate the approved subject or artwork from an unwanted source background."
         },
         {
-          "text": "Generic backgrounds identical across sellers"
+          "label": "Edge review",
+          "text": "Inspect the automatic cutout and correct retained background or missing edge areas."
         },
         {
-          "text": "No brand identity"
+          "label": "Transparent export",
+          "text": "Save a reusable PNG with transparency for the next step in the workflow."
         },
         {
-          "text": "Zero uniqueness signal"
+          "label": "Batch preparation",
+          "text": "Process repeated background-removal jobs, then review exceptions before approval."
         }
       ]
     },
     {
+      "kind": "heading",
+      "level": 2,
+      "text": "Start with a clean source image or approved design"
+    },
+    {
       "kind": "paragraph",
-      "text": "Google Shopping ranks these lower because they're not unique content. Instagram ads underperform because buyers pattern-match them as \"template shops.\""
+      "text": "Begin with the highest-quality authorized source available. For a photographed product, choose a sharp frame with the complete outline visible and enough contrast around the subject. For artwork, use the original exported design rather than a screenshot, marketplace preview, or downloaded mockup. If the original design already has correct transparency, preserve it instead of processing it again."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Only process images and designs that you own or are authorized to use. Do not remove third-party platform watermarks or treat a preview mockup as reusable production artwork. Obtain an approved clean source and follow the license and print provider's current terms."
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "Use Rights-Safe Source Images"
+      "text": "Remove the original background"
     },
     {
       "kind": "paragraph",
-      "text": "Some POD platforms watermark preview mockups. Never upload watermarked images to your store."
+      "text": "Remove the background only when it is not part of the subject and the downstream mockup or design tool needs transparency. Keep intentional interior areas, holes, and negative space. A clean cutout should represent the source accurately rather than changing the design or inventing missing content."
     },
     {
-      "kind": "paragraph",
-      "text": "If a source image contains a watermark, obtain an unwatermarked file from the rights holder or create your own photo. edit-photo does not remove watermarks, and removing ownership marks without permission can create legal and marketplace risks."
+      "kind": "internalLink",
+      "text": "For a focused single-image isolation workflow,",
+      "label": "use the product background remover",
+      "href": "/product-background-remover"
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "Fix #2: Replace Generic Backgrounds"
+      "text": "Inspect difficult edges"
     },
     {
       "kind": "paragraph",
-      "text": "That white studio backdrop everyone uses? Replace it."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Upload your mockup to edit-photo.com, remove the background, drop the product onto:"
+      "text": "Zoom in before accepting the automatic result. Check thin strokes, lettering counters, distressed textures, soft fabric edges, small gaps, light-colored outlines, and semi-transparent details. Compare the cutout with the source and correct the mask where background remains or valid content is missing."
     },
     {
       "kind": "list",
       "items": [
         {
-          "text": "A branded color scheme"
+          "label": "Outer contour",
+          "text": "Look for halos, clipped corners, retained background, and uneven outlines."
         },
         {
-          "text": "A textured surface (wood, marble, linen)"
+          "label": "Interior spaces",
+          "text": "Check holes inside letters, handles, and design elements that should remain transparent."
         },
         {
-          "text": "A lifestyle scene relevant to your niche"
+          "label": "Fine detail",
+          "text": "Confirm that narrow lines and distressed or textured edges still match the approved source."
         }
       ]
     },
     {
+      "kind": "heading",
+      "level": 2,
+      "text": "Export a reusable transparent PNG"
+    },
+    {
       "kind": "paragraph",
-      "text": "Suddenly your mockup looks like a real photo shoot, not a template."
+      "text": "Export PNG when the mockup or design tool needs transparent pixels around the subject. Reopen the saved file over both light and dark backgrounds to reveal halos, isolated pixels, or accidental opacity. Confirm that the dimensions and visible content match the asset you approved."
+    },
+    {
+      "kind": "internalLink",
+      "text": "For the difference between white pixels and real transparency,",
+      "label": "follow the transparent PNG maker workflow",
+      "href": "/transparent-png-maker"
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "Fix #3: Create Consistent Brand Style"
+      "text": "Keep one approved master asset"
     },
     {
       "kind": "paragraph",
-      "text": "Pick a signature aesthetic and apply it to every mockup:"
+      "text": "Approve one transparent master before creating product mockups. Keep it separate from provider-specific exports so later revisions start from the reviewed asset rather than a compressed marketplace image. Record the design version, owner, approval status, and date when more than one person handles the files."
     },
     {
       "kind": "list",
       "items": [
         {
-          "text": "Minimalist: Off-white background, small shadow"
+          "label": "Source",
+          "text": "The untouched authorized photograph or original design export."
         },
         {
-          "text": "Bohemian: Linen texture, warm tones"
+          "label": "Approved master",
+          "text": "The reviewed transparent PNG used for mockup placement and other visual assets."
         },
         {
-          "text": "Streetwear: Concrete or graffiti backdrop"
-        },
-        {
-          "text": "Corporate: Clean gray gradient"
+          "label": "Destination export",
+          "text": "A file created for one product, provider template, mockup, or listing role."
         }
       ]
     },
     {
+      "kind": "heading",
+      "level": 2,
+      "text": "Hand the PNG off to a mockup or design tool"
+    },
+    {
       "kind": "paragraph",
-      "text": "Every mockup you upload becomes recognizable as your brand, not just another Printful template."
+      "text": "Open the approved PNG in the mockup generator, print-provider template, or design editor selected for the next task. That external tool is responsible for placing artwork on the product, applying perspective or displacement, building the scene, adding text, and creating the final layout. Keep this handoff explicit so a cutout file is not mistaken for a finished mockup or print-production file."
     },
     {
       "kind": "heading",
       "level": 2,
-      "text": "Fix #4: Build a Mockup Library"
+      "text": "Check scale, placement, and safe margins in the destination tool"
     },
     {
       "kind": "paragraph",
-      "text": "Smart POD sellers create a library of 5-10 background scenes they own. For every new design:"
+      "text": "Use the print provider's current template and instructions inside the destination tool. Confirm product variant, printable area, artwork scale, orientation, placement, bleed, and safe margins there. edit-photo does not read provider templates or automatically resize artwork to a printable region."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Reuse the same asset across product mockups"
+    },
+    {
+      "kind": "paragraph",
+      "text": "A reviewed transparent master can reduce repeated masking when the same authorized design or product cutout appears in several mockups. Create each destination version from that master, but review every product template separately because print areas, proportions, folds, perspective, and presentation can differ."
+    },
+    {
+      "kind": "internalLink",
+      "text": "When several source photos need the same background-removal stage,",
+      "label": "open the batch background remover",
+      "href": "/batch"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Keep source and output files organized"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use predictable names that distinguish the source, approved master, mockup draft, and final listing export. Avoid overwriting the original or using names such as final-final. A simple design ID, version, product type, and status makes approvals easier to audit and roll back."
+    },
+    {
+      "kind": "internalLink",
+      "text": "For the wider select, edit, export, and listing-review sequence,",
+      "label": "use the product photo editing checklist",
+      "href": "/blog/product-photo-editing-checklist"
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "What edit-photo cannot do"
+    },
+    {
+      "kind": "paragraph",
+      "text": "edit-photo is not a mockup generator, print generator, design editor, publishing service, or advertising optimizer. It does not automatically place artwork on a product, create lifestyle scenes or backgrounds, add marketing text, build graphic layouts, resize artwork to provider templates, publish to POD platforms, or guarantee clicks, conversion, approval, or sales."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Use a dedicated mockup or design tool for product placement, scene composition, typography, and provider-template work. Use the POD platform's current documentation for production files, printable areas, supported formats, and publishing requirements."
+    },
+    {
+      "kind": "heading",
+      "level": 2,
+      "text": "Common POD workflow mistakes"
     },
     {
       "kind": "list",
       "items": [
         {
-          "text": "Generate raw mockup on POD platform"
+          "label": "Using a preview as the source",
+          "text": "A screenshot or watermarked mockup is not a substitute for an authorized original design or clean product image."
         },
         {
-          "text": "Upload to edit-photo.com"
+          "label": "Skipping edge review",
+          "text": "Small halos and missing details become more visible after the asset is placed on a contrasting mockup."
         },
         {
-          "text": "Remove background"
+          "label": "Treating the PNG as print-ready",
+          "text": "Transparency alone does not prove that dimensions, color handling, resolution, bleed, or provider-template placement are correct."
         },
         {
-          "text": "Drop onto your library background"
+          "label": "Editing every destination independently",
+          "text": "Repeated masking creates inconsistent edges. Approve one master, then create traceable destination versions."
         },
         {
-          "text": "Export in all needed sizes"
+          "label": "Publishing without a final preview",
+          "text": "Check the actual product mockup and listing export after the external design step, not only the isolated PNG."
         }
       ]
     },
     {
-      "kind": "paragraph",
-      "text": "Ten minutes per design. Every product looks native to your brand."
-    },
-    {
       "kind": "heading",
       "level": 2,
-      "text": "The Etsy POD Angle"
+      "text": "Final POD asset checklist"
     },
     {
-      "kind": "paragraph",
-      "text": "Etsy POD is oversaturated. The winners aren't the ones with the best designs—they're the ones whose mockups don't scream \"print on demand.\""
+      "kind": "table",
+      "caption": "Approve the reusable asset before moving into mockup creation.",
+      "headers": ["Stage", "Pass condition", "Next action"],
+      "rows": [
+        {
+          "cells": ["Rights", "The source is owned or authorized for the intended use", "Stop and obtain an approved source if rights are unclear"]
+        },
+        {
+          "cells": ["Source", "The original is complete, sharp, and not a preview or screenshot", "Return to the original design or choose a better photograph"]
+        },
+        {
+          "cells": ["Background", "Only unwanted background pixels are removed", "Correct the mask and compare it with the source"]
+        },
+        {
+          "cells": ["Edges", "Contours, holes, and fine details match the approved source", "Inspect over light and dark backgrounds and correct failures"]
+        },
+        {
+          "cells": ["Master", "The transparent PNG is reviewed, named, versioned, and stored separately", "Approve one master before creating destination versions"]
+        },
+        {
+          "cells": ["Handoff", "The correct external mockup or design tool and provider template are selected", "Complete placement, layout, and template checks there"]
+        },
+        {
+          "cells": ["Final QA", "The finished mockup accurately represents the product and intended design", "Correct the responsible stage before publishing"]
+        }
+      ]
     },
     {
-      "kind": "paragraph",
-      "text": "Buyers pay premium prices to sellers who feel real. Your visual identity is 80% of that."
-    },
-    {
-      "kind": "heading",
-      "level": 2,
-      "text": "The Print-on-Demand Winners' Formula"
-    },
-    {
-      "kind": "list",
+      "kind": "faq",
+      "title": "Print-on-demand mockup asset FAQ",
       "items": [
         {
-          "text": "Design in Canva or Illustrator"
+          "question": "Is edit-photo a print-on-demand mockup generator?",
+          "answer": "No. edit-photo removes backgrounds, supports cutout-edge correction, and exports transparent PNG assets. Use a dedicated mockup generator, provider template, or design editor to place artwork on a product and build the final scene."
         },
         {
-          "text": "Generate mockup on POD platform"
+          "question": "Why keep a transparent PNG master for POD mockups?",
+          "answer": "A reviewed transparent master can be reused without masking the same source again. Keep provider-specific mockups and listing exports separate so the approved asset remains available for later products and revisions."
         },
         {
-          "text": "Refine mockup at edit-photo.com"
+          "question": "Does a transparent PNG mean my artwork is print-ready?",
+          "answer": "No. Transparency does not confirm provider dimensions, resolution, color handling, bleed, safe margins, placement, or file requirements. Check those items in the provider template and current documentation."
         },
         {
-          "text": "Consistent brand background library"
+          "question": "Can I remove a platform watermark before making a mockup?",
+          "answer": "Do not use edit-photo to remove third-party watermarks. Obtain the original unwatermarked asset from the rights holder or create an authorized source that is licensed for the intended workflow."
         },
         {
-          "text": "Upload to store looking premium"
+          "question": "When should I use batch background removal for POD assets?",
+          "answer": "Use it when several authorized source images need the same isolation stage. Review representative files first and inspect every important output, especially assets with thin, distressed, or semi-transparent edges."
         }
       ]
-    },
-    {
-      "kind": "paragraph",
-      "text": "Follow this and you'll out-earn competitors selling nearly identical designs."
-    },
-    {
-      "kind": "heading",
-      "level": 2,
-      "text": "Stop Blending In"
-    },
-    {
-      "kind": "paragraph",
-      "text": "Start rebranding your POD mockups free at edit-photo.com and watch your CTR climb."
     }
   ],
   "cta": {
-    "title": "Ready to improve a product photo?",
-    "description": "Remove its background locally in your browser, inspect the edge, and download a transparent PNG.",
-    "button": "Try background removal"
+    "title": "Prepare the reusable asset first",
+    "description": "Remove an unwanted background, review the cutout edge, and export a transparent PNG before continuing in your mockup or design tool.",
+    "button": "Create a transparent asset"
   }
 }

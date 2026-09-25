@@ -353,6 +353,11 @@ export const SEO_LANDING_PAGES: Record<SeoLandingPageId, LandingPageContent> = {
         href: "/blog/apparel-product-photo-workflow",
         description: "Review lace, mesh, fringe, and garment exports before listing.",
       },
+      {
+        title: "Print-on-Demand Mockup Workflow",
+        href: "/blog/print-on-demand-mockup-editing",
+        description: "Prepare and hand off a reviewed transparent PNG to an external mockup or design tool.",
+      },
     ],
   },
 };

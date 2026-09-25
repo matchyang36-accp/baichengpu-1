@@ -1498,6 +1498,126 @@ test("renders the apparel workflow hub and removes consolidated sources from dis
   }
 });
 
+test("renders the POD asset workflow with an explicit external mockup handoff", async () => {
+  const [
+    articleResponse,
+    transparentPngResponse,
+    productRemoverResponse,
+    checklistResponse,
+    batchResponse,
+  ] = await Promise.all([
+    render("/en/blog/print-on-demand-mockup-editing"),
+    render("/en/transparent-png-maker"),
+    render("/en/product-background-remover"),
+    render("/en/blog/product-photo-editing-checklist"),
+    render("/en/batch"),
+  ]);
+
+  for (const response of [
+    articleResponse,
+    transparentPngResponse,
+    productRemoverResponse,
+    checklistResponse,
+    batchResponse,
+  ]) {
+    assert.equal(response.status, 200);
+  }
+
+  const [html, transparentPngHtml] = await Promise.all([
+    articleResponse.text(),
+    transparentPngResponse.text(),
+  ]);
+  assert.match(
+    html,
+    /<title>Print-on-Demand Mockup Workflow: Prepare Reusable PNG Assets \| edit-photo<\/title>/,
+  );
+  assert.match(
+    html,
+    /<h1>How to Prepare Product Images for Print-on-Demand Mockups<\/h1>/,
+  );
+  assert.match(
+    html,
+    /Prepare clean transparent PNG assets for print-on-demand mockups with background removal, edge review, reusable file organization, and final design-tool handoff\./,
+  );
+  for (const heading of [
+    "What edit-photo can do in a POD workflow",
+    "Start with a clean source image or approved design",
+    "Remove the original background",
+    "Inspect difficult edges",
+    "Export a reusable transparent PNG",
+    "Keep one approved master asset",
+    "Hand the PNG off to a mockup or design tool",
+    "Check scale, placement, and safe margins in the destination tool",
+    "Reuse the same asset across product mockups",
+    "Keep source and output files organized",
+    "What edit-photo cannot do",
+    "Common POD workflow mistakes",
+    "Final POD asset checklist",
+  ]) {
+    assert.match(html, new RegExp(heading));
+  }
+  for (const href of [
+    "/en/transparent-png-maker",
+    "/en/product-background-remover",
+    "/en/blog/product-photo-editing-checklist",
+    "/en/batch",
+  ]) {
+    assert.match(html, new RegExp(`href="${href}"`));
+  }
+  assert.match(
+    transparentPngHtml,
+    /href="\/en\/blog\/print-on-demand-mockup-editing"/,
+  );
+  assert.match(html, /edit-photo is not a mockup generator/);
+  assert.match(html, /does not generate the mockup/);
+  assert.match(html, /external tool is responsible for placing artwork on the product/);
+  assert.match(html, /Do not remove third-party platform watermarks/);
+  assert.match(html, /"@type":"Article"/);
+  assert.match(html, /"@type":"BreadcrumbList"/);
+  assert.match(html, /"@type":"FAQPage"/);
+  assert.equal((html.match(/"@type":"Question"/g) ?? []).length, 5);
+  assert.equal((html.match(/<details/g) ?? []).length, 5);
+  assert.match(html, /"datePublished":"2026-08-25T01:00:00.000Z"/);
+  assert.match(html, /"dateModified":"2026-09-25T00:00:00.000Z"/);
+  assert.match(
+    html,
+    /rel="canonical" href="https:\/\/edit-photo\.com\/en\/blog\/print-on-demand-mockup-editing"/,
+  );
+  assert.match(
+    html,
+    /hrefLang="en" href="https:\/\/edit-photo\.com\/en\/blog\/print-on-demand-mockup-editing"/,
+  );
+  assert.match(
+    html,
+    /hrefLang="x-default" href="https:\/\/edit-photo\.com\/en\/blog\/print-on-demand-mockup-editing"/,
+  );
+  for (const riskyClaim of [
+    /same 20 mockup templates/i,
+    /100 times a day/i,
+    /Google Shopping ranks these lower/i,
+    /Instagram ads underperform/i,
+    /library of 5-10 background scenes/i,
+    /Ten minutes per design/i,
+    /visual identity is 80%/i,
+    /out-earn competitors/i,
+    /watch your CTR climb/i,
+  ]) {
+    assert.doesNotMatch(html, riskyClaim);
+  }
+
+  const articleLinks = [
+    ...new Set(
+      [...html.matchAll(/href="(\/en\/(?:blog\/[^"?#]+|[^"?#]+))"/g)].map(
+        (match) => match[1],
+      ),
+    ),
+  ];
+  const linkedResponses = await Promise.all(articleLinks.map((href) => render(href)));
+  for (const response of linkedResponses) {
+    assert.equal(response.status, 200);
+  }
+});
+
 test("returns 410 for retired person-removal content and removes discovery links", async () => {
   const [
     retiredResponse,
